@@ -1,6 +1,5 @@
 {
   "name": "audit-core",
   "version": "0.1.0",
-  "description": "Shared audit contract: finding schema and severity rubric (findings.py), rollup and go/no-go verdict, stack detection, repo walker and grep runner, sensitive-data catalog, git-history helper, endpoint inventory, OWASP/ASVS mapper, report generator. Required by audit-app and audit-llm.",
-  "hooks": "./hooks/hooks.json"
+  "description": "Shared audit contract: finding schema and severity rubric (findings.py), rollup and go/no-go verdict, stack detection, repo walker and grep runner, sensitive-data catalog, git-history helper, endpoint inventory, OWASP/ASVS mapper, report generator. Required by audit-app and audit-llm."
 }
