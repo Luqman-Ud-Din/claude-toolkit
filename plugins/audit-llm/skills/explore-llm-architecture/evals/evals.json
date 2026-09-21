@@ -1,0 +1,17 @@
+{
+  "skill_name": "explore-llm-architecture",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Map out how our support agent works - is it looping forever or does it know when to stop?",
+      "expected_output": "Traces the entry point and loop, identifies whether termination is model-driven, a max-step cap, a done-tool, or absent, cites the exact file/line, and writes explore-llm-architecture.json rather than only answering inline.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "We have a planner agent that hands work off to two specialist agents - can you diagram how they talk to each other?",
+      "expected_output": "Identifies this as multi-agent, maps each agent's role and handoff mechanism, and flags that audit-llm-code-execution-and-multi-agent should review the inter-agent trust/authentication.",
+      "files": []
+    }
+  ]
+}

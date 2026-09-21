@@ -1,0 +1,18 @@
+[
+  {
+    "id": "SECRET-LITERAL",
+    "pattern": "(?i)(apiKey|api_key|secret|clientSecret|password|token|privateKey)\\s*[:=]\\s*['\"][A-Za-z0-9_\\-/+]{12,}['\"]",
+    "globs": ["*.ts", "*.tsx", "*.js", "*.jsx"],
+    "severity_hint": "High",
+    "description": "Secret literal in client code - anything bundled reaches the browser; only publishable keys belong here",
+    "reference": "CWE-798"
+  },
+  {
+    "id": "SERVER-SECRET-IN-ENV",
+    "pattern": "(?i)(REACT_APP_|NEXT_PUBLIC_)[A-Z_]*(SECRET|PRIVATE|PASSWORD|API_KEY)",
+    "globs": ["*.env", "*.ts", "*.tsx", "*.js", "*.jsx"],
+    "severity_hint": "High",
+    "description": "Server-side secret exposed through a client-inlined env var (REACT_APP_/NEXT_PUBLIC_ are public)",
+    "reference": "CWE-798"
+  }
+]

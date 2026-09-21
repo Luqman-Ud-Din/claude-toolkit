@@ -1,0 +1,48 @@
+{
+  "skill_name": "audit-business-logic",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Review the order and payment logic in evals/files/sample-repo and tell me whether it actually does the right thing. Draw the order state machine and list any transitions that should not be possible.",
+      "expected_output": "A Mermaid stateDiagram for OrderStatus showing Pending->Paid, Pending/Paid->Cancelled, Paid->Shipped, and an illegal Cancelled->Paid (and Refunded->Paid) edge via OrderService.Pay; a rules table; a High BIZ finding for the missing status guard in Pay; a High/Medium finding for the double converted to double amount passed to the gateway; Ship() and StockService recorded as verified (not flagged); a 'Flows not fully traced' list; findings written to audit/findings/audit-business-logic.json.",
+      "files": ["evals/files/sample-repo/Shop.Api/Shop.Api.csproj", "evals/files/sample-repo/Shop.Api/Orders/Order.cs", "evals/files/sample-repo/Shop.Api/Orders/OrderService.cs", "evals/files/sample-repo/Shop.Api/Orders/OrdersController.cs", "evals/files/sample-repo/Shop.Api/Stock/StockService.cs"],
+      "expectations": [
+        "Output contains a mermaid stateDiagram-v2 block for the order flow",
+        "A finding with id prefix BIZ- flags OrderService.Pay for allowing Cancelled (terminal) orders to become Paid, rated High or Critical",
+        "A finding flags the (double)order.Total conversion in OrderService.Pay as money on a floating-point type",
+        "OrderService.Ship is listed as a verified rule, not a finding",
+        "StockService.Reserve is not reported as a business-rule finding; the check-then-decrement race is handed off to audit-concurrency-and-race-condition",
+        "OrderLine.WeightKg (double) is not flagged as money",
+        "Report contains a 'Flows not fully traced' or 'Not checked' section",
+        "findings.json validates with ../audit-finding-writer/scripts/findings.py validate"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Can a customer get the same coupon applied more than once in evals/files/sample-repo? Audit the discount logic.",
+      "expected_output": "A High BIZ finding on PricingService.ApplyCoupon / OrdersController.ApplyCoupon: Total is decremented in place with no check on AppliedCouponCode and SingleUse is never enforced, so a repeated POST subtracts the discount twice; remediation derives Total from Subtotal minus a single recorded coupon; ComputeSubtotal noted as correct; a sequence diagram of the coupon flow.",
+      "files": ["evals/files/sample-repo/Shop.Api/Shop.Api.csproj", "evals/files/sample-repo/Shop.Api/Orders/PricingService.cs", "evals/files/sample-repo/Shop.Api/Orders/OrdersController.cs", "evals/files/sample-repo/Shop.Api/Orders/Order.cs"],
+      "expectations": [
+        "A BIZ- finding rated High identifies that ApplyCoupon subtracts from order.Total on every call with no guard",
+        "The finding mentions that Coupon.SingleUse is not enforced",
+        "Remediation says to derive the total from line items and a single recorded coupon rather than mutate Total",
+        "ComputeSubtotal is not flagged",
+        "Output contains a mermaid sequenceDiagram for the coupon flow",
+        "References include CWE-840 or CWE-682"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "We are about to go live. Do a business logic audit of evals/files/sample-repo and write the report to audit/reports/audit-business-logic.md.",
+      "expected_output": "Full report in the skill's output template: summary table, one section per flow (orders/payments, discounts, inventory) with state and sequence diagrams and a rules table, findings for Cancelled->Paid and the double coupon application, a 'Handed off' table naming audit-concurrency-and-race-condition for the stock check-then-act, and a 'Flows not fully traced' list; audit/status/audit-business-logic.json written with status completed.",
+      "files": ["evals/files/sample-repo"],
+      "expectations": [
+        "Report has sections per flow each containing a mermaid diagram and a rules table",
+        "Report contains a 'Handed off' table that names audit-concurrency-and-race-condition for StockService.Reserve",
+        "Both planted issues (illegal Cancelled->Paid transition, coupon applied twice) appear as findings",
+        "audit/status/audit-business-logic.json is written with status completed",
+        "No file outside audit/ is modified"
+      ]
+    }
+  ]
+}

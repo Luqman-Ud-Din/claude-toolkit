@@ -1,0 +1,58 @@
+[
+  {
+    "id": "CONNSTR-PASSWORD",
+    "pattern": "(?i)(password|pwd)\\s*=\\s*[^\\s;\"']{4,}",
+    "globs": ["appsettings*.json", "*.config", "*.cs", "*.env"],
+    "severity_hint": "High",
+    "description": "Connection string / config with an inline password",
+    "reference": "CWE-798"
+  },
+  {
+    "id": "JWT-SIGNING-KEY",
+    "pattern": "(?i)\"(Jwt|Signing|Secret)(Key|Secret)?\"\\s*:\\s*\"[^\"]{12,}\"",
+    "globs": ["appsettings*.json", "*.json"],
+    "severity_hint": "Critical",
+    "description": "JWT/signing/secret key literal in a config file",
+    "reference": "CWE-798"
+  },
+  {
+    "id": "STRIPE-KEY",
+    "pattern": "sk_(live|test)_[0-9a-zA-Z]{16,}",
+    "globs": ["*.json", "*.cs", "*.env", "*.config"],
+    "severity_hint": "Critical",
+    "description": "Stripe secret API key",
+    "reference": "CWE-798"
+  },
+  {
+    "id": "DEBUG-IN-PROD",
+    "pattern": "(?i)(\"DetailedErrors\"\\s*:\\s*true|\"LogLevel\"[^}]*\"Debug\"|UseDeveloperExceptionPage)",
+    "globs": ["appsettings.Production.json", "appsettings.Prod*.json", "*.cs"],
+    "severity_hint": "Medium",
+    "description": "Debug/detailed errors enabled in a production config or unguarded developer page",
+    "reference": "CWE-489"
+  },
+  {
+    "id": "CORS-WILDCARD-CREDS",
+    "pattern": "(AllowAnyOrigin|SetIsOriginAllowed\\(\\s*_?\\s*=>\\s*true)",
+    "globs": ["*.cs"],
+    "severity_hint": "High",
+    "description": "CORS allows any origin - check it is not combined with AllowCredentials",
+    "reference": "CWE-942"
+  },
+  {
+    "id": "ALLOW-CREDENTIALS",
+    "pattern": "AllowCredentials\\(\\)",
+    "globs": ["*.cs"],
+    "severity_hint": "High",
+    "description": "CORS AllowCredentials - dangerous when paired with a wildcard/reflected origin",
+    "reference": "CWE-942"
+  },
+  {
+    "id": "NEW-CONFIG-LITERAL",
+    "pattern": "(?i)(ApiKey|AccessToken|ClientSecret|Password)\\s*=\\s*\"[^\"]{8,}\"",
+    "globs": ["*.cs"],
+    "severity_hint": "High",
+    "description": "Secret assigned a literal in code",
+    "reference": "CWE-798"
+  }
+]

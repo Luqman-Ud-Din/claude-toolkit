@@ -1,0 +1,49 @@
+{
+  "skill_name": "audit-orm-query-and-data-access",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "The product list page is slow and the DB is at 80% CPU. Please review the data access code in evals/files/sample-repo for N+1s, missing pagination and other ORM problems, and tell us how to log queries so we can measure it.",
+      "expected_output": "ORM-prefixed findings for: the N+1 in SaleManager.CalculateTotalAsync, the unpaged tracked GetAll in ProductsController, the Count() > 0 in HasSalesToday, the two-SaveChanges PostAsync with no transaction, and the Name.Contains filter with no index (cross-referenced to audit-db-schema). No findings for GetPage, Exists, or CalculateTotalBatchedAsync. A report with the 'Endpoints returning unbounded collections' table listing GET /api/products -> GetAll, the index cross-check table, and the EF Core query logging config (LogTo / Microsoft.EntityFrameworkCore.Database.Command at Information, EnableSensitiveDataLogging staging-only).",
+      "files": ["evals/files/sample-repo/Shop.Api/Shop.Api.csproj", "evals/files/sample-repo/Shop.Api/Data/ShopDbContext.cs", "evals/files/sample-repo/Shop.Api/Controllers/ProductsController.cs", "evals/files/sample-repo/Shop.Api/Managers/SaleManager.cs"],
+      "expectations": [
+        "Detects the stack as dotnet and loads only references/dotnet.md",
+        "Runs ../audit-code-scan/scripts/grep_scan.py with scripts/patterns/dotnet.json and audit-endpoint-inventory",
+        "Emits a High finding for the foreach loop querying Products per line in CalculateTotalAsync (N+1) with CWE-1049",
+        "Emits a finding for ProductsController.GetAll returning the whole table without paging and without AsNoTracking",
+        "Emits a Low finding for Count(...) > 0 in HasSalesToday recommending Any()",
+        "Emits a finding for PostAsync writing Sales and StockMovements across two SaveChanges without a transaction",
+        "Emits a finding or cross-check row for Name.Contains(term) with no index on Name, referencing audit-db-schema",
+        "Does not flag GetPage, Exists, or CalculateTotalBatchedAsync",
+        "Report contains an 'Endpoints returning unbounded collections' table that lists GetAll",
+        "Report contains the EF Core query logging configuration",
+        "Report includes a Not checked section",
+        "findings.json validates with ../audit-finding-writer/scripts/findings.py validate"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Which endpoints in evals/files/sample-repo return unbounded collections? Just the list, with what would fix each.",
+      "expected_output": "A table with GET /api/products (ProductsController.GetAll) as unbounded - no Skip/Take, tracked, full entity - with Skip/Take + AsNoTracking + Select projection as the fix; GetPage and Search (Take(50)) are bounded and excluded.",
+      "files": ["evals/files/sample-repo/Shop.Api/Controllers/ProductsController.cs"],
+      "expectations": [
+        "Uses audit-endpoint-inventory (materialising call, no paging) or an equivalent trace",
+        "Lists GET /api/products GetAll as unbounded",
+        "Does not list GetPage or Search as unbounded",
+        "Fix mentions Skip/Take with a maximum page size and a projection"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Is there an N+1 in evals/files/sample-repo/Shop.Api/Managers/SaleManager.cs? Show me the fix.",
+      "expected_output": "Yes: CalculateTotalAsync issues one Products query per sale line. Fix: batch with Where(p => ids.Contains(p.Id)) into a dictionary, or Include(...).ThenInclude(l => l.Product); CalculateTotalBatchedAsync in the same file is already the correct shape.",
+      "files": ["evals/files/sample-repo/Shop.Api/Managers/SaleManager.cs"],
+      "expectations": [
+        "Identifies CalculateTotalAsync foreach as N+1 with the queries-per-request arithmetic (1 + number of lines)",
+        "Proposes an IN-batched lookup or Include/ThenInclude",
+        "Points out CalculateTotalBatchedAsync as the existing correct pattern",
+        "Finding id starts with ORM-"
+      ]
+    }
+  ]
+}

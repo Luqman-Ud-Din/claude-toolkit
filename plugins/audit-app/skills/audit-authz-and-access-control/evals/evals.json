@@ -1,0 +1,50 @@
+{
+  "skill_name": "audit-authz-and-access-control",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Audit the ASP.NET Core API under evals/files/sample-repo for authorization and access-control problems. Enumerate the endpoints, flag anything unauthenticated, check for IDOR and privilege escalation, and write findings in the standard format.",
+      "expected_output": "An endpoint inventory table plus AUTHZ findings that include: (a) ReportsController has no authentication (Critical/High, CWE-306); (b) OrdersController.Get and Delete load an order by id with no ownership filter - IDOR (High, CWE-639); (c) UpdateProfileDto exposes Role/IsAdmin and ProfileController.Update copies dto.Role onto the entity - privilege escalation / mass assignment (High, CWE-915). Negatives (login [AllowAnonymous], /health, OrdersController.Mine, Receipt with owner filter, Orders.all with [Authorize(Roles=Admin)], CreateOrderDto) are not flagged.",
+      "files": [
+        "evals/files/sample-repo/Program.cs",
+        "evals/files/sample-repo/Controllers/ReportsController.cs",
+        "evals/files/sample-repo/Controllers/OrdersController.cs",
+        "evals/files/sample-repo/Controllers/ProfileController.cs",
+        "evals/files/sample-repo/Controllers/AuthController.cs",
+        "evals/files/sample-repo/Dto/UpdateProfileDto.cs",
+        "evals/files/sample-repo/Dto/CreateOrderDto.cs",
+        "evals/files/sample-repo/Data/ShopDbContext.cs",
+        "evals/files/sample-repo/Shop.Api.csproj"
+      ],
+      "expectations": [
+        "Detects the stack as dotnet from the .csproj",
+        "Produces an endpoint inventory table with a method, route, auth-required, roles and ownership-check column",
+        "Flags ReportsController as missing authentication (no [Authorize], no [AllowAnonymous])",
+        "Flags OrdersController.Get({id}) as an IDOR - loads by id with no ownership filter, references CWE-639",
+        "Flags OrdersController.Delete({id}) as the same IDOR defect on a write path",
+        "Flags UpdateProfileDto exposing Role/IsAdmin and the profile update copying the role - references CWE-915",
+        "Does NOT flag AuthController login/forgot-password ([AllowAnonymous]) or the /health minimal API",
+        "Does NOT flag OrdersController.Mine, Receipt, or the [Authorize(Roles=Admin)] endpoint",
+        "All finding ids start with AUTHZ-",
+        "findings.json validates with ../audit-finding-writer/scripts/findings.py validate"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "We have a test environment for the sample-repo API at a URL I'll give you, plus tokens for two users. Build the endpoint inventory and generate the cross-account probe command that hits each endpoint as user A using user B's ids. Do not invent results.",
+      "expected_output": "Runs audit-endpoint-inventory to build the inventory, uses its endpoints.probe.json (authz_probe.py's shape, id_params naming the resource) and an ids-b.json with one key per id_params value, and prints the exact authz_probe.py invocation (with --base-url, --token-a, --token-b, --ids-b, --endpoints, --also-anon). States that the probe is not run until a real URL is supplied and points only at a disposable environment.",
+      "files": [
+        "evals/files/sample-repo/Controllers/OrdersController.cs",
+        "evals/files/endpoints.sample.json",
+        "evals/files/ids-b.sample.json"
+      ],
+      "expectations": [
+        "Uses audit-endpoint-inventory to enumerate routes from source",
+        "Emits an endpoint inventory in authz_probe.py's shape with id_params for the {id} routes",
+        "Shows the authz_probe.py command with both tokens, --ids-b and --also-anon",
+        "Explicitly says the probe only runs when the user supplies a URL and targets a test environment",
+        "Does not fabricate pass/fail results for endpoints it has not actually called"
+      ]
+    }
+  ]
+}

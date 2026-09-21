@@ -1,0 +1,17 @@
+{
+  "skill_name": "shared-llm-finding-format",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "audit-llm-excessive-agency just found the refund tool has no approval gate - what ID prefix and Area should this finding use, and where does it get filed?",
+      "expected_output": "Uses Area 'Excessive Agency', ID prefix EA (e.g. LLM-EA-001), and files via audit-finding-writer to audit/findings/audit-llm-excessive-agency.json - not a new bespoke JSON format.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "We found a jailbreak that worked only because there's no output guardrail at all - is this one finding or two, and which Area?",
+      "expected_output": "Recommends one finding filed under the primary fixable root cause (Guardrails, prefix GR), with the jailbreak reproduction cross-referenced in References rather than filed as a separate duplicate finding.",
+      "files": []
+    }
+  ]
+}

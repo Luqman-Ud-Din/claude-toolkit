@@ -1,0 +1,50 @@
+{
+  "skill_name": "propose-architecture-changes",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Does our architecture support the rules we need for launching in Germany, the UAE and Pakistan? BLD: evals/files/sample-bld.md (generated, then extended with the new rules BR-013..017). Architecture doc from explore-architecture: evals/files/sample-architecture.md. I want a refactoring roadmap with the design patterns you'd actually use and where they'd be overkill. Write it under docs/analysis/ in the current directory.",
+      "expected_output": "A report stating both sources; a Proposed changes roadmap of P-xxx steps ordered so domain extraction precedes variation points precedes integration seams precedes messaging, each naming the pattern (from the catalog) or none and the ARC findings resolved; summary table; findings with the Pattern field. Planted issues: tax rules hard-coded in orders.controller.ts (BR-003/BR-013) -> VIOLATION, Pattern Strategy (with Factory optional); fulfilment workflow split across shipments.controller and OrderService with no orchestrator and shipment inserted before transition -> RISK/VIOLATION, Pattern State machine or Saga (saga flagged overkill for in-process); payment via Stripe called from controller with EUR hard-coded vs BR-015 -> GAP, Pattern Adapter/Ports-and-adapters; e-invoicing submission BR-014 with no reliable side-effect mechanism -> GAP, Pattern Outbox; no tenant/market/locale context vs BR-016/017 -> GAP, Pattern Multi-tenancy context; single region vs BR-017 data residency -> GAP; services cycle XARC-001 carried in; job re-implements 'open order' rule -> RISK, Pattern Specification or Repository; synchronous e-mail in transition BR-008 -> RISK, Pattern Domain events. CQRS not recommended.",
+      "files": [
+        "evals/files/sample-bld.md",
+        "evals/files/sample-architecture.md"
+      ],
+      "expectations": [
+        "Header states the BLD source (generated then extended) and the architecture source with date",
+        "Proposed changes roadmap precedes the findings; each P-xxx names a Pattern (catalog name or none), an overkill point, and the ARC findings it resolves",
+        "A finding labelled VIOLATION reports tax rules hard-coded in orders.controller.ts (BR-003/BR-013) with Pattern Strategy",
+        "A finding reports the ship/deliver workflow split between shipments.controller.ts and OrderService with no single orchestrator (fulfilment workflow), with Pattern State machine or Saga, and if Saga is named its overkill point is stated",
+        "A finding labelled GAP or VIOLATION reports the payment integration (Stripe, EUR hard-coded, called from the controller) cannot support BR-015 market-specific providers, with Pattern Adapter / Ports-and-adapters",
+        "A finding labelled GAP reports BR-014 e-invoicing submission has no reliable side-effect mechanism, with Pattern Outbox",
+        "A finding labelled GAP reports the absence of tenant/market/locale/time-zone context propagation (BR-016/BR-017) with Pattern Multi-tenancy context",
+        "A finding reports the reminder job re-implementing the open-order rule differently from customer.service.ts (BR-004/BR-009)",
+        "Every ARC finding has all nine fields (ID, Label, Severity, Area, BLD reference, Location, Impact, Pattern, Remediation) with exactly one label",
+        "Every Pattern value is either none or a name from references/design-patterns.md; CQRS is not recommended, or if mentioned it is explicitly rejected as overkill",
+        "Roadmap order has the domain-extraction step (moving tax/payment/shipping logic out of controllers) before the Strategy/Adapter steps and any Outbox/events step",
+        "XARC-001 (services cycle) is carried into an ARC finding citing the XARC id",
+        "A Beyond the checklist section exists with at least one issue-format item",
+        "The document is written to docs/analysis/propose-architecture-changes/<date>.md and the reply states the path",
+        "Every P-item's Depends on references only earlier P-items",
+        "Summary table counts equal the number of findings including those under Beyond the checklist"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "which design patterns should we use to stop the country if/else mess spreading? bld evals/files/sample-bld.md, architecture evals/files/sample-architecture.md",
+      "expected_output": "The full report, with the variation-point findings (tax by country in the controller; payment provider by market) answered with Strategy + Factory and Adapter, each with an overkill point; CQRS not recommended; other findings still reported.",
+      "files": [
+        "evals/files/sample-bld.md",
+        "evals/files/sample-architecture.md"
+      ],
+      "expectations": [
+        "Output uses the standard sections: header, Proposed changes, Summary, Findings, Beyond the checklist",
+        "Strategy is recommended for the tax-by-country conditional with an explicit overkill point",
+        "Adapter / Ports-and-adapters is recommended for the payment provider variation",
+        "No pattern outside references/design-patterns.md is recommended",
+        "Findings unrelated to the country conditionals (e.g. the services cycle, synchronous e-mail) are still reported",
+        "An Answer paragraph directly under the header names Strategy, Factory and Adapter and the prerequisite step of moving rules out of controllers",
+        "Multi-tenancy context is recommended so that jobs and controllers have a market/locale to dispatch on"
+      ]
+    }
+  ]
+}

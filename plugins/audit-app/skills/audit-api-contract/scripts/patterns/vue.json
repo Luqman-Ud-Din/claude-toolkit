@@ -1,0 +1,66 @@
+[
+  {
+    "id": "FE-ERROR-SHAPES",
+    "pattern": "(error|err|response)\\.(data|_data)\\??\\.(message|error|detail|errors|title|msg|statusMessage)\\b",
+    "globs": ["*.ts", "*.js", "*.vue"],
+    "severity_hint": "Info",
+    "description": "Client parses a server error field; each distinct field name is a distinct server error shape",
+    "reference": "ASVS-13.2"
+  },
+  {
+    "id": "FE-SENSITIVE-MODEL-FIELD",
+    "pattern": "\\b(passwordHash|salt|securityStamp|refreshToken|apiKey|isDeleted|costPrice)\\s*[?:]",
+    "globs": ["*.ts", "*.d.ts", "*.vue"],
+    "severity_hint": "Medium",
+    "description": "Client type declares a field the server should not expose; evidence for the backend over-exposure finding",
+    "reference": "CWE-200"
+  },
+  {
+    "id": "FE-CLIENT-SIDE-PAGING",
+    "pattern": "\\.slice\\(\\s*(page|pageIndex|start)\\w*(\\.value)?\\s*\\*|\\.slice\\(\\s*\\w+\\s*\\*\\s*\\w*(size|pageSize)",
+    "globs": ["*.ts", "*.js", "*.vue"],
+    "severity_hint": "Medium",
+    "description": "Array sliced client-side for paging; the list endpoint probably returns everything",
+    "reference": "CWE-770"
+  },
+  {
+    "id": "SERVER-ENTITY-RETURNED",
+    "pattern": "return\\s+(await\\s+)?(prisma|db|\\w+Repo)\\.\\w+\\.(findMany|findFirst|findUnique|find)\\(",
+    "globs": ["*.ts", "*.js"],
+    "severity_hint": "High",
+    "description": "Nuxt server route returns an ORM result directly; check for secret fields and select/omit",
+    "reference": "CWE-200"
+  },
+  {
+    "id": "SERVER-ADHOC-ERROR",
+    "pattern": "return\\s+\\{\\s*(error|message|msg|success)\\s*:|createError\\(\\s*\\{[^}]*(data|message)\\s*:",
+    "globs": ["*.ts", "*.js"],
+    "severity_hint": "Low",
+    "description": "Ad-hoc error body or createError variant in a Nuxt server route; collect shapes across routes",
+    "reference": "CWE-209"
+  },
+  {
+    "id": "SERVER-SPEC-EXPOSED",
+    "pattern": "openAPI\\s*:\\s*(true|\\{)",
+    "globs": ["nuxt.config.ts", "nuxt.config.js"],
+    "severity_hint": "Medium",
+    "description": "Nitro OpenAPI enabled; confirm production: false or authentication in front",
+    "reference": "OWASP-API8:2023"
+  },
+  {
+    "id": "SERVER-UNVALIDATED-BODY",
+    "pattern": "await\\s+readBody\\(event\\)(?![^\\n]*(parse|safeParse|validate))",
+    "globs": ["*.ts", "*.js"],
+    "severity_hint": "Medium",
+    "description": "Body read without a schema parse on the same line; confirm validation follows",
+    "reference": "CWE-20"
+  },
+  {
+    "id": "FE-UNVERSIONED-URL",
+    "pattern": "['\"`]/?api/(?!v\\d)\\w+",
+    "globs": ["*.ts", "*.js", "*.vue"],
+    "severity_hint": "Info",
+    "description": "Unversioned API path; compare with versioned calls elsewhere",
+    "reference": "ASVS-13.1"
+  }
+]

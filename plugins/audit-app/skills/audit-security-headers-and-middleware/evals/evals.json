@@ -1,0 +1,55 @@
+{
+  "skill_name": "audit-security-headers-and-middleware",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Audit the HTTP pipeline of the ASP.NET Core app in evals/files/sample-repo: security headers, middleware order, CORS, CSRF, rate limiting, body size limits and cookie flags. Show me the middleware order diagram and the header checklist.",
+      "expected_output": "Stack detected as dotnet; extract_middleware.py and ../audit-code-scan/scripts/grep_scan.py (scripts/patterns/dotnet.json) run; no live check because no URL was supplied. Report contains the header checklist table (CSP missing, X-Content-Type-Options missing, Referrer-Policy missing, Permissions-Policy missing, X-Frame-Options present via the inline Use middleware, HSTS present but environment-gated), a cookie flags table for refresh_token, and a Mermaid middleware-order diagram in source order with MapControllers before UseAuthentication/UseAuthorization marked out of order and UseRateLimiter marked missing. Findings with HDR- ids: (1) Critical - authentication/authorization registered after app.MapControllers() in Program.cs:45-48; (2) Medium - no Content-Security-Policy (and the other missing headers); (3) High - refresh_token cookie set without HttpOnly and without SameSite in AuthController.cs:22-26; (4) Medium - no rate limiting on POST /api/auth/login; (5) Low/Info - no explicit request body size limit. The CORS policy is NOT flagged as wildcard-with-credentials. findings.json validates with ../audit-finding-writer/scripts/findings.py validate and a Not checked section lists the absent live URL check.",
+      "files": [
+        "evals/files/sample-repo/Inventory.Api/Inventory.Api.csproj",
+        "evals/files/sample-repo/Inventory.Api/Program.cs",
+        "evals/files/sample-repo/Inventory.Api/Controllers/AuthController.cs"
+      ],
+      "expectations": [
+        "A finding with id starting HDR- has severity Critical, points at evals/files/sample-repo/Inventory.Api/Program.cs around lines 45-48, and states that app.MapControllers() runs before app.UseAuthentication()/app.UseAuthorization()",
+        "A finding with id starting HDR- reports the missing Content-Security-Policy header and names the other missing headers (X-Content-Type-Options, Referrer-Policy, Permissions-Policy)",
+        "A finding with id starting HDR- points at Controllers/AuthController.cs where refresh_token is appended, has severity High, names the missing HttpOnly flag and the missing SameSite, and references CWE-1004",
+        "A finding notes there is no rate limiting on the login endpoint (no AddRateLimiter/UseRateLimiter in the pipeline)",
+        "The report includes a mermaid middleware-order diagram whose nodes are in source order with the out-of-order and missing stages marked",
+        "The report includes a header checklist table with Header / Expected / Source / Status columns and a cookie flags table",
+        "The CORS policy (WithOrigins + AllowCredentials on an explicit origin) is not reported as a High CORS misconfiguration",
+        "X-Frame-Options is reported as present/pass, not missing",
+        "The report states that no live header check was performed because no URL was supplied",
+        "audit/findings/audit-security-headers-and-middleware.json validates with ../audit-finding-writer/scripts/findings.py validate and no file under evals/files was modified"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Is the middleware order in evals/files/sample-repo/Inventory.Api/Program.cs correct? Anything registered in the wrong place?",
+      "expected_output": "extract_middleware.py run against the fixture; the extracted source order is UseExceptionHandler, UseHsts, UseHttpsRedirection, inline header Use, UseStaticFiles, UseRouting, UseCors, MapControllers, UseAuthentication, UseAuthorization. The answer names the Critical defect: endpoints mapped before authentication and authorization, so [Authorize] is not enforced for matched routes; remediation is to move UseAuthentication/UseAuthorization between UseCors and MapControllers. It also notes UseRateLimiter is absent, and that UseHsts is inside an environment conditional (correct, but call it out as conditional).",
+      "files": [
+        "evals/files/sample-repo/Inventory.Api/Program.cs",
+        "evals/files/sample-repo/Inventory.Api/Inventory.Api.csproj"
+      ],
+      "expectations": [
+        "The answer identifies MapControllers being registered before UseAuthentication/UseAuthorization as the defect and rates it Critical",
+        "The remediation says to move UseAuthentication and UseAuthorization after UseRouting/UseCors and before MapControllers",
+        "The extracted order is presented in source order (diagram or list), not alphabetically or as the expected order",
+        "The absence of rate limiting middleware is mentioned",
+        "UseExceptionHandler being first is not reported as a defect"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Grade the response headers of https://staging.example.test and tell me which cookie flags are wrong.",
+      "expected_output": "The skill runs scripts/check_headers.py against exactly the URL supplied (no other host), writing audit/evidence/audit-security-headers-and-middleware/live-headers.json and .md, and reports each header as pass / missing / misconfigured plus each Set-Cookie graded for HttpOnly, Secure and SameSite. If the host is unreachable the skill reports the connection failure as evidence, marks the live check as not performed in the Not checked section, and does not invent header values or probe a different host.",
+      "files": [],
+      "expectations": [
+        "scripts/check_headers.py is invoked with the exact URL the user gave and no other origin is requested",
+        "The output is a pass / missing / misconfigured table covering CSP, HSTS, X-Content-Type-Options, X-Frame-Options, Referrer-Policy and Permissions-Policy, plus a cookie flag table",
+        "If the request fails, the failure is reported honestly and the live results are listed under Not checked rather than fabricated",
+        "No findings are invented for headers that were never observed"
+      ]
+    }
+  ]
+}

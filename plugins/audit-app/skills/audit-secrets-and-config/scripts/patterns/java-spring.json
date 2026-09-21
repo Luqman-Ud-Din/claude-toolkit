@@ -1,0 +1,34 @@
+[
+  {
+    "id": "PROP-PASSWORD",
+    "pattern": "(?i)(spring\\.datasource\\.password|\\.password|\\.secret)\\s*[:=]\\s*\\S{4,}",
+    "globs": ["application*.properties", "application*.yml", "application*.yaml"],
+    "severity_hint": "High",
+    "description": "Password/secret literal in application properties",
+    "reference": "CWE-798"
+  },
+  {
+    "id": "JWT-SECRET",
+    "pattern": "(?i)(jwt|signing|secret)[._-]?(key|secret)?\\s*[:=]\\s*\\S{12,}",
+    "globs": ["application*.properties", "application*.yml", "*.java"],
+    "severity_hint": "Critical",
+    "description": "JWT/signing secret literal",
+    "reference": "CWE-798"
+  },
+  {
+    "id": "DEBUG-IN-PROD",
+    "pattern": "(?i)(debug\\s*[:=]\\s*true|server\\.error\\.include-stacktrace\\s*[:=]\\s*always|spring\\.h2\\.console\\.enabled\\s*[:=]\\s*true)",
+    "globs": ["application-prod*.properties", "application-prod*.yml", "application-production*.*"],
+    "severity_hint": "Medium",
+    "description": "Debug / stacktrace / dev console enabled in a production profile",
+    "reference": "CWE-489"
+  },
+  {
+    "id": "CORS-WILDCARD",
+    "pattern": "allowedOrigins?\\(\\s*\"\\*\"|addAllowedOrigin\\(\\s*\"\\*\"|@CrossOrigin\\(\\s*\"?\\*",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "High",
+    "description": "CORS allows any origin - check it is not combined with allowCredentials(true)",
+    "reference": "CWE-942"
+  }
+]

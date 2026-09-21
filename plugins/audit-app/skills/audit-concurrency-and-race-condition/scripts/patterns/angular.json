@@ -1,0 +1,50 @@
+[
+  {
+    "id": "FE-RETRY-ON-MUTATION",
+    "pattern": "retry\\(\\s*\\d+\\s*\\)|retryWhen\\(|retry\\(\\s*\\{",
+    "globs": ["*.ts"],
+    "severity_hint": "Medium",
+    "description": "RxJS retry; if it wraps POST/PUT/DELETE (or an interceptor applies it to all methods) each retry replays a mutation",
+    "reference": "CWE-362"
+  },
+  {
+    "id": "FE-PARALLEL-SUBMIT",
+    "pattern": "mergeMap\\(\\s*\\([^)]*\\)\\s*=>\\s*this\\.\\w+\\.(post|put|delete|save|submit|pay|create)|switchMap\\(\\s*\\([^)]*\\)\\s*=>\\s*this\\.\\w+\\.(post|put|delete|pay|create)",
+    "globs": ["*.ts"],
+    "severity_hint": "Medium",
+    "description": "mergeMap/switchMap on a mutation; use exhaustMap so a second click is ignored while one is in flight (switchMap cancels only the client side)",
+    "reference": "CWE-362"
+  },
+  {
+    "id": "FE-SUBMIT-NO-GUARD",
+    "pattern": "(pay|checkout|submit|placeOrder|confirm|save)\\w*\\s*\\(\\s*\\)\\s*(:\\s*void)?\\s*\\{(?![^}]*(submitting|isSubmitting|loading|isLoading|inFlight|disabled|busy))",
+    "globs": ["*.component.ts"],
+    "severity_hint": "Low",
+    "description": "Submit-like handler with no in-flight flag on the same line; open it and confirm the button is disabled while the request runs",
+    "reference": "CWE-362"
+  },
+  {
+    "id": "FE-BUTTON-NO-DISABLE",
+    "pattern": "<(button|ion-button)[^>]*\\((click|ngSubmit)\\)=\"[^\"]*(pay|checkout|submit|placeOrder|confirm|save)[^\"]*\"(?![^>]*\\[disabled\\])",
+    "globs": ["*.html"],
+    "severity_hint": "Low",
+    "description": "Submit button without [disabled] binding; a double click sends two requests",
+    "reference": "CWE-362"
+  },
+  {
+    "id": "FE-IDEMPOTENCY-KEY",
+    "pattern": "Idempotency-Key|idempotencyKey|randomUUID\\(\\)",
+    "globs": ["*.ts"],
+    "severity_hint": "Info",
+    "description": "Client-generated idempotency key present; record as client mitigation in the inventory",
+    "reference": "CWE-362"
+  },
+  {
+    "id": "FE-STALE-PUT",
+    "pattern": "\\.put(<[^>]*>)?\\([^,]+,\\s*(this\\.)?(form|model|item|entity|record)\\w*(\\.value)?\\s*\\)",
+    "globs": ["*.ts"],
+    "severity_hint": "Low",
+    "description": "Full-object PUT from client state; without a version/ETag the server does last-write-wins",
+    "reference": "CWE-362"
+  }
+]

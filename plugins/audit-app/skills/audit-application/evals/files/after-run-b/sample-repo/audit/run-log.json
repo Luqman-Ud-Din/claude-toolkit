@@ -1,0 +1,1069 @@
+{
+  "skill": "audit-application",
+  "root": ".",
+  "runs": [
+    {
+      "run_id": 1,
+      "started_at": "2026-09-11T12:23:23.525573+00:00",
+      "finished_at": "2026-09-11T12:23:36.411095+00:00",
+      "mode": "profile",
+      "profile": "pre-launch",
+      "custom_skills": null,
+      "single_skill": null,
+      "force": false,
+      "non_interactive": true,
+      "simulate_failure": [
+        "audit-secrets-and-config"
+      ],
+      "multi_tenant": true,
+      "resumed": false,
+      "plan": {
+        "plan_version": 1,
+        "mode": "profile",
+        "profile": "pre-launch",
+        "profile_description": "authz, multi-tenant isolation, secrets, injection, XSS, business-logic, datetime, concurrency, performance, readiness, dependencies - then reporting.",
+        "custom_skills": null,
+        "single_skill": null,
+        "multi_tenant": true,
+        "multi_tenant_source": "audit/stack.json",
+        "tenancy_signals": null,
+        "stack": {
+          "source": "audit/stack.json",
+          "primary_backend": "dotnet",
+          "primary_frontend": "angular",
+          "stacks": [
+            "angular",
+            "dotnet"
+          ],
+          "server_templates": []
+        },
+        "simulate_failure": [
+          "audit-secrets-and-config"
+        ],
+        "items": [
+          {
+            "type": "setup",
+            "id": "detect-stack",
+            "phase": "setup",
+            "action": "run",
+            "text": "detect the stack once -> audit/stack.json (children read it instead of re-detecting)",
+            "order": 1
+          },
+          {
+            "type": "checkpoint",
+            "id": "multi-tenant",
+            "phase": "setup",
+            "action": "run",
+            "text": "ask: is the application multi-tenant? (recorded in audit/stack.json multi_tenant)",
+            "order": 2
+          },
+          {
+            "type": "setup",
+            "id": "prerequisites",
+            "phase": "setup",
+            "action": "run",
+            "text": "confirm per-stack prerequisites from references/<stack>.md (SDKs installed, build possible, DB/test URL access)",
+            "order": 3
+          },
+          {
+            "type": "setup",
+            "id": "workspace",
+            "phase": "setup",
+            "action": "run",
+            "text": "create audit/findings, audit/evidence, audit/status (and audit/reports, which every child writes)",
+            "order": 4
+          },
+          {
+            "type": "checkpoint",
+            "id": "scope-profile",
+            "phase": "setup",
+            "action": "run",
+            "text": "ask: scope profile (full, security-only, pre-launch, compliance-only, custom)",
+            "order": 5
+          },
+          {
+            "type": "skill",
+            "id": "audit-system-design",
+            "phase": "discovery",
+            "wave": 1,
+            "prefix": "ARCH",
+            "action": "skip",
+            "kind": "out-of-profile",
+            "reason": "not in scope profile 'pre-launch'",
+            "parallel_group": null,
+            "order": null
+          },
+          {
+            "type": "skill",
+            "id": "audit-privacy-data-flow-mapper",
+            "phase": "discovery",
+            "wave": 1,
+            "prefix": "PII",
+            "action": "skip",
+            "kind": "out-of-profile",
+            "reason": "not in scope profile 'pre-launch'",
+            "parallel_group": null,
+            "order": null
+          },
+          {
+            "type": "skill",
+            "id": "audit-api-contract",
+            "phase": "discovery",
+            "wave": 1,
+            "prefix": "API",
+            "action": "skip",
+            "kind": "out-of-profile",
+            "reason": "not in scope profile 'pre-launch'",
+            "parallel_group": null,
+            "order": null
+          },
+          {
+            "type": "skill",
+            "id": "audit-db-schema",
+            "phase": "discovery",
+            "wave": 1,
+            "prefix": "DB",
+            "action": "skip",
+            "kind": "out-of-profile",
+            "reason": "not in scope profile 'pre-launch'",
+            "parallel_group": null,
+            "order": null
+          },
+          {
+            "type": "checkpoint",
+            "id": "critical-flows",
+            "phase": "discovery",
+            "after_phase": "discovery",
+            "action": "run",
+            "text": "confirm the 3-5 critical business flows to trace",
+            "needed_by": [
+              "audit-business-logic",
+              "audit-concurrency-and-race-condition",
+              "audit-datetime-and-timezone"
+            ],
+            "order": 6
+          },
+          {
+            "type": "skill",
+            "id": "audit-authz-and-access-control",
+            "phase": "security",
+            "wave": 1,
+            "prefix": "AUTHZ",
+            "action": "run",
+            "kind": null,
+            "reason": null,
+            "parallel_group": "security-wave1",
+            "order": 7
+          },
+          {
+            "type": "skill",
+            "id": "audit-multi-tenant-isolation",
+            "phase": "security",
+            "wave": 1,
+            "prefix": "TENANT",
+            "action": "run",
+            "kind": null,
+            "reason": null,
+            "parallel_group": "security-wave1",
+            "order": 8
+          },
+          {
+            "type": "skill",
+            "id": "audit-secrets-and-config",
+            "phase": "security",
+            "wave": 1,
+            "prefix": "SEC",
+            "action": "run",
+            "kind": null,
+            "reason": null,
+            "parallel_group": "security-wave1",
+            "simulate_failure": true,
+            "order": 9
+          },
+          {
+            "type": "skill",
+            "id": "audit-security-headers-and-middleware",
+            "phase": "security",
+            "wave": 1,
+            "prefix": "HDR",
+            "action": "skip",
+            "kind": "out-of-profile",
+            "reason": "not in scope profile 'pre-launch'",
+            "parallel_group": "security-wave1",
+            "order": null
+          },
+          {
+            "type": "skill",
+            "id": "audit-dependency-vulnerabilities",
+            "phase": "security",
+            "wave": 1,
+            "prefix": "DEP",
+            "action": "run",
+            "kind": null,
+            "reason": null,
+            "parallel_group": "security-wave1",
+            "order": 10
+          },
+          {
+            "type": "skill",
+            "id": "audit-injection-vulnerabilities",
+            "phase": "security",
+            "wave": 2,
+            "prefix": "INJ",
+            "action": "run",
+            "kind": null,
+            "reason": null,
+            "parallel_group": "security-wave2",
+            "order": 11
+          },
+          {
+            "type": "skill",
+            "id": "audit-frontend-xss-and-dom-safety",
+            "phase": "security",
+            "wave": 2,
+            "prefix": "XSS",
+            "action": "run",
+            "kind": null,
+            "reason": null,
+            "parallel_group": "security-wave2",
+            "order": 12
+          },
+          {
+            "type": "skill",
+            "id": "audit-client-auth-and-storage",
+            "phase": "security",
+            "wave": 3,
+            "prefix": "CAUTH",
+            "action": "skip",
+            "kind": "out-of-profile",
+            "reason": "not in scope profile 'pre-launch'",
+            "parallel_group": "security-wave3",
+            "order": null
+          },
+          {
+            "type": "checkpoint",
+            "id": "security-gate",
+            "phase": "security",
+            "after_phase": "security",
+            "action": "run",
+            "text": "show Critical/High findings; ask whether to continue or stop and fix",
+            "needed_by": [
+              "audit-authz-and-access-control",
+              "audit-multi-tenant-isolation",
+              "audit-secrets-and-config",
+              "audit-dependency-vulnerabilities",
+              "audit-injection-vulnerabilities",
+              "audit-frontend-xss-and-dom-safety"
+            ],
+            "order": 13
+          },
+          {
+            "type": "skill",
+            "id": "audit-async-and-dependency-injection",
+            "phase": "quality",
+            "wave": 1,
+            "prefix": "ASYNC",
+            "action": "skip",
+            "kind": "out-of-profile",
+            "reason": "not in scope profile 'pre-launch'",
+            "parallel_group": "quality-wave1",
+            "order": null
+          },
+          {
+            "type": "skill",
+            "id": "audit-orm-query-and-data-access",
+            "phase": "quality",
+            "wave": 1,
+            "prefix": "ORM",
+            "action": "skip",
+            "kind": "out-of-profile",
+            "reason": "not in scope profile 'pre-launch'",
+            "parallel_group": "quality-wave1",
+            "order": null
+          },
+          {
+            "type": "skill",
+            "id": "audit-backend-resource-leak",
+            "phase": "quality",
+            "wave": 1,
+            "prefix": "LEAK",
+            "action": "skip",
+            "kind": "out-of-profile",
+            "reason": "not in scope profile 'pre-launch'",
+            "parallel_group": "quality-wave1",
+            "order": null
+          },
+          {
+            "type": "skill",
+            "id": "audit-frontend-best-practices",
+            "phase": "quality",
+            "wave": 1,
+            "prefix": "FEBP",
+            "action": "skip",
+            "kind": "out-of-profile",
+            "reason": "not in scope profile 'pre-launch'",
+            "parallel_group": "quality-wave1",
+            "order": null
+          },
+          {
+            "type": "skill",
+            "id": "audit-frontend-memory-leak",
+            "phase": "quality",
+            "wave": 1,
+            "prefix": "FELEAK",
+            "action": "skip",
+            "kind": "out-of-profile",
+            "reason": "not in scope profile 'pre-launch'",
+            "parallel_group": "quality-wave1",
+            "order": null
+          },
+          {
+            "type": "skill",
+            "id": "audit-accessibility-and-i18n",
+            "phase": "quality",
+            "wave": 1,
+            "prefix": "A11Y",
+            "action": "skip",
+            "kind": "out-of-profile",
+            "reason": "not in scope profile 'pre-launch'",
+            "parallel_group": "quality-wave1",
+            "order": null
+          },
+          {
+            "type": "skill",
+            "id": "audit-business-logic",
+            "phase": "quality",
+            "wave": 1,
+            "prefix": "BIZ",
+            "action": "run",
+            "kind": null,
+            "reason": null,
+            "parallel_group": "quality-wave1",
+            "order": 14
+          },
+          {
+            "type": "skill",
+            "id": "audit-concurrency-and-race-condition",
+            "phase": "quality",
+            "wave": 2,
+            "prefix": "RACE",
+            "action": "run",
+            "kind": null,
+            "reason": null,
+            "parallel_group": "quality-wave2",
+            "order": 15
+          },
+          {
+            "type": "skill",
+            "id": "audit-datetime-and-timezone",
+            "phase": "quality",
+            "wave": 2,
+            "prefix": "TIME",
+            "action": "run",
+            "kind": null,
+            "reason": null,
+            "parallel_group": "quality-wave2",
+            "order": 16
+          },
+          {
+            "type": "skill",
+            "id": "audit-performance-and-scalability",
+            "phase": "quality",
+            "wave": 2,
+            "prefix": "PERF",
+            "action": "run",
+            "kind": null,
+            "reason": null,
+            "parallel_group": "quality-wave2",
+            "order": 17
+          },
+          {
+            "type": "skill",
+            "id": "audit-technical-debt",
+            "phase": "quality",
+            "wave": 3,
+            "prefix": "DEBT",
+            "action": "skip",
+            "kind": "out-of-profile",
+            "reason": "not in scope profile 'pre-launch'",
+            "parallel_group": "quality-wave3",
+            "order": null
+          },
+          {
+            "type": "skill",
+            "id": "audit-logging-and-observability",
+            "phase": "readiness",
+            "wave": 1,
+            "prefix": "LOG",
+            "action": "skip",
+            "kind": "out-of-profile",
+            "reason": "not in scope profile 'pre-launch'",
+            "parallel_group": "readiness-wave1",
+            "order": null
+          },
+          {
+            "type": "skill",
+            "id": "audit-test-coverage-and-ci",
+            "phase": "readiness",
+            "wave": 1,
+            "prefix": "TEST",
+            "action": "skip",
+            "kind": "out-of-profile",
+            "reason": "not in scope profile 'pre-launch'",
+            "parallel_group": "readiness-wave1",
+            "order": null
+          },
+          {
+            "type": "skill",
+            "id": "audit-infra-and-deployment",
+            "phase": "readiness",
+            "wave": 1,
+            "prefix": "INFRA",
+            "action": "skip",
+            "kind": "out-of-profile",
+            "reason": "not in scope profile 'pre-launch'",
+            "parallel_group": "readiness-wave1",
+            "order": null
+          },
+          {
+            "type": "skill",
+            "id": "audit-licensing-and-compliance",
+            "phase": "readiness",
+            "wave": 1,
+            "prefix": "LIC",
+            "action": "skip",
+            "kind": "out-of-profile",
+            "reason": "not in scope profile 'pre-launch'",
+            "parallel_group": "readiness-wave1",
+            "order": null
+          },
+          {
+            "type": "skill",
+            "id": "audit-gdpr-data-protection",
+            "phase": "readiness",
+            "wave": 1,
+            "prefix": "GDPR",
+            "action": "skip",
+            "kind": "out-of-profile",
+            "reason": "not in scope profile 'pre-launch'",
+            "parallel_group": "readiness-wave1",
+            "order": null
+          },
+          {
+            "type": "skill",
+            "id": "audit-soc2-controls-evidence",
+            "phase": "readiness",
+            "wave": 2,
+            "prefix": "SOC2",
+            "action": "skip",
+            "kind": "out-of-profile",
+            "reason": "not in scope profile 'pre-launch'",
+            "parallel_group": "readiness-wave2",
+            "order": null
+          },
+          {
+            "type": "skill",
+            "id": "audit-production-readiness-checklist",
+            "phase": "readiness",
+            "wave": 3,
+            "prefix": "READY",
+            "action": "run",
+            "kind": null,
+            "reason": null,
+            "parallel_group": "readiness-wave3",
+            "order": 18
+          },
+          {
+            "type": "action",
+            "id": "dedupe",
+            "phase": "reporting",
+            "wave": 1,
+            "action": "run",
+            "text": "roll up findings with audit-findings-rollup: de-duplicate by root_cause_key across skills, severity counts, go/no-go (../audit-findings-rollup/scripts/findings_rollup.py rollup -> audit/evidence/audit-findings-rollup/rollup.json)",
+            "derived": true,
+            "parallel_group": null,
+            "order": 19
+          },
+          {
+            "type": "skill",
+            "id": "audit-owasp-asvs-mapper",
+            "phase": "reporting",
+            "wave": 2,
+            "prefix": "MAP",
+            "action": "run",
+            "kind": null,
+            "reason": null,
+            "parallel_group": null,
+            "derived": true,
+            "order": 20
+          },
+          {
+            "type": "skill",
+            "id": "audit-report-generator",
+            "phase": "reporting",
+            "wave": 3,
+            "prefix": "RPT",
+            "action": "run",
+            "kind": null,
+            "reason": null,
+            "parallel_group": null,
+            "derived": true,
+            "order": 21
+          }
+        ],
+        "counts": {
+          "skills_run": 13,
+          "skills_conditional": 0,
+          "skills_skipped": {
+            "out-of-profile": 19
+          },
+          "checkpoints": [
+            "multi-tenant",
+            "scope-profile",
+            "critical-flows",
+            "security-gate"
+          ]
+        },
+        "warnings": []
+      },
+      "events": [
+        {
+          "event": "checkpoint",
+          "id": "multi-tenant",
+          "phase": "setup",
+          "answer": "yes",
+          "mode": "provided",
+          "at": "2026-09-11T12:23:23.525573+00:00"
+        },
+        {
+          "event": "checkpoint",
+          "id": "scope-profile",
+          "phase": "setup",
+          "answer": "pre-launch",
+          "mode": "provided",
+          "at": "2026-09-11T12:23:23.525573+00:00"
+        },
+        {
+          "event": "skip",
+          "id": "audit-system-design",
+          "type": "skill",
+          "phase": "discovery",
+          "kind": "out-of-profile",
+          "reason": "not in scope profile 'pre-launch'",
+          "status_written": true,
+          "at": "2026-09-11T12:23:23.528683+00:00"
+        },
+        {
+          "event": "skip",
+          "id": "audit-privacy-data-flow-mapper",
+          "type": "skill",
+          "phase": "discovery",
+          "kind": "out-of-profile",
+          "reason": "not in scope profile 'pre-launch'",
+          "status_written": true,
+          "at": "2026-09-11T12:23:23.530088+00:00"
+        },
+        {
+          "event": "skip",
+          "id": "audit-api-contract",
+          "type": "skill",
+          "phase": "discovery",
+          "kind": "out-of-profile",
+          "reason": "not in scope profile 'pre-launch'",
+          "status_written": true,
+          "at": "2026-09-11T12:23:23.531750+00:00"
+        },
+        {
+          "event": "skip",
+          "id": "audit-db-schema",
+          "type": "skill",
+          "phase": "discovery",
+          "kind": "out-of-profile",
+          "reason": "not in scope profile 'pre-launch'",
+          "status_written": true,
+          "at": "2026-09-11T12:23:23.532971+00:00"
+        },
+        {
+          "event": "skip",
+          "id": "audit-security-headers-and-middleware",
+          "type": "skill",
+          "phase": "security",
+          "kind": "out-of-profile",
+          "reason": "not in scope profile 'pre-launch'",
+          "status_written": true,
+          "at": "2026-09-11T12:23:23.534121+00:00"
+        },
+        {
+          "event": "skip",
+          "id": "audit-client-auth-and-storage",
+          "type": "skill",
+          "phase": "security",
+          "kind": "out-of-profile",
+          "reason": "not in scope profile 'pre-launch'",
+          "status_written": true,
+          "at": "2026-09-11T12:23:23.535283+00:00"
+        },
+        {
+          "event": "skip",
+          "id": "audit-async-and-dependency-injection",
+          "type": "skill",
+          "phase": "quality",
+          "kind": "out-of-profile",
+          "reason": "not in scope profile 'pre-launch'",
+          "status_written": true,
+          "at": "2026-09-11T12:23:23.536445+00:00"
+        },
+        {
+          "event": "skip",
+          "id": "audit-orm-query-and-data-access",
+          "type": "skill",
+          "phase": "quality",
+          "kind": "out-of-profile",
+          "reason": "not in scope profile 'pre-launch'",
+          "status_written": true,
+          "at": "2026-09-11T12:23:23.537572+00:00"
+        },
+        {
+          "event": "skip",
+          "id": "audit-backend-resource-leak",
+          "type": "skill",
+          "phase": "quality",
+          "kind": "out-of-profile",
+          "reason": "not in scope profile 'pre-launch'",
+          "status_written": true,
+          "at": "2026-09-11T12:23:23.538690+00:00"
+        },
+        {
+          "event": "skip",
+          "id": "audit-frontend-best-practices",
+          "type": "skill",
+          "phase": "quality",
+          "kind": "out-of-profile",
+          "reason": "not in scope profile 'pre-launch'",
+          "status_written": true,
+          "at": "2026-09-11T12:23:23.539813+00:00"
+        },
+        {
+          "event": "skip",
+          "id": "audit-frontend-memory-leak",
+          "type": "skill",
+          "phase": "quality",
+          "kind": "out-of-profile",
+          "reason": "not in scope profile 'pre-launch'",
+          "status_written": true,
+          "at": "2026-09-11T12:23:23.540906+00:00"
+        },
+        {
+          "event": "skip",
+          "id": "audit-accessibility-and-i18n",
+          "type": "skill",
+          "phase": "quality",
+          "kind": "out-of-profile",
+          "reason": "not in scope profile 'pre-launch'",
+          "status_written": true,
+          "at": "2026-09-11T12:23:23.542071+00:00"
+        },
+        {
+          "event": "skip",
+          "id": "audit-technical-debt",
+          "type": "skill",
+          "phase": "quality",
+          "kind": "out-of-profile",
+          "reason": "not in scope profile 'pre-launch'",
+          "status_written": true,
+          "at": "2026-09-11T12:23:23.543227+00:00"
+        },
+        {
+          "event": "skip",
+          "id": "audit-logging-and-observability",
+          "type": "skill",
+          "phase": "readiness",
+          "kind": "out-of-profile",
+          "reason": "not in scope profile 'pre-launch'",
+          "status_written": true,
+          "at": "2026-09-11T12:23:23.544448+00:00"
+        },
+        {
+          "event": "skip",
+          "id": "audit-test-coverage-and-ci",
+          "type": "skill",
+          "phase": "readiness",
+          "kind": "out-of-profile",
+          "reason": "not in scope profile 'pre-launch'",
+          "status_written": true,
+          "at": "2026-09-11T12:23:23.545716+00:00"
+        },
+        {
+          "event": "skip",
+          "id": "audit-infra-and-deployment",
+          "type": "skill",
+          "phase": "readiness",
+          "kind": "out-of-profile",
+          "reason": "not in scope profile 'pre-launch'",
+          "status_written": true,
+          "at": "2026-09-11T12:23:23.547434+00:00"
+        },
+        {
+          "event": "skip",
+          "id": "audit-licensing-and-compliance",
+          "type": "skill",
+          "phase": "readiness",
+          "kind": "out-of-profile",
+          "reason": "not in scope profile 'pre-launch'",
+          "status_written": true,
+          "at": "2026-09-11T12:23:23.548757+00:00"
+        },
+        {
+          "event": "skip",
+          "id": "audit-gdpr-data-protection",
+          "type": "skill",
+          "phase": "readiness",
+          "kind": "out-of-profile",
+          "reason": "not in scope profile 'pre-launch'",
+          "status_written": true,
+          "at": "2026-09-11T12:23:23.549878+00:00"
+        },
+        {
+          "event": "skip",
+          "id": "audit-soc2-controls-evidence",
+          "type": "skill",
+          "phase": "readiness",
+          "kind": "out-of-profile",
+          "reason": "not in scope profile 'pre-launch'",
+          "status_written": true,
+          "at": "2026-09-11T12:23:23.551036+00:00"
+        },
+        {
+          "event": "checkpoint",
+          "id": "critical-flows",
+          "answer": "order payment; order cancellation; stock reservation",
+          "mode": "auto-continued",
+          "at": "2026-09-11T12:23:23.863048+00:00",
+          "data_file": "audit/evidence/audit-application/checkpoint-critical-flows.json"
+        },
+        {
+          "event": "start",
+          "id": "audit-authz-and-access-control",
+          "type": "skill",
+          "phase": "security",
+          "at": "2026-09-11T12:23:24.128987+00:00"
+        },
+        {
+          "event": "finish",
+          "id": "audit-authz-and-access-control",
+          "type": "skill",
+          "phase": "security",
+          "status": "completed",
+          "reason": null,
+          "started_at": "2026-09-11T12:23:24.128987+00:00",
+          "finished_at": "2026-09-11T12:23:24.907418+00:00",
+          "duration_s": 0.778,
+          "limited_access": [],
+          "contract_warnings": []
+        },
+        {
+          "event": "start",
+          "id": "audit-multi-tenant-isolation",
+          "type": "skill",
+          "phase": "security",
+          "at": "2026-09-11T12:23:25.039949+00:00"
+        },
+        {
+          "event": "finish",
+          "id": "audit-multi-tenant-isolation",
+          "type": "skill",
+          "phase": "security",
+          "status": "completed",
+          "reason": null,
+          "started_at": "2026-09-11T12:23:25.039949+00:00",
+          "finished_at": "2026-09-11T12:23:25.794904+00:00",
+          "duration_s": 0.755,
+          "limited_access": [],
+          "contract_warnings": []
+        },
+        {
+          "event": "start",
+          "id": "audit-secrets-and-config",
+          "type": "skill",
+          "phase": "security",
+          "at": "2026-09-11T12:23:25.932056+00:00"
+        },
+        {
+          "event": "finish",
+          "id": "audit-secrets-and-config",
+          "type": "skill",
+          "phase": "security",
+          "status": "failed",
+          "reason": "simulated failure (--simulate-failure audit-secrets-and-config)",
+          "started_at": "2026-09-11T12:23:25.932056+00:00",
+          "finished_at": "2026-09-11T12:23:26.251642+00:00",
+          "duration_s": 0.32
+        },
+        {
+          "event": "start",
+          "id": "audit-dependency-vulnerabilities",
+          "type": "skill",
+          "phase": "security",
+          "at": "2026-09-11T12:23:26.377585+00:00"
+        },
+        {
+          "event": "finish",
+          "id": "audit-dependency-vulnerabilities",
+          "type": "skill",
+          "phase": "security",
+          "status": "completed",
+          "reason": null,
+          "started_at": "2026-09-11T12:23:26.377585+00:00",
+          "finished_at": "2026-09-11T12:23:27.152688+00:00",
+          "duration_s": 0.775,
+          "limited_access": [],
+          "contract_warnings": []
+        },
+        {
+          "event": "start",
+          "id": "audit-injection-vulnerabilities",
+          "type": "skill",
+          "phase": "security",
+          "at": "2026-09-11T12:23:27.389992+00:00"
+        },
+        {
+          "event": "finish",
+          "id": "audit-injection-vulnerabilities",
+          "type": "skill",
+          "phase": "security",
+          "status": "completed",
+          "reason": null,
+          "started_at": "2026-09-11T12:23:27.389992+00:00",
+          "finished_at": "2026-09-11T12:23:28.151619+00:00",
+          "duration_s": 0.762,
+          "limited_access": [],
+          "contract_warnings": []
+        },
+        {
+          "event": "start",
+          "id": "audit-frontend-xss-and-dom-safety",
+          "type": "skill",
+          "phase": "security",
+          "at": "2026-09-11T12:23:28.274322+00:00"
+        },
+        {
+          "event": "finish",
+          "id": "audit-frontend-xss-and-dom-safety",
+          "type": "skill",
+          "phase": "security",
+          "status": "completed",
+          "reason": null,
+          "started_at": "2026-09-11T12:23:28.274322+00:00",
+          "finished_at": "2026-09-11T12:23:29.050205+00:00",
+          "duration_s": 0.776,
+          "limited_access": [],
+          "contract_warnings": []
+        },
+        {
+          "event": "checkpoint",
+          "id": "security-gate",
+          "answer": "continue",
+          "mode": "auto-continued",
+          "at": "2026-09-11T12:23:29.399022+00:00",
+          "data_file": "audit/evidence/audit-application/checkpoint-security-gate.json"
+        },
+        {
+          "event": "start",
+          "id": "audit-business-logic",
+          "type": "skill",
+          "phase": "quality",
+          "at": "2026-09-11T12:23:29.631837+00:00"
+        },
+        {
+          "event": "finish",
+          "id": "audit-business-logic",
+          "type": "skill",
+          "phase": "quality",
+          "status": "completed",
+          "reason": null,
+          "started_at": "2026-09-11T12:23:29.631837+00:00",
+          "finished_at": "2026-09-11T12:23:30.375240+00:00",
+          "duration_s": 0.743,
+          "limited_access": [],
+          "contract_warnings": []
+        },
+        {
+          "event": "start",
+          "id": "audit-concurrency-and-race-condition",
+          "type": "skill",
+          "phase": "quality",
+          "at": "2026-09-11T12:23:30.632401+00:00"
+        },
+        {
+          "event": "finish",
+          "id": "audit-concurrency-and-race-condition",
+          "type": "skill",
+          "phase": "quality",
+          "status": "completed",
+          "reason": null,
+          "started_at": "2026-09-11T12:23:30.632401+00:00",
+          "finished_at": "2026-09-11T12:23:31.457308+00:00",
+          "duration_s": 0.825,
+          "limited_access": [],
+          "contract_warnings": []
+        },
+        {
+          "event": "start",
+          "id": "audit-datetime-and-timezone",
+          "type": "skill",
+          "phase": "quality",
+          "at": "2026-09-11T12:23:31.589515+00:00"
+        },
+        {
+          "event": "finish",
+          "id": "audit-datetime-and-timezone",
+          "type": "skill",
+          "phase": "quality",
+          "status": "completed",
+          "reason": null,
+          "started_at": "2026-09-11T12:23:31.589515+00:00",
+          "finished_at": "2026-09-11T12:23:32.351780+00:00",
+          "duration_s": 0.762,
+          "limited_access": [],
+          "contract_warnings": []
+        },
+        {
+          "event": "start",
+          "id": "audit-performance-and-scalability",
+          "type": "skill",
+          "phase": "quality",
+          "at": "2026-09-11T12:23:32.474451+00:00"
+        },
+        {
+          "event": "finish",
+          "id": "audit-performance-and-scalability",
+          "type": "skill",
+          "phase": "quality",
+          "status": "completed",
+          "reason": "limited access: no running environment URL for the load test",
+          "started_at": "2026-09-11T12:23:32.474451+00:00",
+          "finished_at": "2026-09-11T12:23:33.265321+00:00",
+          "duration_s": 0.791,
+          "limited_access": [
+            "no running environment URL for the load test"
+          ],
+          "contract_warnings": []
+        },
+        {
+          "event": "start",
+          "id": "audit-production-readiness-checklist",
+          "type": "skill",
+          "phase": "readiness",
+          "at": "2026-09-11T12:23:33.518635+00:00"
+        },
+        {
+          "event": "finish",
+          "id": "audit-production-readiness-checklist",
+          "type": "skill",
+          "phase": "readiness",
+          "status": "completed",
+          "reason": null,
+          "started_at": "2026-09-11T12:23:33.518635+00:00",
+          "finished_at": "2026-09-11T12:23:34.275149+00:00",
+          "duration_s": 0.757,
+          "limited_access": [],
+          "contract_warnings": []
+        },
+        {
+          "event": "start",
+          "id": "dedupe",
+          "type": "action",
+          "phase": "reporting",
+          "at": "2026-09-11T12:23:34.518024+00:00"
+        },
+        {
+          "event": "finish",
+          "id": "dedupe",
+          "type": "action",
+          "phase": "reporting",
+          "status": "completed",
+          "reason": null,
+          "started_at": "2026-09-11T12:23:34.518024+00:00",
+          "finished_at": "2026-09-11T12:23:34.735063+00:00",
+          "duration_s": 0.217
+        },
+        {
+          "event": "start",
+          "id": "audit-owasp-asvs-mapper",
+          "type": "skill",
+          "phase": "reporting",
+          "at": "2026-09-11T12:23:34.998239+00:00"
+        },
+        {
+          "event": "finish",
+          "id": "audit-owasp-asvs-mapper",
+          "type": "skill",
+          "phase": "reporting",
+          "status": "completed",
+          "reason": null,
+          "started_at": "2026-09-11T12:23:34.998239+00:00",
+          "finished_at": "2026-09-11T12:23:35.420762+00:00",
+          "duration_s": 0.423,
+          "limited_access": [],
+          "contract_warnings": []
+        },
+        {
+          "event": "start",
+          "id": "audit-report-generator",
+          "type": "skill",
+          "phase": "reporting",
+          "at": "2026-09-11T12:23:35.706641+00:00",
+          "parked_dedupe": true
+        },
+        {
+          "event": "finish",
+          "id": "audit-report-generator",
+          "type": "skill",
+          "phase": "reporting",
+          "status": "completed",
+          "reason": null,
+          "started_at": "2026-09-11T12:23:35.706641+00:00",
+          "finished_at": "2026-09-11T12:23:36.114555+00:00",
+          "duration_s": 0.408,
+          "limited_access": [],
+          "contract_warnings": [],
+          "unparked_dedupe": true
+        }
+      ],
+      "duration_s": 12.886,
+      "outcome": "completed",
+      "pending_at_finish": [],
+      "timings": {
+        "by_phase_s": {
+          "security": 4.166,
+          "quality": 3.121,
+          "readiness": 0.757,
+          "reporting": 1.048
+        },
+        "by_item_s": {
+          "audit-authz-and-access-control": 0.778,
+          "audit-multi-tenant-isolation": 0.755,
+          "audit-secrets-and-config": 0.32,
+          "audit-dependency-vulnerabilities": 0.775,
+          "audit-injection-vulnerabilities": 0.762,
+          "audit-frontend-xss-and-dom-safety": 0.776,
+          "audit-business-logic": 0.743,
+          "audit-concurrency-and-race-condition": 0.825,
+          "audit-datetime-and-timezone": 0.762,
+          "audit-performance-and-scalability": 0.791,
+          "audit-production-readiness-checklist": 0.757,
+          "dedupe": 0.217,
+          "audit-owasp-asvs-mapper": 0.423,
+          "audit-report-generator": 0.408
+        }
+      },
+      "counts": {
+        "completed": 12,
+        "failed": 1,
+        "skipped": 19,
+        "pending": 0,
+        "limited_access": 1
+      }
+    }
+  ]
+}

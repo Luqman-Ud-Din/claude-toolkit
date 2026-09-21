@@ -1,0 +1,56 @@
+{
+  "skill": "audit-concurrency-and-race-condition",
+  "generated_at": "2026-09-11T12:23:31.045839+00:00",
+  "target": {
+    "root": ".",
+    "commit": null
+  },
+  "stack": {
+    "primary_backend": "dotnet",
+    "primary_frontend": "angular"
+  },
+  "scope": {
+    "checked": [
+      "order payment flow"
+    ],
+    "not_checked": []
+  },
+  "findings": [
+    {
+      "id": "RACE-001",
+      "title": "Order payment has no idempotency or concurrency token",
+      "severity": "Medium",
+      "confidence": "confirmed",
+      "location": {
+        "file": "Inventory.Api/Controllers/OrdersController.cs",
+        "line": 33
+      },
+      "evidence": "Inventory.Api/Controllers/OrdersController.cs:33",
+      "impact": "A double click can record the payment twice.",
+      "remediation": "Add a rowversion column and handle DbUpdateConcurrencyException.",
+      "references": [
+        "CWE-362",
+        "OWASP-A04:2021",
+        "ASVS-11.1.6"
+      ],
+      "tags": [],
+      "root_cause_key": "orders.pay:no-idempotency",
+      "extra": {
+        "mapping": {
+          "rule": "race-condition",
+          "matched_by": "cwe:CWE-362",
+          "added": [
+            "OWASP-A04:2021",
+            "ASVS-11.1.6"
+          ],
+          "top10": "A04",
+          "asvs": [
+            "11.1.6"
+          ],
+          "cwe": "CWE-362"
+        }
+      }
+    }
+  ],
+  "summary": {}
+}

@@ -1,0 +1,17 @@
+{
+  "skill_name": "audit-llm-excessive-agency",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Review the tool permissions on our agent before we let it handle real customer refunds autonomously.",
+      "expected_output": "Uses the explore-llm-tools-and-permissions map if present, ranks tools by reversibility x approval gap, specifically checks the refund tool for a server-side amount cap and a real (not prompt-only) approval gate, and writes concrete LLM-EA-NNN findings usable directly by propose-llm-controls.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "The agent uses one shared API key for every tool call, no matter which user is chatting - is that a problem?",
+      "expected_output": "Flags this as a confused-deputy / least-privilege finding distinct from any missing-approval-gate finding, explaining the blast radius if that shared credential is misused via a manipulated agent.",
+      "files": []
+    }
+  ]
+}

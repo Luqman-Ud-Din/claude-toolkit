@@ -1,0 +1,11 @@
+{
+  "name": "shop-api",
+  "private": true,
+  "scripts": { "start": "node dist/app.js" },
+  "dependencies": {
+    "@prisma/client": "^5.10.0",
+    "axios": "^1.6.0",
+    "express": "^4.19.2",
+    "express-session": "^1.18.0"
+  }
+}

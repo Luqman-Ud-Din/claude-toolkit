@@ -1,0 +1,5 @@
+[
+  {"id": "COMPRESSION-DISABLED", "pattern": "server\\.compression\\.enabled\\s*[:=]\\s*false|^\\s*enabled:\\s*false", "globs": ["application*.yml", "application*.yaml", "application*.properties"], "severity_hint": "Low", "description": "Response compression explicitly disabled (yml hit needs the parent key confirmed); confirm the proxy compresses", "reference": "docs.spring.io/spring-boot/reference/web/servlet.html"},
+  {"id": "STATIC-CACHE-MISSING", "pattern": "spring\\.web\\.resources\\.add-mappings\\s*[:=]\\s*false", "globs": ["application*.yml", "application*.yaml", "application*.properties"], "severity_hint": "Info", "description": "Default static resource handling disabled; verify the custom handler sets cache headers", "reference": "docs.spring.io/spring-boot/reference/web/servlet.html"},
+  {"id": "FRONTEND-DEV-BUILD", "pattern": "<arguments>run (start|serve|dev)</arguments>", "globs": ["pom.xml"], "severity_hint": "Medium", "description": "frontend-maven-plugin runs a dev command in the build", "reference": "ASVS-14.3.2"}
+]

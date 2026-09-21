@@ -1,0 +1,12 @@
+{
+  "skill": "audit-business-logic",
+  "status": "completed",
+  "reason": null,
+  "started_at": "2026-09-11T12:23:29.644229+00:00",
+  "finished_at": "2026-09-11T12:23:30.259279+00:00",
+  "scripts": [
+    "../audit-stack-detection/scripts/detect_stack.py",
+    "../audit-code-scan/scripts/grep_scan.py",
+    "../audit-finding-writer/scripts/findings.py"
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "skill_name": "audit-code-scan",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Run the automated grep pass over evals/files/sample-repo using the pattern file evals/files/patterns/dotnet.json and give me the hits as JSON and a markdown table. Don't treat them as confirmed findings yet.",
+      "expected_output": "grep_scan.py produces hits for RAW-SQL-CONCAT in src/OrderRepository.cs and HARDCODED-CONN-PW in src/appsettings.Production.json; the parameterized query line is not hit; nothing under node_modules or bin is scanned; every hit has status unreviewed; output files written where requested.",
+      "files": ["evals/files/sample-repo", "evals/files/patterns/dotnet.json"],
+      "expectations": [
+        "hits.json contains a RAW-SQL-CONCAT hit in src/OrderRepository.cs",
+        "hits.json contains a HARDCODED-CONN-PW hit in src/appsettings.Production.json",
+        "No hit references the FromSqlInterpolated line",
+        "No hit references a path containing node_modules or bin",
+        "Every hit has status unreviewed",
+        "The response does not call the hits confirmed findings"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "the CSP-HEADER-PRESENT pattern in evals/files/patterns/dotnet.json came back with 0 hits on evals/files/sample-repo. does that mean there's no CSP, or did the scanner just not look at the right files?",
+      "expected_output": "The skill checks coverage with repo_walk.py (listing .cs files read), confirms Program.cs was scanned, and concludes the absence is real, explaining that -PRESENT patterns prove absence only when coverage is confirmed.",
+      "files": ["evals/files/sample-repo", "evals/files/patterns/dotnet.json"],
+      "expectations": [
+        "The skill runs repo_walk.py or equivalent to confirm which files were read",
+        "The response states src/Program.cs was scanned",
+        "The response concludes no CSP header is set",
+        "The response explains zero hits mean absence only when coverage is confirmed"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "I'm writing a new audit script in another skill that needs to walk .ts and .cs files. How do I reuse your file walker instead of copying a skip list?",
+      "expected_output": "The skill gives the cross-skill import snippet for repo_walk, shows iter_files with exts, read_text and rel, and explains extra_skip/include_dirs and listing changes under Not checked.",
+      "files": [],
+      "expectations": [
+        "Response loads repo_walk.py by file path under a unique module name (importlib.util.spec_from_file_location), not by adding audit-code-scan/scripts to sys.path",
+        "Response shows iter_files called with an exts argument",
+        "Response mentions rel for repo-relative paths",
+        "Response says default changes must be listed under Not checked"
+      ]
+    }
+  ]
+}

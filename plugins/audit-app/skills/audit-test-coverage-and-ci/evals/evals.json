@@ -1,0 +1,46 @@
+{
+  "skill_name": "audit-test-coverage-and-ci",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "We're about to go live with the shop API in evals/files/sample-repo. Review our tests and the GitHub Actions pipeline - are the important parts covered and does CI actually stop bad code?",
+      "expected_output": "Runs ../audit-stack-detection/scripts/detect_stack.py (dotnet), test_inventory.py, ci_scan.py and ../audit-code-scan/scripts/grep_scan.py with patterns/dotnet.json. Report at audit/reports/audit-test-coverage-and-ci.md with: a coverage map by critical path - Payment (PaymentService, PaymentsController) none; Authentication (AuthController, TokenService) partial (unit tests with 401 cases, no integration/e2e); Data mutation (OrderService) partial (one of two tests skipped, unit only). A CI gate checklist: tests run on PR = fail (the dotnet test step in .github/workflows/ci.yml is commented out), test failure blocks merge = fail/unknown, analyzers = fail, security scan = fail, coverage = fail (coverlet referenced but never collected in CI), reproducible install = fail/advisory (dotnet restore without --locked-mode), artifacts versioned = fail, signed = fail, no direct pushes to main = unknown (CODEOWNERS present, branch protection not readable). A skipped-test list with OrderServiceTests.CancelAsync_rejects_orders_that_are_already_paid at tests/Shop.Api.Tests/OrderServiceTests.cs:20, Fact(Skip), reason 'Flaky since the SQL Server 2022 upgrade - see issue #412'. Findings (TEST- prefix): PaymentService/PaymentsController have no tests (High); CI builds pull requests but never runs tests (High); skipped cancel test on a data-mutation path (Medium); no security scan/analyzers in CI (Medium). AuthController/TokenService are not reported as untested.",
+      "files": ["evals/files/sample-repo"],
+      "expectations": [
+        "Coverage map by critical path marks payment as none and names PaymentService",
+        "Output contains a High finding that PaymentService (payment path) has zero tests, located at src/Shop.Api/Services/PaymentService.cs",
+        "Output contains a High finding that .github/workflows/ci.yml runs on pull_request but has no test step (the dotnet test step is commented out)",
+        "Skipped-test list includes CancelAsync_rejects_orders_that_are_already_paid in OrderServiceTests.cs with the reason about the SQL Server 2022 upgrade / issue #412",
+        "CI gate checklist table has rows for tests on PR, analyzers, security scan, coverage threshold, reproducible install, artifact versioning/signing and branch protection, with branch protection marked unknown rather than pass",
+        "AuthController and TokenService are not reported as untested",
+        "Finding ids start with TEST- and findings.json validates with ../audit-finding-writer/scripts/findings.py validate",
+        "Report lists what was not checked (branch protection via the forge API, suite not executed, flaky history)"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Do we have any skipped or disabled tests in evals/files/sample-repo, and why were they skipped?",
+      "expected_output": "Runs test_inventory.py and ../audit-code-scan/scripts/grep_scan.py. Lists exactly one skipped test: OrderServiceTests.CancelAsync_rejects_orders_that_are_already_paid (xUnit [Fact(Skip=...)], tests/Shop.Api.Tests/OrderServiceTests.cs:20) with reason 'Flaky since the SQL Server 2022 upgrade - see issue #412'. Explains that the skipped test is the only guard on the cancel-paid-order rule (data mutation / money state transition) and that the same issue #412 is cited for disabling the CI test step, so the skip and the CI change share a root cause. Recommends fixing the flakiness or converting to a deterministic unit test and re-enabling it, tracking skips with an expiry.",
+      "files": ["evals/files/sample-repo"],
+      "expectations": [
+        "Reports exactly one skipped test and names CancelAsync_rejects_orders_that_are_already_paid",
+        "Gives the reason string from the Skip attribute",
+        "Connects the skip to the commented-out CI test step via issue #412 or the SQL Server 2022 upgrade",
+        "Does not invent other skipped tests in AuthControllerTests.cs"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Can you check if our CI in evals/files/sample-repo has the gates it should have - tests, analyzers, security scanning, branch protection?",
+      "expected_output": "Runs ci_scan.py. CI gate checklist: GitHub Actions ci.yml triggers on push and pull_request to main; steps are checkout, setup-dotnet, restore, build, publish, upload-artifact; test gate missing (commented out at lines 21-23); lint/analyzer missing (no -warnaserror / dotnet format); security scan missing (no dotnet list package --vulnerable, CodeQL, gitleaks); coverage missing; reproducible install missing (dotnet restore without --locked-mode); artifact version missing (artifact name shop-api, no version); signing missing; actions pinned to tags not SHAs (Low); branch protection unknown - CODEOWNERS exists but is not enforcement, verify with gh api repos/{owner}/{repo}/branches/main/protection. Deploy gate n/a (no deploy job). Findings for the missing test gate (High) and missing security scan (Medium) at minimum.",
+      "files": ["evals/files/sample-repo"],
+      "expectations": [
+        "States that the pipeline runs on pull requests but has no active test step and cites the commented-out dotnet test lines",
+        "Marks analyzers and security scanning as missing",
+        "Marks branch protection as unknown and gives the gh api (or equivalent) command to verify it",
+        "Notes CODEOWNERS is present but is not by itself a merge gate",
+        "Mentions dotnet restore without --locked-mode as a reproducibility gap"
+      ]
+    }
+  ]
+}

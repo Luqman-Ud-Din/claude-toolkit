@@ -1,0 +1,51 @@
+{
+  "skill_name": "propose-schema-changes",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Check whether our schema can support the rules we need for the international launch. BLD (edited to describe the planned rules): evals/files/sample-bld.md. Schema doc from explore-schema: evals/files/sample-schema.md. Target markets: Germany, UAE, Pakistan. I want a migration plan I can hand to the DBA. Write it under docs/analysis/ in the current directory.",
+      "expected_output": "A report stating both sources (BLD hand-edited; schema generated 2026-09-10), a Proposed migrations section of ordered P-xxx steps each listing resolved SCH findings, a summary table by label x severity, then findings. Planted issues that must be found: BR-001 email uniqueness with no UNIQUE constraint -> RISK; BR-007 orders.customer_id nullable while BLD says required -> VIOLATION; BR-007 order_lines.product_id without FK -> VIOLATION or RISK (cite XSCH-001); order status 'refunded' and payment status 'refunded' in the BLD lifecycle with no enum/CHECK -> GAP; Return entity with no table -> GAP; BR-012 money columns without currency -> GAP (High); BR-008 order_no not unique/gapless -> GAP or RISK; BR-005 stock_on_hand no CHECK >= 0 -> RISK; naive timestamps vs BR-009 time zones -> GAP; BR-014 no tax_registration_no column -> GAP; postcode varchar(10)/Dutch assumption vs BR-011 -> GAP; BR-006 no transition audit columns -> GAP. Ends with Beyond the checklist.",
+      "files": [
+        "evals/files/sample-bld.md",
+        "evals/files/sample-schema.md"
+      ],
+      "expectations": [
+        "Header states the BLD source (hand-edited/planned) and the schema source with date",
+        "Proposed migrations section precedes the findings and each P-xxx step lists the SCH findings it resolves",
+        "A finding labelled RISK reports customer e-mail uniqueness (BR-001) enforced only in application code with no UNIQUE constraint on customers.email",
+        "A finding labelled VIOLATION reports orders.customer_id being nullable while BR-007 requires every order to belong to a customer",
+        "A finding reports order_lines.product_id having no foreign key (BR-007), citing XSCH-001",
+        "A finding labelled GAP reports the 'refunded' status required by the BLD lifecycle that no column/enum/CHECK can hold",
+        "A finding labelled GAP reports the Return entity having no table",
+        "A finding labelled GAP with Severity High reports money columns (orders/payments/products/customers) stored without a currency (BR-012)",
+        "A finding reports order_no not unique/gapless (BR-008)",
+        "A finding reports naive timestamp columns against the time-zone rule (BR-009)",
+        "A finding reports the missing tax registration number column (BR-014)",
+        "Every SCH finding has all eight fields (ID, Label, Severity, Area, BLD reference, Location, Impact, Remediation) with exactly one label and a P-xxx reference that exists",
+        "Summary table counts match the number of findings per label and severity",
+        "A Beyond the checklist section exists with at least one issue-format item",
+        "The document is written to docs/analysis/propose-schema-changes/<date>.md and the reply states the path",
+        "Every P-item's Depends on references only earlier P-items",
+        "Sketched DDL for new FK columns uses the referenced key's type (integer ids, not bigint against serial)"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "will our db handle refunds and returns? bld is in evals/files/sample-bld.md and the schema writeup is evals/files/sample-schema.md",
+      "expected_output": "Same full report format (not a one-off answer): the refunds/returns question is answered up front via the GAP findings for the 'refunded' status, the missing Return table and the payment status enum, plus the rest of the cross-check, in the standard sections.",
+      "files": [
+        "evals/files/sample-bld.md",
+        "evals/files/sample-schema.md"
+      ],
+      "expectations": [
+        "Output uses the standard sections: header with sources, Proposed migrations, Summary, Findings, Beyond the checklist",
+        "A GAP finding exists for the Return entity having no table",
+        "A GAP finding exists for the 'refunded' status not representable in orders.status/payments.status",
+        "The migration steps are ordered so that additive changes precede constraints that depend on them",
+        "Findings beyond the refund question are still reported, including money-without-currency (BR-012)",
+        "An Answer paragraph directly under the header answers the refunds/returns question and names the findings that support it",
+        "A RISK finding for BR-001 customer e-mail uniqueness (application-only check, no UNIQUE constraint) is still reported despite the narrow question"
+      ]
+    }
+  ]
+}

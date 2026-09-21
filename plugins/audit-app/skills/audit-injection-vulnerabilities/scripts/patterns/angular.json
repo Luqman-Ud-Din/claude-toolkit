@@ -1,0 +1,182 @@
+[
+  {
+    "id": "TMPL-EVAL",
+    "pattern": "(?<![\\w.$])eval\\s*\\(",
+    "globs": ["*.ts", "*.js", "*.html"],
+    "severity_hint": "High",
+    "description": "eval() call - arbitrary code execution if the string is not a literal",
+    "reference": "CWE-95",
+    "ignore_case": false
+  },
+  {
+    "id": "TMPL-NEW-FUNCTION",
+    "pattern": "new\\s+Function\\s*\\(",
+    "globs": ["*.ts", "*.js", "*.html"],
+    "severity_hint": "High",
+    "description": "new Function(...) compiles a string into executable code",
+    "reference": "CWE-95",
+    "ignore_case": false
+  },
+  {
+    "id": "TMPL-TIMER-STRING",
+    "pattern": "set(?:Timeout|Interval)\\s*\\(\\s*[\"'`]",
+    "globs": ["*.ts", "*.js", "*.html"],
+    "severity_hint": "High",
+    "description": "setTimeout/setInterval called with a string body (implicit eval)",
+    "reference": "CWE-95",
+    "ignore_case": false
+  },
+  {
+    "id": "TMPL-COMPILE",
+    "pattern": "(compileModuleAndAllComponentsSync|createComponent\\s*\\(\\s*Component\\(|Compiler\\b.*compileModule)",
+    "globs": ["*.ts"],
+    "severity_hint": "Medium",
+    "description": "Runtime Angular template compilation from a dynamically built component/template",
+    "reference": "CWE-1336",
+    "ignore_case": false
+  },
+  {
+    "id": "TMPL-DYNAMIC-TEMPLATE",
+    "pattern": "template\\s*:\\s*(?:[`\"'][^`\"']*\\$\\{|[A-Za-z_$][\\w$]*\\s*[,}]|[A-Za-z_$][\\w$]*\\s*\\+)",
+    "globs": ["*.ts"],
+    "severity_hint": "Medium",
+    "description": "Component/directive template source built from a variable or interpolation",
+    "reference": "CWE-1336",
+    "ignore_case": false
+  },
+  {
+    "id": "SSRF-OPEN-REDIRECT",
+    "pattern": "(?:window\\.)?location\\s*(?:\\.href|\\.replace\\s*\\(|\\.assign\\s*\\(|=)\\s*[^=;]*(?:\\$\\{|\\+\\s*[A-Za-z_$])",
+    "globs": ["*.ts", "*.js"],
+    "severity_hint": "Medium",
+    "description": "Navigation target built by concatenation/interpolation - open-redirect candidate",
+    "reference": "CWE-601",
+    "ignore_case": false
+  },
+  {
+    "id": "SSRF-WINDOW-OPEN",
+    "pattern": "window\\.open\\s*\\(",
+    "globs": ["*.ts", "*.js", "*.html"],
+    "severity_hint": "Low",
+    "description": "window.open target - check whether the URL comes from user or API data",
+    "reference": "CWE-601",
+    "ignore_case": false
+  },
+  {
+    "id": "SSRF-CAP-BROWSER",
+    "pattern": "Browser\\.open\\s*\\(",
+    "globs": ["*.ts"],
+    "severity_hint": "Medium",
+    "description": "Capacitor Browser.open with a URL - arbitrary scheme/host on device",
+    "reference": "CWE-601",
+    "ignore_case": false
+  },
+  {
+    "id": "SSRF-FETCH-VAR-URL",
+    "pattern": "(?:fetch|http\\.(?:get|post|put|delete)|CapacitorHttp\\.\\w+)\\s*\\(\\s*(?:[A-Za-z_$][\\w$]*(?:\\.[\\w$]+)*\\s*[,)]|[`\"'][^`\"']*\\$\\{)",
+    "globs": ["*.ts"],
+    "severity_hint": "Low",
+    "description": "Outbound request whose URL is a variable or interpolated string",
+    "reference": "CWE-918",
+    "ignore_case": false
+  },
+  {
+    "id": "PATH-URL-INTERP",
+    "pattern": "(?:endpoint|url|path|apiUrl|route)\\s*[:=]\\s*[`][^`]*\\$\\{",
+    "globs": ["*.ts"],
+    "severity_hint": "Low",
+    "description": "API path built by template interpolation - record the parameter for the backend trace",
+    "reference": "CWE-22",
+    "ignore_case": true
+  },
+  {
+    "id": "PATH-CAP-FILESYSTEM",
+    "pattern": "Filesystem\\.(?:readFile|writeFile|deleteFile|mkdir|rmdir|readdir|getUri|copy|rename)\\s*\\(",
+    "globs": ["*.ts"],
+    "severity_hint": "Medium",
+    "description": "Capacitor Filesystem call - check whether `path` comes from user input",
+    "reference": "CWE-22",
+    "ignore_case": false
+  },
+  {
+    "id": "PATH-SAVEAS-NAME",
+    "pattern": "(?:saveAs|FileSaver\\.saveAs)\\s*\\(",
+    "globs": ["*.ts"],
+    "severity_hint": "Low",
+    "description": "file-saver saveAs - check the filename argument for user-controlled path separators",
+    "reference": "CWE-22",
+    "ignore_case": false
+  },
+  {
+    "id": "CSVFI-XLSX-WRITE",
+    "pattern": "XLSX\\.(?:write|writeFile|writeFileXLSX)\\s*\\(",
+    "globs": ["*.ts"],
+    "severity_hint": "Medium",
+    "description": "SheetJS export - check cells for CSV/Excel formula injection guards",
+    "reference": "CWE-1236",
+    "ignore_case": false
+  },
+  {
+    "id": "CSVFI-XLSX-SHEETGEN",
+    "pattern": "XLSX\\.utils\\.(?:json_to_sheet|aoa_to_sheet|table_to_sheet|sheet_add_json|sheet_add_aoa)\\s*\\(",
+    "globs": ["*.ts"],
+    "severity_hint": "Medium",
+    "description": "SheetJS sheet built from app data - formula-injection sink if values start with = + - @",
+    "reference": "CWE-1236",
+    "ignore_case": false
+  },
+  {
+    "id": "CSVFI-XLSX-READ",
+    "pattern": "XLSX\\.read(?:File)?\\s*\\(",
+    "globs": ["*.ts"],
+    "severity_hint": "Medium",
+    "description": "SheetJS parses an uploaded workbook - untrusted input into the parser",
+    "reference": "CWE-502",
+    "ignore_case": false
+  },
+  {
+    "id": "CSVFI-CSV-JOIN",
+    "pattern": "(?:\\.join\\s*\\(\\s*[\"'],[\"']\\s*\\)|text\\/csv|\\.csv[\"'`])",
+    "globs": ["*.ts"],
+    "severity_hint": "Low",
+    "description": "Hand-rolled CSV construction - check quoting and formula-prefix escaping",
+    "reference": "CWE-1236",
+    "ignore_case": true
+  },
+  {
+    "id": "DESER-JSON-PARSE-STORAGE",
+    "pattern": "JSON\\.parse\\s*\\(\\s*(?:localStorage|sessionStorage)",
+    "globs": ["*.ts"],
+    "severity_hint": "Low",
+    "description": "Parsing attacker-influenceable browser storage without validation",
+    "reference": "CWE-502",
+    "ignore_case": false
+  },
+  {
+    "id": "SQL-CAP-SQLITE",
+    "pattern": "(?:db|sqlite|connection)\\.(?:query|execute|run)\\s*\\(\\s*(?:[`\"'][^`\"']*\\$\\{|[\"'][^\"']*[\"']\\s*\\+)",
+    "globs": ["*.ts"],
+    "severity_hint": "Medium",
+    "description": "On-device SQLite query built by string concatenation",
+    "reference": "CWE-89",
+    "ignore_case": true
+  },
+  {
+    "id": "TMPL-BYPASS-SECURITY",
+    "pattern": "bypassSecurityTrust(?:Html|Script|Style|Url|ResourceUrl)\\s*\\(",
+    "globs": ["*.ts"],
+    "severity_hint": "High",
+    "description": "Angular sanitizer bypass - ResourceUrl/Script variants enable code execution",
+    "reference": "CWE-79",
+    "ignore_case": false
+  },
+  {
+    "id": "HTTPPARAMS-RAW",
+    "pattern": "new\\s+HttpParams\\s*\\(\\s*\\{\\s*fromString",
+    "globs": ["*.ts"],
+    "severity_hint": "Low",
+    "description": "HttpParams built from a raw query string - bypasses per-value encoding",
+    "reference": "CWE-88",
+    "ignore_case": false
+  }
+]

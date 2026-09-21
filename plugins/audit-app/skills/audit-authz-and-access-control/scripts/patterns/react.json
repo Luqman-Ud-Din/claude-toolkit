@@ -1,0 +1,18 @@
+[
+  {
+    "id": "PROTECTED-ROUTE",
+    "pattern": "PrivateRoute|ProtectedRoute|RequireAuth|<Route\\b",
+    "globs": ["*.tsx", "*.jsx", "*.ts", "*.js"],
+    "severity_hint": "Info",
+    "description": "Client route protection - UX only; the server must enforce the same authorization",
+    "reference": "CWE-602"
+  },
+  {
+    "id": "ROLE-CONDITIONAL-RENDER",
+    "pattern": "(isAdmin|user\\.role|hasRole|hasPermission)\\s*&&",
+    "globs": ["*.tsx", "*.jsx"],
+    "severity_hint": "Info",
+    "description": "Component hidden by role - cosmetic; confirm the API rejects unauthorized calls",
+    "reference": "CWE-602"
+  }
+]

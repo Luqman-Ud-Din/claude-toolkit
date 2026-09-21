@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>Serilog</id>
+    <version>4.0.0</version>
+    <authors>Serilog Contributors</authors>
+    <license type="expression">Apache-2.0</license>
+    <projectUrl>https://serilog.net/</projectUrl>
+  </metadata>
+</package>

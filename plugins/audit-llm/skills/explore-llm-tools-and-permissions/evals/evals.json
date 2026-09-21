@@ -1,0 +1,17 @@
+{
+  "skill_name": "explore-llm-tools-and-permissions",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "List every tool our support agent can call and flag which ones are dangerous.",
+      "expected_output": "Enumerates each tool with schema, credentials, reversibility, and approval status, surfaces the irreversible/ungated ones first in the summary, and writes explore-llm-tools-and-permissions.json.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "The agent connects to a couple of MCP servers for extra tools - can you map what those give it access to?",
+      "expected_output": "Lists the MCP-provided tools as far as visible, flags them as externally sourced, and notes that their provenance/trust should be checked via audit-llm-supply-chain rather than assumed safe just because they're connected.",
+      "files": []
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+[
+  {
+    "id": "TEST-SKIP-DISABLED",
+    "pattern": "@Disabled\\b|@Ignore\\b|@Test\\s*\\(\\s*enabled\\s*=\\s*false",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "Medium",
+    "description": "JUnit/TestNG test disabled so it never runs in CI",
+    "reference": "CWE-1120"
+  },
+  {
+    "id": "TEST-H2-SUBSTITUTE",
+    "pattern": "jdbc:h2:mem|jdbc:hsqldb:mem|jdbc:derby:memory",
+    "globs": ["*.properties", "*.yml", "*.yaml", "*.java", "*.kt"],
+    "severity_hint": "Medium",
+    "description": "In-memory H2/HSQLDB stands in for the production database - dialect, constraints and native SQL untested",
+    "reference": "CWE-1120"
+  },
+  {
+    "id": "TEST-SLEEP",
+    "pattern": "Thread\\.sleep\\(|TimeUnit\\.[A-Z]+\\.sleep\\(",
+    "globs": ["*Test*.java", "*Tests*.java", "*IT.java", "*Test*.kt"],
+    "severity_hint": "Low",
+    "description": "Timing-dependent test - a common source of flakiness",
+    "reference": "CWE-1120"
+  },
+  {
+    "id": "TEST-CI-SKIPTESTS",
+    "pattern": "-DskipTests|-Dmaven\\.test\\.skip|gradlew[^\\n]*-x\\s+test|allow_failure:\\s*true",
+    "globs": ["*.yml", "*.yaml", "Jenkinsfile*"],
+    "severity_hint": "High",
+    "description": "CI explicitly skips tests or lets the test step fail without failing the build",
+    "reference": "ASVS-1.14.4"
+  },
+  {
+    "id": "TEST-PROD-DATASOURCE",
+    "pattern": "spring\\.datasource\\.url\\s*[:=]\\s*jdbc:[a-z]+://(?!localhost|127\\.0\\.0\\.1)",
+    "globs": ["application-test*.properties", "application-test*.yml", "*.properties", "*.yml"],
+    "severity_hint": "High",
+    "description": "Test profile points at a remote database - tests may mutate shared data",
+    "reference": "CWE-1188"
+  },
+  {
+    "id": "TEST-NO-JACOCO",
+    "pattern": "mvn[^\\n]*\\b(test|verify)\\b(?![^\\n]*jacoco)",
+    "globs": ["*.yml", "*.yaml", "Jenkinsfile*"],
+    "severity_hint": "Low",
+    "description": "Tests run without a coverage agent - no coverage is measured in CI",
+    "reference": "ASVS-1.14.4"
+  }
+]

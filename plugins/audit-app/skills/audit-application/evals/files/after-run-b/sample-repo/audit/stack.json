@@ -1,0 +1,30 @@
+{
+  "detected_at": "2026-09-11T12:23:23.482126+00:00",
+  "root": ".",
+  "stacks": [
+    {
+      "id": "angular",
+      "reference": "angular.md",
+      "evidence": [
+        "web/package.json"
+      ],
+      "roots": [
+        "web"
+      ]
+    },
+    {
+      "id": "dotnet",
+      "reference": "dotnet.md",
+      "evidence": [
+        "Inventory.Api/Inventory.Api.csproj"
+      ],
+      "roots": [
+        "Inventory.Api"
+      ]
+    }
+  ],
+  "primary_backend": "dotnet",
+  "primary_frontend": "angular",
+  "multi_tenant": true,
+  "multi_tenant_source": "setup answer (provided)"
+}

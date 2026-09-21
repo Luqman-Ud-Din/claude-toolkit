@@ -1,0 +1,82 @@
+[
+  {
+    "id": "PII-NODE-LOG-VALUE",
+    "pattern": "\\b(?:console|logger|log|winston|pino|bunyan)\\.(?:log|info|debug|warn|error|trace)\\s*\\([^;]*\\b(?:email|phone|mobile|firstName|lastName|fullName|address|dob|ssn|iban|cardNumber|password)\\b",
+    "globs": ["*.js", "*.ts", "*.mjs", "*.cjs"],
+    "severity_hint": "High",
+    "description": "Log call whose arguments include a PII field",
+    "reference": "CWE-532"
+  },
+  {
+    "id": "PII-NODE-LOG-REQ-BODY",
+    "pattern": "\\b(?:console|logger|log)\\.(?:log|info|debug|warn|error)\\s*\\([^;]*\\breq\\.(?:body|query|params|headers)\\b",
+    "globs": ["*.js", "*.ts", "*.mjs", "*.cjs"],
+    "severity_hint": "High",
+    "description": "Whole request body/query/headers logged - includes every submitted PII field and auth headers",
+    "reference": "CWE-532"
+  },
+  {
+    "id": "PII-NODE-MORGAN-COMBINED",
+    "pattern": "morgan\\s*\\(\\s*['\"](?:combined|common)['\"]|morgan\\s*\\(\\s*['\"][^'\"]*:req\\[",
+    "globs": ["*.js", "*.ts"],
+    "severity_hint": "Low",
+    "description": "HTTP access logging in combined format - full URLs (with any PII in the query string) and IPs are logged",
+    "reference": "CWE-532"
+  },
+  {
+    "id": "PII-NODE-CACHE-KEY",
+    "pattern": "(?:redis|client|cache|ioredis)\\.(?:set|setex|get|hset|hget|del)\\s*\\(\\s*`[^`]*\\$\\{[^}]*(?:email|phone|mobile|name)\\b|(?:redis|cache)\\.(?:set|get)\\s*\\(\\s*['\"][^'\"]*['\"]\\s*\\+\\s*\\w*(?:email|phone)",
+    "globs": ["*.js", "*.ts"],
+    "severity_hint": "Medium",
+    "description": "PII interpolated into a Redis/cache key",
+    "reference": "CWE-359"
+  },
+  {
+    "id": "PII-NODE-OUTBOUND-HTTP",
+    "pattern": "\\b(?:axios|fetch|got|superagent|request|needle|ky)\\s*(?:\\.(?:post|put|patch|get))?\\s*\\(\\s*[`'\"]https?://",
+    "globs": ["*.js", "*.ts", "*.mjs"],
+    "severity_hint": "Info",
+    "description": "Outbound HTTP call to a literal URL - third-party endpoint; inspect the payload",
+    "reference": "GDPR-Art.28"
+  },
+  {
+    "id": "PII-NODE-THIRD-PARTY-SDK",
+    "pattern": "require\\(\\s*['\"](?:@sendgrid/mail|twilio|mailchimp|@mailchimp/mailchimp_marketing|stripe|@sentry/node|mixpanel|analytics-node|@segment/analytics-node|nodemailer|@hubspot/api-client|intercom-client|posthog-node|@aws-sdk/client-s3|firebase-admin)['\"]\\s*\\)|from\\s+['\"](?:@sendgrid/mail|twilio|@mailchimp/mailchimp_marketing|stripe|@sentry/node|mixpanel|@segment/analytics-node|nodemailer|@hubspot/api-client|posthog-node|@aws-sdk/client-s3|firebase-admin)['\"]",
+    "globs": ["*.js", "*.ts", "*.mjs"],
+    "severity_hint": "Info",
+    "description": "Third-party SDK import - a processor for the inventory; find what is passed to it",
+    "reference": "GDPR-Art.28"
+  },
+  {
+    "id": "PII-NODE-SENTRY-SET-USER",
+    "pattern": "Sentry\\.setUser\\s*\\(\\s*\\{[^}]*(?:email|username|ip_address)",
+    "globs": ["*.js", "*.ts"],
+    "severity_hint": "Medium",
+    "description": "Sentry user context includes email/username/IP - sent with every error event",
+    "reference": "CWE-359"
+  },
+  {
+    "id": "PII-NODE-PII-IN-ROUTE-OR-QUERY",
+    "pattern": "(?:router|app)\\.(?:get|delete)\\s*\\(\\s*['\"][^'\"]*:(?:email|phone|mobile|ssn|iban)\\b|req\\.query\\.(?:email|phone|mobile|ssn|iban)\\b",
+    "globs": ["*.js", "*.ts"],
+    "severity_hint": "Medium",
+    "description": "PII accepted in the route path or query string",
+    "reference": "CWE-598"
+  },
+  {
+    "id": "PII-NODE-SCHEMA-PII-COLUMN",
+    "pattern": "@Column\\s*\\([^)]*\\)\\s*(?:email|phone|mobile|firstName|lastName|fullName|address|dob|ssn|iban|cardNumber)\\s*[:!?]|\\b(?:email|phone|mobile|firstName|lastName|fullName|address|dob|ssn|iban|cardNumber)\\s*:\\s*\\{\\s*type\\s*:\\s*(?:String|DataTypes|Sequelize)|^\\s*(?:email|phone|mobile|firstName|lastName|address|dob|iban)\\s+String",
+    "globs": ["*.js", "*.ts", "*.prisma"],
+    "severity_hint": "Info",
+    "description": "PII column in a TypeORM / Mongoose / Sequelize / Prisma model - a storage location",
+    "reference": "GDPR-Art.30"
+  },
+  {
+    "id": "PII-NODE-TEMPLATE-PLACEHOLDER",
+    "pattern": "\\{\\{\\s*(?:user\\.|customer\\.)?(?:email|phone|mobile|firstName|first_name|lastName|last_name|fullName|name|address)\\s*\\}\\}|<%=\\s*[^%]*(?:email|phone|name)|#\\{[^}]*(?:email|phone|name)",
+    "globs": ["*.hbs", "*.handlebars", "*.ejs", "*.pug", "*.html", "*.txt", "*.mjml"],
+    "severity_hint": "Info",
+    "description": "PII placeholder in an email/SMS template",
+    "reference": "GDPR-Art.30"
+  }
+]

@@ -1,0 +1,58 @@
+{
+  "skill": "audit-dependency-vulnerabilities",
+  "generated_at": "2026-09-11T12:23:26.790645+00:00",
+  "target": {
+    "root": ".",
+    "commit": null
+  },
+  "stack": {
+    "primary_backend": "dotnet",
+    "primary_frontend": "angular"
+  },
+  "scope": {
+    "checked": [
+      "NuGet (dotnet list package --vulnerable)",
+      "npm audit (web)"
+    ],
+    "not_checked": []
+  },
+  "findings": [
+    {
+      "id": "DEP-001",
+      "title": "Transitive System.Text.Json with a known DoS advisory",
+      "severity": "Medium",
+      "confidence": "confirmed",
+      "location": {
+        "file": "Inventory.Api/Inventory.Api.csproj",
+        "line": 1
+      },
+      "evidence": "Inventory.Api/Inventory.Api.csproj:1",
+      "impact": "A crafted request could slow the API down.",
+      "remediation": "Pin the patched version in Directory.Packages.props.",
+      "references": [
+        "CWE-400",
+        "OWASP-A06:2021",
+        "ASVS-12.1.1",
+        "ASVS-11.1.4"
+      ],
+      "tags": [],
+      "extra": {
+        "mapping": {
+          "rule": "resource-exhaustion",
+          "matched_by": "cwe:CWE-400",
+          "added": [
+            "ASVS-12.1.1",
+            "ASVS-11.1.4"
+          ],
+          "top10": "A04",
+          "asvs": [
+            "12.1.1",
+            "11.1.4"
+          ],
+          "cwe": "CWE-770"
+        }
+      }
+    }
+  ],
+  "summary": {}
+}

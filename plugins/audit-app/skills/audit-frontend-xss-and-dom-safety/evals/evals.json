@@ -1,0 +1,48 @@
+{
+  "skill_name": "audit-frontend-xss-and-dom-safety",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Audit the Angular app in evals/files/sample-app for XSS and unsafe DOM use. We use DomSanitizer in a few places - tell me which bypasses are justified and which are not.",
+      "expected_output": "Stack detected as angular; grep pass with scripts/patterns/angular.json and scan_html_scripts.py; findings with XSS- ids: (1) High - comment.component.ts bypassSecurityTrustHtml on comment.body, labelled unjustified; (2) High - product-preview.component.ts nativeElement.innerHTML = product.description; (3) Info - help-article.component.ts bypass preceded by DOMPurify.sanitize on the same value, labelled justified; (4) Low - index.html tracker script without integrity; optionally Low for the inline config script. Report includes the sanitizer bypass register with a Label column, a Not checked section, and findings.json validates.",
+      "files": ["evals/files/sample-app/package.json", "evals/files/sample-app/src/app/comments/comment.component.ts", "evals/files/sample-app/src/app/products/product-preview.component.ts", "evals/files/sample-app/src/app/help/help-article.component.ts", "evals/files/sample-app/src/index.html"],
+      "expectations": [
+        "A finding with id starting XSS- points at src/app/comments/comment.component.ts at the bypassSecurityTrustHtml line, severity High, and is labelled unjustified",
+        "A finding with id starting XSS- points at src/app/products/product-preview.component.ts at the nativeElement.innerHTML line with severity High and references CWE-79",
+        "The help-article.component.ts bypass is reported with severity Info (not High, Medium or Low) and is labelled justified, with DOMPurify.sanitize named as the reason",
+        "A finding points at src/index.html for the cdn.example-analytics.com script lacking integrity, severity Low, referencing SRI or CWE-829",
+        "The cdnjs DOMPurify script that has integrity and crossorigin attributes is not reported as missing SRI",
+        "The report contains a sanitizer bypass register table with justified/unjustified labels",
+        "The report contains a Not checked section",
+        "audit/findings/audit-frontend-xss-and-dom-safety.json validates with ../audit-finding-writer/scripts/findings.py validate",
+        "No file under evals/files/sample-app was modified"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Is help-article.component.ts in evals/files/sample-app safe? A reviewer flagged bypassSecurityTrustHtml there.",
+      "expected_output": "A short verdict that the bypass is justified: DOMPurify.sanitize with a fixed allow-list runs on the same value immediately before the bypass and the reason is documented; recorded as an Info finding tagged justified, with the advice to keep the sanitizer adjacent to the bypass and add a unit test.",
+      "files": ["evals/files/sample-app/src/app/help/help-article.component.ts", "evals/files/sample-app/package.json"],
+      "expectations": [
+        "The answer states the bypass is justified because DOMPurify.sanitize runs on the same value immediately before it",
+        "No finding with severity Critical, High, Medium or Low is emitted for help-article.component.ts",
+        "If a findings entry is written its severity is Info and it is tagged justified"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Pre-prod security review of the web frontend in evals/files/sample-app: innerHTML, sanitization, eval, third-party scripts, inline scripts - the works. Standard finding format please.",
+      "expected_output": "Stack resolved to angular, both scripts run, four to five findings (two High, one Info justified bypass, one or two Low for SRI/inline script), eval class reported as checked with no hits, report and status files under audit/.",
+      "files": ["evals/files/sample-app/package.json", "evals/files/sample-app/src/app/comments/comment.component.ts", "evals/files/sample-app/src/app/products/product-preview.component.ts", "evals/files/sample-app/src/app/help/help-article.component.ts", "evals/files/sample-app/src/index.html"],
+      "expectations": [
+        "Exactly two findings have severity High: the comment bypass and the product-preview innerHTML write",
+        "The help-article bypass is Info and labelled justified",
+        "At least one Low finding covers the external script without integrity in src/index.html",
+        "The inline window.__APP_CONFIG__ script is mentioned as a CSP concern (Low finding or noted in the third-party/inline table)",
+        "The scope or report states that eval/new Function patterns were checked and produced no hits",
+        "audit/status/audit-frontend-xss-and-dom-safety.json is written with status completed",
+        "Remediation for the comment finding mentions [innerHTML] binding or DOMPurify.sanitize before the bypass"
+      ]
+    }
+  ]
+}

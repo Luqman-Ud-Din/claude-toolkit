@@ -1,0 +1,27 @@
+[
+  {
+    "id": "RAW-SQL-CONCAT",
+    "pattern": "FromSqlRaw\\s*\\(.*\\+",
+    "globs": ["*.cs"],
+    "severity_hint": "High",
+    "description": "Raw SQL built by string concatenation",
+    "reference": "CWE-89",
+    "ignore_case": false
+  },
+  {
+    "id": "HARDCODED-CONN-PW",
+    "pattern": "(Password|Pwd)\\s*=\\s*[^;\"${]{3,}",
+    "globs": ["appsettings*.json"],
+    "severity_hint": "Critical",
+    "description": "Connection string with a literal password",
+    "reference": "CWE-798"
+  },
+  {
+    "id": "CSP-HEADER-PRESENT",
+    "pattern": "Content-Security-Policy",
+    "globs": ["*.cs"],
+    "severity_hint": "Medium",
+    "description": "Marker: a CSP header is set somewhere. Zero hits is the finding.",
+    "reference": "ASVS-14.4.3"
+  }
+]

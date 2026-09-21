@@ -1,0 +1,45 @@
+{
+  "skill_name": "audit-concurrency-and-race-condition",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Check evals/files/sample-repo for race conditions and double-submit problems. We run three replicas in production.",
+      "expected_output": "A state-changing operations inventory listing POST /api/users/register (not idempotent, exists-check only, no unique index), POST /api/payments/charge (no idempotency key, in-memory status check, unconditional write), the Stripe webhook (idempotent via unique (Provider, EventId)), and StockService.TryReserveAsync (atomic conditional update); a shared-state table with RateLimiterMiddleware._hits (static Dictionary, unsafe) and SettingsCache (immutable / ConcurrentDictionary, safe); RACE findings for the register check-then-insert, the charge endpoint, and the static dictionary; findings written to audit/findings/audit-concurrency-and-race-condition.json.",
+      "files": ["evals/files/sample-repo"],
+      "expectations": [
+        "Report contains a state-changing operations inventory table with idempotency and transaction columns",
+        "A RACE- finding flags UsersController.Register as check-then-act (AnyAsync then Add) with no unique index on Users.Email in migrations/001_init.sql",
+        "A RACE- finding rated High flags PaymentsController.Charge for having no idempotency key and an in-memory status check before an unconditional write",
+        "A RACE- finding flags RateLimiterMiddleware._hits as a static Dictionary mutated per request without synchronization",
+        "StripeWebhookController is recorded as idempotent and not flagged",
+        "StockService.TryReserveAsync is recorded as safe (atomic conditional update) and not flagged",
+        "SettingsCache is not flagged",
+        "findings.json validates with ../audit-finding-writer/scripts/findings.py validate"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Can our payment endpoint in evals/files/sample-repo/Ledger.Api/Payments/PaymentsController.cs charge a customer twice if they double-click?",
+      "expected_output": "Yes: explanation of the interleaving (both requests load the order as Pending, both call the gateway, both set Paid); a High RACE finding with remediation: Idempotency-Key stored before the gateway call, the same key passed to the gateway, and an atomic UPDATE ... WHERE Status = Pending (or rowversion) with 0 rows treated as already paid; a reproduction note describing two concurrent POSTs (optionally via scripts/double_submit.sh).",
+      "files": ["evals/files/sample-repo/Ledger.Api/Payments/PaymentsController.cs", "evals/files/sample-repo/Ledger.Api/Ledger.Api.csproj"],
+      "expectations": [
+        "Output answers yes and describes the two-request interleaving",
+        "A RACE- finding rated High names PaymentsController.Charge with a file:line",
+        "Remediation mentions an idempotency key stored before the side effect and a conditional/atomic status update or rowversion",
+        "References include CWE-362 or CWE-367"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Is there any shared mutable state in evals/files/sample-repo/Ledger.Api/Infrastructure that could break under load?",
+      "expected_output": "A Medium RACE finding for RateLimiterMiddleware._hits (static Dictionary<string,int> with ContainsKey-then-set and ++ from concurrent requests; can throw or corrupt; per-process so useless across replicas) with remediation ConcurrentDictionary.AddOrUpdate or a Redis-backed limiter; SettingsCache reported as safe (static readonly immutable map, ConcurrentDictionary with atomic AddOrUpdate).",
+      "files": ["evals/files/sample-repo/Ledger.Api/Infrastructure/RateLimiter.cs", "evals/files/sample-repo/Ledger.Api/Infrastructure/SettingsCache.cs"],
+      "expectations": [
+        "A RACE- finding names RateLimiterMiddleware._hits as unsynchronized static mutable state",
+        "Remediation mentions ConcurrentDictionary (AddOrUpdate) or a shared store such as Redis",
+        "SettingsCache is explicitly reported as safe and not flagged",
+        "References include CWE-662 or CWE-362"
+      ]
+    }
+  ]
+}

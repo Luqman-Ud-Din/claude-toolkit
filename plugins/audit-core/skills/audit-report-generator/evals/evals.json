@@ -1,0 +1,65 @@
+{
+  "skill_name": "audit-report-generator",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "All the audits on evals/files/sample-repo are done. Put together the final audit report for the Digital Inventory launch decision.",
+      "expected_output": "build_report.py is run and audit/audit-report.md is produced. The executive summary recommends NO-GO because a Critical (AUTHZ-001) and a High (AUTHZ-002, merged with AUTHZ-003) are open, with a caveat naming the skipped secrets audit, lists AUTHZ-001, AUTHZ-002 and HDR-001 as the top three risks in plain language, the scope table shows the skipped secrets audit with its reason, the pass/fail matrix marks authz FAIL, headers WARN, frontend best practices PASS and secrets NOT RUN, the remediation plan lists AUTHZ-001 and AUTHZ-002 as must-fix-before-launch and HDR-001/HDR-002 as post-launch tickets, and FEBP-002 appears only in the false-positive appendix.",
+      "files": [
+        "evals/files/sample-repo/audit/findings/audit-authz-and-access-control.json",
+        "evals/files/sample-repo/audit/findings/audit-security-headers-and-middleware.json",
+        "evals/files/sample-repo/audit/findings/audit-frontend-best-practices.json",
+        "evals/files/sample-repo/audit/status/audit-authz-and-access-control.json",
+        "evals/files/sample-repo/audit/status/audit-security-headers-and-middleware.json",
+        "evals/files/sample-repo/audit/status/audit-frontend-best-practices.json",
+        "evals/files/sample-repo/audit/status/audit-secrets-and-config.json",
+        "evals/files/sample-repo/audit/reports/audit-owasp-asvs-mapper.md",
+        "evals/files/sample-repo/audit/evidence/audit-authz-and-access-control/endpoint_probe.txt",
+        "evals/files/sample-repo/Api/Api.csproj",
+        "evals/files/sample-repo/web/package.json"
+      ],
+      "expectations": [
+        "The executive summary states a NO-GO recommendation",
+        "A caveat listed after the recommendation names the skipped audit-secrets-and-config",
+        "The executive summary's top three risks start with AUTHZ-001 (the only Critical) and do not contain CWE ids",
+        "The 'Must fix before launch' table contains AUTHZ-001 and AUTHZ-002 and nothing of Medium or lower severity",
+        "AUTHZ-003 is merged into AUTHZ-002 (shown as merged, both locations listed in Appendix A) and does not appear as a separate finding",
+        "HDR-001 and HDR-002 appear under 'Ticket for post-launch'",
+        "The pass/fail matrix shows authz and access control as FAIL, security headers as WARN, frontend best practices as PASS and secrets and config as NOT RUN",
+        "FEBP-002 is listed only in the excluded false positives appendix and is not counted",
+        "The OWASP/ASVS section embeds the mapper's Top 10 table",
+        "The scope table shows the skipped secrets audit with its reason",
+        "Appendix B lists the scripts from the status files and the endpoint_probe.txt evidence file"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Can you export the audit report for evals/files/sample-repo as a Word document? The client wants a .docx.",
+      "expected_output": "build_report.py is run with --docx. If pandoc is installed, audit/audit-report.docx is produced; if not, the reply says pandoc was not found, gives the install pointer and the exact pandoc command, and delivers audit/audit-report.md. The status file records the export outcome.",
+      "files": ["evals/files/sample-repo/audit/findings/audit-authz-and-access-control.json"],
+      "expectations": [
+        "The script is invoked with --docx",
+        "If pandoc is missing the reply says so explicitly and gives the pandoc command rather than silently skipping",
+        "audit/audit-report.md is still produced",
+        "audit/status/audit-report-generator.json records the export result"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "is this thing ready to ship? summarise the audits in evals/files/sample-repo for me in a couple of lines and tell me what has to be fixed first",
+      "expected_output": "A short plain-language answer derived from the generated report: not ready (NO-GO); the unauthenticated company-admin endpoints must be fixed first, then the missing ownership filter in the base repository (covers orders and invoices); HSTS and nosniff can be ticketed for after launch; the secrets audit did not run so that area is unknown.",
+      "files": [
+        "evals/files/sample-repo/audit/findings/audit-authz-and-access-control.json",
+        "evals/files/sample-repo/audit/findings/audit-security-headers-and-middleware.json",
+        "evals/files/sample-repo/audit/findings/audit-frontend-best-practices.json",
+        "evals/files/sample-repo/audit/status/audit-secrets-and-config.json"
+      ],
+      "expectations": [
+        "Answer says the application is not ready (NO-GO) and explains why in plain language",
+        "Answer names the unauthenticated admin endpoints as the first fix and the ownership filter as the second",
+        "Answer mentions that the secrets audit was skipped so that area is unverified",
+        "Answer distinguishes launch blockers from post-launch items"
+      ]
+    }
+  ]
+}

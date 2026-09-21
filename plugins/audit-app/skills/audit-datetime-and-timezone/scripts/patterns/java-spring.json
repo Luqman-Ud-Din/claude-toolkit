@@ -1,0 +1,82 @@
+[
+  {
+    "id": "LOCAL-NOW",
+    "pattern": "LocalDateTime\\.now\\(\\)|LocalDate\\.now\\(\\)|LocalTime\\.now\\(\\)|ZonedDateTime\\.now\\(\\)|new Date\\(\\)|Calendar\\.getInstance\\(\\)|ZoneId\\.systemDefault\\(\\)|TimeZone\\.getDefault\\(\\)",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "Medium",
+    "description": "Local/JVM-zone time API or default zone; confirm the decision it feeds and inject a Clock",
+    "reference": "CWE-682"
+  },
+  {
+    "id": "NAIVE-TYPE",
+    "pattern": "\\b(private|protected|public)\\s+(LocalDateTime|java\\.util\\.Date|Timestamp)\\s+\\w*(At|On|Date|Time|Utc|Expir|Created|Updated|Start|End)\\w*\\s*;",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "Medium",
+    "description": "Zone-less type on a field that looks like an instant; prefer Instant/OffsetDateTime with a UTC column",
+    "reference": "CWE-704"
+  },
+  {
+    "id": "NON-ISO-FORMAT",
+    "pattern": "SimpleDateFormat\\(|ofPattern\\(\\s*\"(dd|MM|d)[/.-](MM|dd|M)[/.-]y{2,4}|ofPattern\\(\\s*\"yyyy-MM-dd HH:mm(:ss)?\"\\s*\\)|@JsonFormat\\([^)]*pattern\\s*=\\s*\"[^\"]*(dd/MM|MM/dd|HH:mm:ss\")",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "Medium",
+    "description": "Non-ISO or offset-less date format; check whether it reaches an API, DB, or file that is later parsed",
+    "reference": "CWE-20"
+  },
+  {
+    "id": "NAIVE-PARSE",
+    "pattern": "LocalDateTime\\.parse\\(|LocalDate\\.parse\\(\\s*\\w+\\.get|Timestamp\\.valueOf\\(",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "Medium",
+    "description": "Client or DB string parsed as a naive datetime; check which zone is assumed",
+    "reference": "CWE-704"
+  },
+  {
+    "id": "CRON-NO-ZONE",
+    "pattern": "@Scheduled\\((?![^)]*zone)[^)]*cron\\s*=|cronSchedule\\((?![^;]*inTimeZone)",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "Low",
+    "description": "Cron schedule without an explicit zone (JVM default zone applies)",
+    "reference": "CWE-682"
+  },
+  {
+    "id": "DAY-MATH",
+    "pattern": "\\.plusDays\\(\\s*1\\s*\\)|\\.plusMonths\\(\\s*1\\s*\\)|\\.atStartOfDay\\(\\)|ChronoUnit\\.DAYS\\.between\\(",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "Low",
+    "description": "Calendar arithmetic or day boundary; verify zone and DST behaviour (atStartOfDay() without a zone is naive)",
+    "reference": "CWE-682"
+  },
+  {
+    "id": "SQL-LOCAL-NOW",
+    "pattern": "\\bCURRENT_TIMESTAMP\\b|\\bNOW\\(\\)|\\bSYSDATE\\b|\\bGETDATE\\(\\)",
+    "globs": ["*.java", "*.kt", "*.sql", "*.xml", "*.yaml", "*.yml"],
+    "severity_hint": "Medium",
+    "description": "Session/server-local time function in SQL or migration default",
+    "reference": "CWE-682"
+  },
+  {
+    "id": "COLUMN-NO-TZ",
+    "pattern": "\\b(timestamp|datetime)(\\(\\d+\\))?\\b(?!\\s*with time zone)(?!tz)[^,]*(NOT NULL|NULL|DEFAULT|,)|columnDefinition\\s*=\\s*\"(timestamp|datetime)\"",
+    "globs": ["*.sql", "*.xml", "*.java", "*.kt"],
+    "severity_hint": "Medium",
+    "description": "Zone-less timestamp column; needs hibernate.jdbc.time_zone=UTC or timestamptz",
+    "reference": "CWE-704"
+  },
+  {
+    "id": "JDBC-TZ-UNSET",
+    "pattern": "hibernate\\.jdbc\\.time_zone|spring\\.jackson\\.time-zone|user\\.timezone",
+    "globs": ["*.properties", "*.yml", "*.yaml", "Dockerfile", "*.sh"],
+    "severity_hint": "Info",
+    "description": "Zone configuration present; record its value in the Environment table (absence elsewhere is the finding)",
+    "reference": "CWE-682"
+  },
+  {
+    "id": "TEST-REAL-TIME",
+    "pattern": "Instant\\.now\\(\\)|LocalDate(Time)?\\.now\\(\\)|Thread\\.sleep\\(",
+    "globs": ["*Test.java", "*Tests.java", "*IT.java", "*Test.kt"],
+    "severity_hint": "Low",
+    "description": "Test uses real time; use Clock.fixed",
+    "reference": "CWE-682"
+  }
+]

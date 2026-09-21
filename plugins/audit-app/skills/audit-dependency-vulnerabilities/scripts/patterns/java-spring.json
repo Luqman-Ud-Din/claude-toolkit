@@ -1,0 +1,105 @@
+[
+  {
+    "id": "MAVEN-LOG4J-CORE-LT-2.17.1",
+    "pattern": "log4j[\\w.\\-]*(?:\\.version|-core)[^<]*(?:>|:)\\s*2\\.(?:[0-9]|1[0-6])\\.\\d+|log4j-core:2\\.(?:[0-9]|1[0-6])\\.\\d+",
+    "globs": [
+      "pom.xml",
+      "build.gradle",
+      "build.gradle.kts",
+      "gradle.properties",
+      "*.toml"
+    ],
+    "severity_hint": "Critical",
+    "description": "log4j-core 2.0-2.16.x: Log4Shell RCE family (CVE-2021-44228, CVE-2021-45046, CVE-2021-45105, CVE-2021-44832)",
+    "reference": "CVE-2021-44228"
+  },
+  {
+    "id": "MAVEN-SPRING-CORE-SPRING4SHELL",
+    "pattern": "spring(?:framework)?[\\w.\\-]*\\.version\\s*>\\s*5\\.3\\.(?:[0-9]|1[0-7])\\b|spring-(?:core|beans|webmvc):5\\.3\\.(?:[0-9]|1[0-7])\\b",
+    "globs": [
+      "pom.xml",
+      "build.gradle",
+      "build.gradle.kts",
+      "gradle.properties"
+    ],
+    "severity_hint": "Critical",
+    "description": "Spring Framework 5.3.0-5.3.17: Spring4Shell RCE via data binding on JDK 9+ (CVE-2022-22965)",
+    "reference": "CVE-2022-22965"
+  },
+  {
+    "id": "MAVEN-SPRING-BOOT-EOL",
+    "pattern": "spring-boot[\\w.\\-]*\\.version\\s*>\\s*(?:1\\.\\d|2\\.[0-6])\\.|spring-boot[\\w.\\-]*:(?:1\\.\\d|2\\.[0-6])\\.\\d",
+    "globs": [
+      "pom.xml",
+      "build.gradle",
+      "build.gradle.kts"
+    ],
+    "severity_hint": "Medium",
+    "description": "Spring Boot 2.6 or older is out of OSS support; no security patches are published (also check the spring-boot-starter-parent <version> by hand - it is on its own line and not grep-able)",
+    "reference": "OWASP-A06:2021"
+  },
+  {
+    "id": "MAVEN-JACKSON-DATABIND-OLD",
+    "pattern": "jackson[\\w.\\-]*\\.version\\s*>\\s*2\\.(?:[0-9]|1[0-2])\\.|jackson-databind:2\\.(?:[0-9]|1[0-2])\\.",
+    "globs": [
+      "pom.xml",
+      "build.gradle",
+      "build.gradle.kts",
+      "gradle.properties"
+    ],
+    "severity_hint": "High",
+    "description": "jackson-databind 2.12 or older: deserialization gadget and DoS advisories (CVE-2022-42003/42004 and earlier)",
+    "reference": "CVE-2022-42003"
+  },
+  {
+    "id": "MAVEN-COMMONS-TEXT-1.5-1.9",
+    "pattern": "commons-text[\\w.\\-]*(?:\\.version|</artifactId>)[^<]*(?:>|:)\\s*1\\.[5-9](?:\\.\\d+)?\\b|commons-text:1\\.[5-9]\\b",
+    "globs": [
+      "pom.xml",
+      "build.gradle",
+      "build.gradle.kts",
+      "gradle.properties"
+    ],
+    "severity_hint": "Critical",
+    "description": "commons-text 1.5-1.9: StringSubstitutor script interpolation RCE (Text4Shell, CVE-2022-42889)",
+    "reference": "CVE-2022-42889"
+  },
+  {
+    "id": "MAVEN-SNAKEYAML-LT-2.0",
+    "pattern": "snakeyaml[\\w.\\-]*(?:\\.version|</artifactId>)[^<]*(?:>|:)\\s*1\\.\\d+|snakeyaml:1\\.\\d+",
+    "globs": [
+      "pom.xml",
+      "build.gradle",
+      "build.gradle.kts",
+      "gradle.properties"
+    ],
+    "severity_hint": "High",
+    "description": "snakeyaml 1.x: arbitrary class instantiation on untrusted YAML (CVE-2022-1471)",
+    "reference": "CVE-2022-1471"
+  },
+  {
+    "id": "MAVEN-SNAPSHOT-OR-RANGE-VERSION",
+    "pattern": "<version>\\s*(?:LATEST|RELEASE|\\[|\\()[^<]*</version>|:(?:latest|\\+|\\[)['\"]",
+    "globs": [
+      "pom.xml",
+      "build.gradle",
+      "build.gradle.kts"
+    ],
+    "severity_hint": "Low",
+    "description": "Unpinned Maven/Gradle version (LATEST/RELEASE/range/+): non-reproducible builds, auto-pulls new releases",
+    "reference": "CWE-1104"
+  },
+  {
+    "id": "MAVEN-HTTP-REPOSITORY",
+    "pattern": "<url>\\s*http://|maven\\s*\\{\\s*url\\s*[=(]?\\s*['\"]http://",
+    "globs": [
+      "pom.xml",
+      "build.gradle",
+      "build.gradle.kts",
+      "settings.xml"
+    ],
+    "severity_hint": "High",
+    "description": "Artifact repository over plain HTTP: dependencies can be substituted in transit",
+    "reference": "CWE-494"
+  }
+]

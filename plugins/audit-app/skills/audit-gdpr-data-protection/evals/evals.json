@@ -1,0 +1,63 @@
+{
+  "skill_name": "audit-gdpr-data-protection",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Do a GDPR review of the Express/TypeORM API in evals/files/sample-repo. I want the personal-data inventory, the rights matrix, findings, and a list of what needs a non-engineering owner.",
+      "expected_output": "The inventory (built via the privacy mapper) lists email, phone, first_name, last_name in table users with Segment as a third party receiving email and first_name. The rights matrix marks erasure as N (the only DELETE route is /sessions/:token, a logout, explicitly excluded), portability N, access Partial (GET /users/:id), rectification Y (PUT /users/:id), consent-capture Partial (marketingConsent: boolean with no timestamp/version), consent-withdrawal N, retention N (no cron/job), minimisation N (logger.info with user.email and names; analytics.identify traits with email), encryption in transit Partial (ssl: false in data-source.ts), access logging N. Findings GDPR-001 no erasure path (High), GDPR-002 PII in logs (High), GDPR-003 consent boolean only (Medium), GDPR-004 email/name sent to Segment without consent gate (Medium), GDPR-005 DB TLS disabled (Medium), GDPR-006 no retention job (Medium). An 'Outside code scope' table listing DPA with Segment, transfer mechanism, retention schedule, backup re-deletion, breach runbook, DPIA. Not checked lists backups, vendor consoles, infra encryption.",
+      "files": [
+        "evals/files/sample-repo/package.json",
+        "evals/files/sample-repo/src/models/user.model.ts",
+        "evals/files/sample-repo/src/routes/users.routes.ts",
+        "evals/files/sample-repo/src/services/user.service.ts",
+        "evals/files/sample-repo/src/logger.ts",
+        "evals/files/sample-repo/src/data-source.ts",
+        "evals/files/sample-repo/src/server.ts"
+      ],
+      "expectations": [
+        "Rights matrix marks erasure as not implemented and explicitly says the DELETE /sessions/:token route is logout, not erasure",
+        "Rights matrix marks rectification as implemented via PUT /users/:id",
+        "Consent row says the marketingConsent boolean has no timestamp or policy version, citing src/models/user.model.ts",
+        "A High finding exists for the logger.info line in src/services/user.service.ts that logs user.email",
+        "A finding exists for analytics.identify sending email to Segment",
+        "A finding exists for ssl: false in src/data-source.ts",
+        "The 'Outside code scope - needs organisational owner' list includes a DPA/transfer item for Segment and backup re-deletion",
+        "Findings use the GDPR- prefix and references include GDPR-Art.17 for the erasure finding",
+        "The report states it is a technical review, not legal advice"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Can we honour a right-to-be-forgotten request with the code in evals/files/sample-repo? Just the erasure question.",
+      "expected_output": "No. There is no DELETE or anonymise path on the users resource; router.delete('/sessions/:token') only revokes a session. Even if a row delete were added, the person's email also sits in /var/log/crm/app.log (winston file transport) and in Segment (identify traits), neither of which the code touches. One High finding GDPR-001 with remediation: add DELETE /api/users/:id (or /me) that anonymises the users row, calls Segment's deletion/suppression API, and a note that log purge and backup re-deletion are organisational.",
+      "files": [
+        "evals/files/sample-repo/src/routes/users.routes.ts",
+        "evals/files/sample-repo/src/services/user.service.ts",
+        "evals/files/sample-repo/src/logger.ts"
+      ],
+      "expectations": [
+        "Answer is that erasure cannot be fulfilled by the current code",
+        "The logout DELETE route is called out as not being erasure",
+        "Downstream copies in logs and Segment are named as places the erasure must reach",
+        "Exactly one High finding for erasure with GDPR-Art.17 referenced",
+        "Backup re-deletion is listed as organisational, not as a code finding"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Is our consent handling in evals/files/sample-repo/src/models/user.model.ts good enough for GDPR? We use it to decide who gets marketing emails.",
+      "expected_output": "Not sufficient: marketingConsent is a bare boolean with default false; there is no consentGivenAt, no policyVersion, no source, and no withdrawal endpoint, so the controller cannot demonstrate consent (Art.7(1)) or offer withdrawal as easily as giving (Art.7(3)). Because marketing sends depend on it, the finding is rated High rather than Medium. Remediation: a Consent entity (userId, purpose, policyVersion, givenAt, withdrawnAt, source) plus PATCH /users/me/consent and a check in the send path; also note that analytics.identify already sends marketingConsent and email to Segment regardless of the flag.",
+      "files": [
+        "evals/files/sample-repo/src/models/user.model.ts",
+        "evals/files/sample-repo/src/services/user.service.ts"
+      ],
+      "expectations": [
+        "Output states the consent is a boolean without timestamp or version",
+        "Severity is High because marketing depends on it (justification given)",
+        "Remediation names the fields to add (given at, policy version, source, withdrawn at) and a withdrawal endpoint",
+        "References include GDPR-Art.7(1) and GDPR-Art.7(3)",
+        "The Segment identify call is mentioned as sending data regardless of consent"
+      ]
+    }
+  ]
+}

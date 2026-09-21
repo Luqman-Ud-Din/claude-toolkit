@@ -1,0 +1,48 @@
+{
+  "skill_name": "audit-soc2-controls-evidence",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "We're kicking off SOC 2 Type 1 prep next month. Can you go through evals/files/sample-repo, tell me where we stand on the technical controls, and pull together the evidence an auditor would want?",
+      "expected_output": "audit/findings/audit-soc2-controls-evidence.json and audit/reports/audit-soc2-controls-evidence.md with SOC2- findings: High for branch protection disabled on main (.github/settings.yml, CC8.1), Medium for no security scan in .github/workflows/ci.yml (CC7.1), Medium for backups configured in infra/backup.sh with no documented restore test (docs/runbooks/backups.md has instructions only, A1.2). The report has the control-to-evidence matrix (criterion -> control -> evidence artifact -> status) and a separate organisational gaps list. audit/evidence/audit-soc2-controls-evidence/ holds index.json plus snapshots of ci.yml, CODEOWNERS, settings.yml, backup.sh and the backups runbook; branch protection via gh api is recorded as not-checked (fixture is not a GitHub clone) while the settings-as-code file still proves protection is off.",
+      "files": ["evals/files/sample-repo/.github/settings.yml", "evals/files/sample-repo/.github/workflows/ci.yml", "evals/files/sample-repo/.github/CODEOWNERS", "evals/files/sample-repo/infra/backup.sh", "evals/files/sample-repo/infra/deploy.sh", "evals/files/sample-repo/docs/runbooks/backups.md", "evals/files/sample-repo/Api/Program.cs", "evals/files/sample-repo/Api/appsettings.json", "evals/files/sample-repo/Api/Api.csproj"],
+      "expectations": [
+        "A finding rated High says branch protection is disabled on main, cites .github/settings.yml and references SOC2-CC8.1",
+        "A finding rated Medium says the CI pipeline has no vulnerability/dependency/SAST scan and references SOC2-CC7.1",
+        "A finding says backups exist (infra/backup.sh) but no restore test is documented, and references SOC2-A1.2",
+        "Every finding id starts with SOC2-",
+        "The report contains a control-to-evidence matrix with columns for criterion, control, evidence artifact and status",
+        "The report contains a separate organisational gaps section (for example access reviews, vendor SOC 2 reports, patch SLA) that is not written as findings",
+        "audit/evidence/audit-soc2-controls-evidence/index.json exists and lists snapshots of .github/workflows/ci.yml, .github/CODEOWNERS and infra/backup.sh with sha256 values",
+        "index.json records branch_protection_api with status not-checked and a reason, instead of claiming the API was queried",
+        "CODEOWNERS and the build/test CI gate are shown as implemented, not as gaps",
+        "The report has a Not checked section naming IdP/MFA configuration or cloud console settings"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Our auditor sent a request list and item 14 is 'evidence that changes to production are reviewed and approved'. Using evals/files/sample-repo, what can we actually show them, and what's missing?",
+      "expected_output": "The CC8.1 rows of the matrix: branch protection missing (settings.yml protection null on main, develop has no required reviews), CODEOWNERS implemented, CI build/test gate implemented, deploy job runs on every push to main with no environment approval so deploys are not gated, ticket traceability not-checked (no git history in the fixture). Evidence snapshots exported with index.json, a High SOC2 finding for the unprotected production branch, and remediation that includes exporting gh api repos/{owner}/{repo}/branches/main/protection once enabled.",
+      "files": ["evals/files/sample-repo/.github/settings.yml", "evals/files/sample-repo/.github/workflows/ci.yml", "evals/files/sample-repo/.github/CODEOWNERS", "evals/files/sample-repo/infra/deploy.sh"],
+      "expectations": [
+        "The answer states that branch protection is off on main and that pushes deploy straight to production through the deploy job",
+        "CODEOWNERS is cited as existing evidence",
+        "The answer distinguishes what the repository proves from what needs the GitHub settings export or a policy owner",
+        "Ticket traceability is marked not checked rather than missing, because git history is not available",
+        "Remediation includes enabling required reviews/status checks and exporting the protection setting as evidence"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "For the availability criteria - are the backups in evals/files/sample-repo good enough for SOC 2?",
+      "expected_output": "A1.2 rows: backups implemented (nightly pg_dump, SSE encryption, 30-day local and 90-day S3 retention) but restore test partial/missing - the runbook has restore instructions and no dated record of a performed restore, RTO/RPO absent, no DR plan; a Medium SOC2 finding referencing SOC2-A1.2 with remediation to run and log a restore test (date, backup used, duration, row-count checks) on a fixed cadence; DR plan and restore cadence listed as organisational gaps.",
+      "files": ["evals/files/sample-repo/infra/backup.sh", "evals/files/sample-repo/docs/runbooks/backups.md"],
+      "expectations": [
+        "The answer says backups are automated, encrypted and retained, citing infra/backup.sh",
+        "The answer says restore instructions are not a restore test and no test record exists",
+        "A finding references SOC2-A1.2",
+        "A DR plan or restore-test cadence appears in an organisational gaps list"
+      ]
+    }
+  ]
+}

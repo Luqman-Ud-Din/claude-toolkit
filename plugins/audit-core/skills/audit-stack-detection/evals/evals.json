@@ -1,0 +1,44 @@
+{
+  "skill_name": "audit-stack-detection",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Before we start the security audit, figure out what this repo is built with. It's the sample under evals/files/polyglot-repo - there's a backend, a web app and a worker in there somewhere. Tell me which stack references each audit skill should load.",
+      "expected_output": "Stacks dotnet (Api), angular (web), python-django (worker) and containers (Dockerfile) detected with evidence files and roots; primary_backend dotnet, primary_frontend angular; the node_modules and bin folders are ignored; reference files dotnet.md, angular.md, python-django.md named, containers noted as having no reference file.",
+      "files": ["evals/files/polyglot-repo"],
+      "expectations": [
+        "Output lists stack id dotnet with evidence Api/Api.csproj",
+        "Output lists stack id angular with evidence web/package.json",
+        "Output lists stack id python-django with evidence worker/manage.py or worker/requirements.txt",
+        "Output lists containers and says it has no reference file",
+        "No stack is detected from web/node_modules/fake-lib/package.json",
+        "primary_backend is dotnet and primary_frontend is angular",
+        "audit/stack.json is not written because the user did not ask for --write"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "The orchestrator already set things up in evals/files/existing-state-repo. Re-run stack detection there for the injection audit but don't clobber what audit-application decided.",
+      "expected_output": "The existing audit/stack.json is returned unchanged, including multi_tenant true and its detected_at timestamp; the skill explains --force would re-detect and does not use it.",
+      "files": ["evals/files/existing-state-repo"],
+      "expectations": [
+        "Returned document has multi_tenant true",
+        "Returned detected_at equals 2026-09-01T08:00:00+00:00",
+        "The skill does not pass --force",
+        "audit/stack.json is byte-identical after the run"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "we have a Go service in evals/files/unknown-stack-repo, what stack does the audit tooling think it is and how would I add Go support?",
+      "expected_output": "No stacks detected and a warning printed; the skill explains Go is unsupported, lists it as not detected, and walks through adding a marker to detect_stack.py plus copying stack-reference-template.md into each consumer skill.",
+      "files": ["evals/files/unknown-stack-repo"],
+      "expectations": [
+        "Output stacks array is empty",
+        "Output says Go is not a supported stack id",
+        "Instructions mention adding marker logic to detect_stack.py",
+        "Instructions mention copying stack-reference-template.md to the consumer references folder"
+      ]
+    }
+  ]
+}

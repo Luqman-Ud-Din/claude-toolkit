@@ -1,0 +1,130 @@
+[
+  {
+    "id": "SPEC-EXPOSED",
+    "pattern": "UseSwagger(UI)?\\(|MapOpenApi\\(|MapSwagger\\(|MapScalarApiReference\\(|UseReDoc\\(",
+    "globs": ["*.cs"],
+    "severity_hint": "Medium",
+    "description": "Spec/Swagger UI mounted; confirm it is inside an IsDevelopment() guard or behind authentication in production",
+    "reference": "OWASP-API8:2023"
+  },
+  {
+    "id": "ENTITY-RETURNED",
+    "pattern": "ActionResult<\\s*(IEnumerable<|List<|IList<)?\\s*(User|Users|Account|Order|Orders|Product|Products|Customer|Invoice|Payment|Employee|Company|Tenant|Branch)\\s*>|Task<\\s*(IEnumerable<|List<)?\\s*(User|Account|Order|Product|Customer|Invoice|Payment)\\s*>+\\s+\\w+\\s*\\(|return\\s+Ok\\(\\s*(await\\s+)?_?\\w*(db|context|repo|repository|manager)\\w*\\.\\w+\\.(Find|First|Single|ToList|FirstOrDefault)\\w*\\(",
+    "globs": ["*Controller.cs", "*Endpoints.cs", "*Handler.cs"],
+    "severity_hint": "High",
+    "description": "Handler returns what looks like an entity type or a raw repository result; check the type's fields for secrets/internal columns",
+    "reference": "CWE-200"
+  },
+  {
+    "id": "SENSITIVE-FIELD-SERIALISABLE",
+    "pattern": "public\\s+(string|byte\\[\\]|Guid)\\??\\s+(Password|PasswordHash|Hash|Salt|SecurityStamp|RefreshToken|AccessToken|ApiKey|SecretKey|Otp|OtpCode|Pin|ConnectionString)\\w*\\s*\\{\\s*get;",
+    "globs": ["*.cs"],
+    "severity_hint": "High",
+    "description": "Credential-like property on a class; confirm it never reaches a response (DTO projection or [JsonIgnore])",
+    "reference": "CWE-200"
+  },
+  {
+    "id": "UNPAGINATED-LIST",
+    "pattern": "\\.ToList(Async)?\\(\\s*(ct|cancellationToken)?\\s*\\)\\s*(;|\\))(?![^\\n]*(Skip|Take|Page))|\\.ToArray(Async)?\\(\\)|GetAll\\w*\\s*\\(",
+    "globs": ["*Controller.cs", "*Endpoints.cs", "*Manager.cs", "*Service.cs"],
+    "severity_hint": "Medium",
+    "description": "Collection materialised without Skip/Take on the same line; open the method and confirm pagination and a page-size cap",
+    "reference": "CWE-770"
+  },
+  {
+    "id": "PAGINATION-PRESENT",
+    "pattern": "\\.Skip\\(|\\.Take\\(|PagedList|PaginationAssign|PageSize|PageNumber",
+    "globs": ["*.cs"],
+    "severity_hint": "Info",
+    "description": "Pagination marker present; record in the endpoint table",
+    "reference": "CWE-770"
+  },
+  {
+    "id": "ADHOC-ERROR-SHAPE",
+    "pattern": "(BadRequest|NotFound|Conflict|Unauthorized|StatusCode\\(\\s*\\d+\\s*,|Ok)\\(\\s*new\\s*\\{\\s*(error|Error|message|Message|msg|success|Success|status|Status)\\b|StatusCode\\(\\s*\\d+\\s*,\\s*(ex|e|exception)\\.(Message|ToString\\(\\)|StackTrace)",
+    "globs": ["*.cs"],
+    "severity_hint": "Low",
+    "description": "Ad-hoc error body (anonymous object or exception text); collect shapes per controller and compare with ProblemDetails usage",
+    "reference": "CWE-209"
+  },
+  {
+    "id": "PROBLEMDETAILS-PRESENT",
+    "pattern": "AddProblemDetails\\(|ProblemDetails\\b|ValidationProblem\\(|Problem\\(\\s*(title|detail|statusCode)|UseExceptionHandler\\(|IExceptionHandler\\b",
+    "globs": ["*.cs"],
+    "severity_hint": "Info",
+    "description": "RFC 9457 / global handler marker present; record as the expected shape",
+    "reference": "CWE-209"
+  },
+  {
+    "id": "SUCCESS-FALSE-200",
+    "pattern": "Ok\\(\\s*new\\s*\\{[^}]*(success|Success)\\s*=\\s*false",
+    "globs": ["*.cs"],
+    "severity_hint": "Medium",
+    "description": "Error returned as HTTP 200 with success=false",
+    "reference": "ASVS-13.2"
+  },
+  {
+    "id": "UNVALIDATED-DTO",
+    "pattern": "\\[FromBody\\]\\s*(User|Order|Product|Account|Customer|Invoice|Payment)\\s+\\w+|(class|record)\\s+\\w+(Request|Command|Input|Model)\\b(?![^\\n]*;)",
+    "globs": ["*.cs"],
+    "severity_hint": "Medium",
+    "description": "Entity bound from the body, or a request DTO declared; open it and confirm DataAnnotations/FluentValidation cover required, range, length",
+    "reference": "CWE-20"
+  },
+  {
+    "id": "VALIDATION-PRESENT",
+    "pattern": "\\[(Required|Range|StringLength|MaxLength|MinLength|EmailAddress|RegularExpression|Phone|Url)\\b|AbstractValidator<|RuleFor\\(",
+    "globs": ["*.cs"],
+    "severity_hint": "Info",
+    "description": "Validation marker present; record in the endpoint table",
+    "reference": "CWE-20"
+  },
+  {
+    "id": "NO-APICONTROLLER",
+    "pattern": "class\\s+\\w+Controller\\s*:\\s*(ControllerBase|Controller)\\b",
+    "globs": ["*Controller.cs"],
+    "severity_hint": "Info",
+    "description": "Controller declaration; confirm [ApiController] is applied (automatic 400 on invalid ModelState) or ModelState.IsValid is checked",
+    "reference": "CWE-20"
+  },
+  {
+    "id": "CREATE-RETURNS-200",
+    "pattern": "\\[HttpPost[^\\]]*\\][\\s\\S]{0,400}?return\\s+Ok\\(",
+    "globs": ["*Controller.cs"],
+    "severity_hint": "Info",
+    "description": "POST handler; line-based match, so open it and check whether a create returns 201 CreatedAtAction rather than 200",
+    "reference": "ASVS-13.2"
+  },
+  {
+    "id": "NON-ISO-DATE-OUT",
+    "pattern": "ToString\\(\\s*\"(dd|MM|d)[/.-](MM|dd|M)[/.-]y{2,4}[^\"]*\"\\s*\\)|DateFormatString\\s*=\\s*\"(?!yyyy-MM-dd'T')|\\[JsonConverter\\([^)]*Date",
+    "globs": ["*.cs"],
+    "severity_hint": "Low",
+    "description": "Non-ISO date format in serialisation; hand the zone question to audit-datetime-and-timezone",
+    "reference": "ASVS-13.1"
+  },
+  {
+    "id": "JSON-OPTIONS",
+    "pattern": "PropertyNamingPolicy\\s*=|JsonStringEnumConverter|ReferenceHandler\\.|AddNewtonsoftJson\\(",
+    "globs": ["*.cs"],
+    "severity_hint": "Info",
+    "description": "JSON serialisation policy configured; record casing/enum/reference handling for the naming check",
+    "reference": "ASVS-13.1"
+  },
+  {
+    "id": "UNVERSIONED-ROUTE",
+    "pattern": "\\[Route\\(\\s*\"api/(?!v\\d|v\\{)",
+    "globs": ["*.cs"],
+    "severity_hint": "Low",
+    "description": "Route without a version segment; compare with AddApiVersioning / other routes",
+    "reference": "ASVS-13.1"
+  },
+  {
+    "id": "VERSIONING-PRESENT",
+    "pattern": "AddApiVersioning\\(|\\[ApiVersion\\(|v\\{version:apiVersion\\}",
+    "globs": ["*.cs"],
+    "severity_hint": "Info",
+    "description": "API versioning configured; record the strategy",
+    "reference": "ASVS-13.1"
+  }
+]

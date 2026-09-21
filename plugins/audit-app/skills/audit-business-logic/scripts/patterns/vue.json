@@ -1,0 +1,42 @@
+[
+  {
+    "id": "CLIENT-SENDS-MONEY",
+    "pattern": "(\\$fetch\\(|axios\\.(post|put|patch)|useFetch\\()[\\s\\S]{0,200}\\b(total|grandTotal|discountAmount|taxAmount|unitPrice)\\s*:",
+    "globs": ["*.ts", "*.js", "*.vue"],
+    "severity_hint": "Medium",
+    "description": "Client sends a computed money field; verify the server ignores it and recomputes",
+    "reference": "CWE-602"
+  },
+  {
+    "id": "SERVER-TRUSTS-BODY",
+    "pattern": "readBody\\(event\\)[\\s\\S]{0,200}\\.(total|status|role)\\b|data:\\s*body\\b|\\.\\.\\.body\\b",
+    "globs": ["*.ts", "*.js"],
+    "severity_hint": "High",
+    "description": "Nuxt server route persists client-supplied total/status/role",
+    "reference": "CWE-915"
+  },
+  {
+    "id": "UI-ONLY-RULE",
+    "pattern": ":disabled=\"[^\"]*\\.(status|state)\\b|v-if=\"[^\"]*(isAdmin|can\\(|status\\s*===?)",
+    "globs": ["*.vue"],
+    "severity_hint": "Info",
+    "description": "Business rule enforced in the template; add it to the flow rules table and verify on the server",
+    "reference": "CWE-602"
+  },
+  {
+    "id": "DISCOUNT-APPLY-UI",
+    "pattern": "\\b(apply|add|redeem)(Discount|Coupon|Promo|Voucher)\\w*\\s*\\(|watch(Effect)?\\([\\s\\S]{0,120}(coupon|discount)",
+    "globs": ["*.ts", "*.js", "*.vue"],
+    "severity_hint": "Info",
+    "description": "Coupon/discount trigger in the client (possibly in a watcher); check the server dedupes",
+    "reference": "CWE-840"
+  },
+  {
+    "id": "MUTATION-RETRY",
+    "pattern": "retry:\\s*[1-9]",
+    "globs": ["*.ts", "*.js", "*.vue"],
+    "severity_hint": "Info",
+    "description": "Retry configured; if on a mutation that moves money/stock, hand the replay case to audit-concurrency-and-race-condition",
+    "reference": "CWE-840"
+  }
+]

@@ -1,0 +1,66 @@
+[
+  {
+    "id": "LOG-REQUEST-BODY",
+    "pattern": "\\b(?:log|logger|LOG|LOGGER)\\.(?:info|debug|warn|error|trace)\\(.*(?:getReader\\(\\)|getInputStream\\(\\)|requestBody|getHeader\\(\\s*\"Authorization\"|writeValueAsString\\(\\s*(?:request|body|dto|payload)|\\brequest\\s*\\)|\\bbody\\s*\\))",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "High",
+    "description": "Request body/DTO/Authorization header logged (Lombok @Data toString prints every field)",
+    "reference": "CWE-532"
+  },
+  {
+    "id": "LOG-PAYLOAD-FILTER",
+    "pattern": "setIncludePayload\\(\\s*true\\s*\\)|setIncludeHeaders\\(\\s*true\\s*\\)",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "High",
+    "description": "CommonsRequestLoggingFilter logs request payloads/headers - check it is dev-profile only",
+    "reference": "CWE-532"
+  },
+  {
+    "id": "LOG-SENSITIVE-FIELD",
+    "pattern": "\\b(?:log|logger|LOG|LOGGER)\\.(?:info|debug|warn|error|trace)\\(.*\\b\\w*(?:password|passwd|secret|token|apiKey|authorization|cookie|cardNumber|cvv|ssn|iban)\\b(?!\\s*(?:reset|policy|expir|hash))",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "Critical",
+    "description": "Log call names a credential/token/card field - confirm a value is logged",
+    "reference": "CWE-532"
+  },
+  {
+    "id": "LOG-CATCH-DEBUG",
+    "pattern": "\\b(?:log|logger|LOG|LOGGER)\\.(?:debug|trace)\\(.*,\\s*(?:e|ex|exception|t|throwable)\\s*\\)|catch\\s*\\([^)]*\\)\\s*\\{\\s*(?:log|logger|LOG)\\.(?:debug|trace|info)",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "High",
+    "description": "Exception logged at debug/trace - hidden at INFO in production (multi-line catch: log_scan.py)",
+    "reference": "CWE-778"
+  },
+  {
+    "id": "LOG-CONCAT-MESSAGE",
+    "pattern": "\\b(?:log|logger|LOG|LOGGER)\\.(?:info|debug|warn|error|trace)\\(\\s*(?:\"[^\"]*\"\\s*\\+|String\\.format\\()",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "Low",
+    "description": "Concatenated/String.format message instead of {} placeholders - unstructured, log-injection prone",
+    "reference": "CWE-117"
+  },
+  {
+    "id": "LOG-CORRELATION-MARKER",
+    "pattern": "MDC\\.put|X-Correlation-Id|X-Request-Id|micrometer-tracing|%X\\{|includeMdcKeyName|opentelemetry|traceparent|ContextPropagatingTaskDecorator",
+    "globs": ["*.java", "*.kt", "*.xml", "*.yml", "*.yaml", "*.properties", "*.gradle"],
+    "severity_hint": "Info",
+    "description": "Correlation-id / trace-context marker. ZERO hits across the repo means no correlation-id filter - write that finding",
+    "reference": "CWE-778"
+  },
+  {
+    "id": "LOG-STDOUT",
+    "pattern": "printStackTrace\\(\\)|System\\.(?:out|err)\\.print",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "Low",
+    "description": "stdout/printStackTrace instead of the logger",
+    "reference": "CWE-778"
+  },
+  {
+    "id": "LOG-SQL-BIND-TRACE",
+    "pattern": "org\\.hibernate\\.(?:orm\\.jdbc\\.bind|type\\.descriptor\\.sql|SQL)\\s*[:=]\\s*(?:trace|debug)|org\\.springframework\\.web\\s*[:=]\\s*debug",
+    "globs": ["*.yml", "*.yaml", "*.properties"],
+    "severity_hint": "Medium",
+    "description": "Bind-parameter / web DEBUG logging - writes SQL values and request details; check the profile",
+    "reference": "CWE-532"
+  }
+]

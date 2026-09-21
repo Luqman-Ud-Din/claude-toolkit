@@ -1,0 +1,80 @@
+{
+  "skill_name": "audit-performance-and-scalability",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "We go live next month with two API instances behind a load balancer. Will evals/files/sample-repo handle production traffic? Do a performance and scalability review and give us a load-test plan with thresholds.",
+      "expected_output": "PERF-prefixed findings for: OrdersService.create three sequential upstream calls (High, Promise.all), GET /api/products full-entity response with no compression middleware (Medium), express-session MemoryStore blocking horizontal scaling (High, Redis store), and the dashboard issuing GET /api/products five times on load (Medium, single fetch/shareReplay). Nothing on availability(), /products/summary, or UnitsService. Report includes the per-endpoint latency table with estimates and reasoning, the caching opportunity map (what/where/TTL/invalidation), the load-test plan with p50/p95/p99/error-rate/throughput thresholds, a generated k6 skeleton, an explicit delegation statement for ORM, leak and frontend-best-practices skills, and a results section marked not run.",
+      "files": [
+        "evals/files/sample-repo/api/package.json",
+        "evals/files/sample-repo/api/src/app.ts",
+        "evals/files/sample-repo/api/src/products.routes.ts",
+        "evals/files/sample-repo/api/src/orders.routes.ts",
+        "evals/files/sample-repo/api/src/orders.service.ts",
+        "evals/files/sample-repo/web/package.json",
+        "evals/files/sample-repo/web/src/app/dashboard/dashboard.component.ts",
+        "evals/files/sample-repo/web/src/app/core/units.service.ts"
+      ],
+      "expectations": [
+        "Detects node-express backend and angular frontend and loads only those two reference files",
+        "Runs ../audit-code-scan/scripts/grep_scan.py with both pattern files and audit-endpoint-inventory",
+        "Emits a High finding for the three sequential awaits in OrdersService.create with a Promise.all remediation (CWE-1050)",
+        "Emits a finding for GET /api/products returning full entities with no compression, remediation includes compression() and a select projection",
+        "Emits a High finding for express-session without a shared store, remediation names connect-redis or a stateless alternative",
+        "Emits a Medium finding for DashboardComponent issuing the same products request five times, remediation is one shared fetch or shareReplay",
+        "Does not flag OrdersService.availability, /products/summary, or UnitsService.getUnits",
+        "Report contains a per-endpoint latency table with estimated p95 and reasoning",
+        "Report contains a caching opportunity map with what, where, TTL and invalidation trigger columns",
+        "Report contains a load-test plan with p50, p95, p99, error-rate and throughput thresholds and a generated k6 script path",
+        "Report states what is delegated to audit-orm-query-and-data-access, audit-backend-resource-leak and audit-frontend-best-practices",
+        "Load-test results section says the test was not run because no environment was provided",
+        "All finding ids start with PERF- and findings.json validates"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Here is the k6 summary from last night's load test: evals/files/k6-summary-fail.json. Did we pass? Which endpoints are the problem?",
+      "expected_output": "Runs loadtest_plan.py grade --format k6; overall FAIL: p95 1240 ms > 800 (default bucket), p99 2650 > 1500, error rate 2.4% > 1%; per-endpoint table shows GET /api/products (p95 1810) and POST /api/orders (p95 1120) failing and /products/summary passing; suggests the sequential-calls and payload findings as likely causes.",
+      "files": [
+        "evals/files/k6-summary-fail.json"
+      ],
+      "expectations": [
+        "Uses scripts/loadtest_plan.py grade with --format k6",
+        "Reports overall FAIL with p95, p99 and error rate each compared to their thresholds",
+        "Names GET /api/products and POST /api/orders as failing endpoints and /products/summary as passing",
+        "Links the failures to code-level causes (sequential upstream calls, uncompressed full-entity payload)"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Generate a k6 script for the endpoints in evals/files/sample-repo/api at 50 rps against https://staging.example.com and tell me what thresholds it enforces.",
+      "expected_output": "Runs audit-endpoint-inventory then loadtest_plan.py k6 --inventory endpoints.probe.json --rps 50; produces a loadtest.js with a ramping-arrival-rate scenario, per-endpoint tags, and thresholds http_req_failed rate<0.01, read p95<500, write p95<1000, p99<1500/2000; explains the TODOs (auth token, request bodies, ids).",
+      "files": [
+        "evals/files/sample-repo/api/src/app.ts",
+        "evals/files/sample-repo/api/src/products.routes.ts",
+        "evals/files/sample-repo/api/src/orders.routes.ts"
+      ],
+      "expectations": [
+        "Produces a k6 script containing GET /api/products, GET /api/products/summary, POST /api/orders and GET /api/orders/{id}/availability (path parameter written as {id} or :id)",
+        "Script uses an arrival-rate executor at 50 requests per second",
+        "Script thresholds include http_req_failed rate<0.01 and p95 limits for read and write kinds",
+        "Response lists the placeholders that must be filled before running (TOKEN, bodies, path ids)"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "We ran bombardier for 10 minutes at 50 connections against the products summary endpoint on staging. Output is evals/files/bombardier-pass.json. Does it meet our thresholds?",
+      "expected_output": "loadtest_plan.py grade is run with --format bombardier; p95 and p99 latency and the error rate are each compared with the default thresholds and pass; throughput is reported as INFO because no --target-rps was given. Overall PASS, with a note that one endpoint at one concurrency level is not a full load test.",
+      "files": [
+        "evals/files/bombardier-pass.json"
+      ],
+      "expectations": [
+        "loadtest_plan.py grade is run with --format bombardier",
+        "p95 latency, p99 latency and error rate are each reported as PASS",
+        "Throughput is reported as informational because no target was set",
+        "Overall verdict reported is PASS",
+        "The reply says one endpoint at one concurrency level does not cover the whole API"
+      ]
+    }
+  ]
+}

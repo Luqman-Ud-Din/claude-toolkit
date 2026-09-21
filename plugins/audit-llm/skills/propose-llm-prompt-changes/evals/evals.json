@@ -1,0 +1,17 @@
+{
+  "skill_name": "propose-llm-prompt-changes",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "LLM-IG-002 found our inventory agent silently creates purchase orders instead of asking when stock is ambiguous - can you fix the prompt?",
+      "expected_output": "Produces a targeted before/after diff of just the relevant instruction with reasoning tied to the finding id, states the added-friction trade-off, and recommends propose-llm-eval-suite for verification.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "LLM-EA-003 says the refund tool has no approval gate - can you just reword the prompt to tell the model to always double-check before refunding?",
+      "expected_output": "Explains a prompt-only fix is not the right primary fix for an excessive-agency finding, offers the wording improvement only as defense-in-depth, and points to propose-llm-controls for the actual code-level approval gate.",
+      "files": []
+    }
+  ]
+}

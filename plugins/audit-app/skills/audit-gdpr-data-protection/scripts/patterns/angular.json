@@ -1,0 +1,74 @@
+[
+  {
+    "id": "GDPR-NG-CONSENT-CHECKBOX-NO-VERSION",
+    "pattern": "formControlName\\s*=\\s*['\"]\\w*(?:consent|optIn|agree|acceptTerms|acceptPrivacy|marketing|newsletter)\\w*['\"]|new\\s+FormControl\\s*\\(\\s*(?:false|true)\\s*[,)][^;]*(?:consent|agree|marketing)",
+    "globs": ["*.html", "*.ts"],
+    "severity_hint": "Info",
+    "description": "Consent checkbox in a form - the request model should carry the policy version and the backend must stamp the time; a bare boolean is not evidence of consent",
+    "reference": "GDPR-Art.7(1)"
+  },
+  {
+    "id": "GDPR-NG-PRECHECKED-CONSENT",
+    "pattern": "(?:consent|optIn|marketing|newsletter)\\w*\\s*:\\s*\\[?\\s*true|\\[checked\\]\\s*=\\s*\"true\"[^>]*(?:consent|marketing|newsletter)|(?:consent|marketing|newsletter)[^>]*\\[checked\\]\\s*=\\s*\"true\"",
+    "globs": ["*.ts", "*.html"],
+    "severity_hint": "Medium",
+    "description": "Consent control defaults to checked - not freely given / affirmative",
+    "reference": "GDPR-Art.4(11)"
+  },
+  {
+    "id": "GDPR-NG-ANALYTICS-PII",
+    "pattern": "\\b(?:gtag|mixpanel|amplitude|posthog|analytics|appInsights|logEvent|trackEvent|identify|setUserProperties|setUserId)\\b[^;]*\\b(?:email|phone|mobile|firstName|lastName|fullName|name)\\s*:",
+    "globs": ["*.ts"],
+    "severity_hint": "High",
+    "description": "Analytics event carrying personal data to the vendor",
+    "reference": "GDPR-Art.5(1)(c)"
+  },
+  {
+    "id": "GDPR-NG-TAG-WITHOUT-CONSENT-GATE",
+    "pattern": "<script[^>]*src\\s*=\\s*['\"]https?://(?:www\\.googletagmanager\\.com|www\\.google-analytics\\.com|static\\.hotjar\\.com|connect\\.facebook\\.net|www\\.clarity\\.ms|cdn\\.segment\\.com)",
+    "globs": ["index.html"],
+    "severity_hint": "Medium",
+    "description": "Tracking tag loaded unconditionally in index.html - no consent gate (ePrivacy/consent) is possible before it fires",
+    "reference": "GDPR-Art.6(1)(a)"
+  },
+  {
+    "id": "GDPR-NG-SENTRY-PII",
+    "pattern": "Sentry\\.setUser\\s*\\(|sendDefaultPii\\s*:\\s*true|replaysSessionSampleRate\\s*:\\s*[1-9]",
+    "globs": ["*.ts"],
+    "severity_hint": "Medium",
+    "description": "Sentry user context / session replay - personal data to the error tracker",
+    "reference": "GDPR-Art.28"
+  },
+  {
+    "id": "GDPR-NG-LOCALSTORAGE-PROFILE",
+    "pattern": "(?:localStorage|sessionStorage)\\.setItem\\s*\\(\\s*['\"][^'\"]*(?:user|profile|customer|email)[^'\"]*['\"]",
+    "globs": ["*.ts"],
+    "severity_hint": "Low",
+    "description": "Profile persisted in browser storage - a storage location for the inventory and the erasure path (clear on logout/deletion)",
+    "reference": "GDPR-Art.17"
+  },
+  {
+    "id": "GDPR-NG-SELF-SERVICE-PRIVACY-UI",
+    "pattern": "(?:delete[_-]?account|deleteAccount|download[_-]?(?:my[_-]?)?data|exportData|privacy[_-]?settings|manage[_-]?consent|withdraw)\\w*",
+    "globs": ["*.ts", "*.html"],
+    "severity_hint": "Info",
+    "description": "Self-service privacy UI (delete account / download data / consent settings) - evidence for the rights matrix; find the backend endpoint it calls",
+    "reference": "GDPR-Art.12"
+  },
+  {
+    "id": "GDPR-NG-PII-IN-QUERY-PARAMS",
+    "pattern": "(?:HttpParams\\(\\)|params)\\.(?:set|append)\\s*\\(\\s*['\"](?:email|phone|mobile|cnic|ssn)['\"]|queryParams\\s*:\\s*\\{[^}]*\\b(?:email|phone|mobile)\\b",
+    "globs": ["*.ts"],
+    "severity_hint": "Medium",
+    "description": "Personal data sent as a query parameter - access logs, proxies, browser history",
+    "reference": "GDPR-Art.5(1)(c)"
+  },
+  {
+    "id": "GDPR-NG-CONSOLE-PII",
+    "pattern": "console\\.(?:log|info|debug|warn|error)\\s*\\([^;]*\\b(?:email|phone|mobile|user|profile|customer)\\b",
+    "globs": ["*.ts"],
+    "severity_hint": "Low",
+    "description": "console output with user data - captured by session replay and error trackers",
+    "reference": "GDPR-Art.5(1)(c)"
+  }
+]

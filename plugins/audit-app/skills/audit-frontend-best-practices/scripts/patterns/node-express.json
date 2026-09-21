@@ -1,0 +1,7 @@
+[
+  {"id": "STATIC-NO-MAXAGE", "pattern": "express\\.static\\((?![^)]*(maxAge|immutable))[^)]*\\)", "globs": ["*.js", "*.ts", "*.mjs"], "severity_hint": "Low", "description": "express.static without cache-control options; hashed assets are re-downloaded", "reference": "expressjs.com/en/advanced/best-practice-performance.html"},
+  {"id": "NEST-SERVESTATIC-NO-CACHE", "pattern": "ServeStaticModule\\.forRoot\\((?![^)]*maxAge)", "globs": ["*.ts"], "severity_hint": "Info", "description": "NestJS ServeStaticModule without serveStaticOptions.maxAge", "reference": "docs.nestjs.com/recipes/serve-static"},
+  {"id": "DEV-SERVER-AS-START", "pattern": "\"start\"\\s*:\\s*\"(ng serve|vite\\b|react-scripts start|next dev|nuxt dev|vue-cli-service serve)", "globs": ["package.json"], "severity_hint": "Medium", "description": "start script runs a dev server; confirm the deployment does not use it", "reference": "ASVS-14.3.2"},
+  {"id": "BUILD-WITHOUT-PROD-CONFIG", "pattern": "\"build\"\\s*:\\s*\"ng build\"", "globs": ["package.json"], "severity_hint": "Low", "description": "ng build without --configuration production (relies on defaultConfiguration; verify)", "reference": "angular.dev/tools/cli/build"},
+  {"id": "SERVE-PROJECT-ROOT", "pattern": "express\\.static\\(\\s*(__dirname|process\\.cwd\\(\\)|['\"]\\.['\"])\\s*\\)", "globs": ["*.js", "*.ts", "*.mjs"], "severity_hint": "High", "description": "Static middleware serves the project root (source, .env reachable)", "reference": "CWE-538"}
+]

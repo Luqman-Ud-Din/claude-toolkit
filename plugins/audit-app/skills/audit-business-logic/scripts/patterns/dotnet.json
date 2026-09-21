@@ -1,0 +1,66 @@
+[
+  {
+    "id": "MONEY-FLOAT",
+    "pattern": "\\b(double|float|Double|Single)\\b\\s+\\w*(Amount|Price|Total|Cost|Balance|Tax|Discount|Rate|Fee|Credit|Subtotal|Charge)\\w*\\b|\\b(Amount|Price|Total|Cost|Balance|Tax|Discount|Subtotal)\\w*\\s*=\\s*\\(?(double|float)\\)|Convert\\.ToDouble\\(\\s*\\w*(amount|price|total|discount)",
+    "globs": ["*.cs"],
+    "severity_hint": "High",
+    "description": "Money-like value typed or converted as float/double; use decimal",
+    "reference": "CWE-682"
+  },
+  {
+    "id": "MONEY-ROUND-DEFAULT",
+    "pattern": "Math\\.Round\\([^,)]*(,\\s*\\d+)?\\)",
+    "globs": ["*.cs"],
+    "severity_hint": "Medium",
+    "description": "Math.Round without MidpointRounding (banker's rounding by default); confirm the invoice expects it",
+    "reference": "CWE-682"
+  },
+  {
+    "id": "STATE-SWITCH",
+    "pattern": "switch\\s*\\(\\s*\\w+\\.?(Status|State|Stage)\\s*\\)|if\\s*\\(\\s*\\w+\\.(Status|State)\\s*(==|!=)",
+    "globs": ["*.cs"],
+    "severity_hint": "Info",
+    "description": "State-transition decision; map it to the flow's state diagram and check it consults a single transition table",
+    "reference": "CWE-841"
+  },
+  {
+    "id": "STATE-ASSIGN",
+    "pattern": "\\.(Status|State|Stage)\\s*=\\s*\\w+(Status|State|Stage)?\\.\\w+\\s*;",
+    "globs": ["*.cs"],
+    "severity_hint": "Info",
+    "description": "Status written directly; verify a transition guard precedes it",
+    "reference": "CWE-841"
+  },
+  {
+    "id": "DISCOUNT-APPLY",
+    "pattern": "\\b(Apply|Add|Use|Redeem)(Discount|Coupon|Promo|Voucher)\\w*\\s*\\(|\\.(Total|GrandTotal|Amount|Subtotal|NetAmount)\\s*-=\\s*|\\.(Total|GrandTotal|Amount)\\s*=\\s*\\w+\\.(Total|GrandTotal|Amount)\\s*-\\s*",
+    "globs": ["*.cs"],
+    "severity_hint": "High",
+    "description": "Discount application or incremental total mutation; check it cannot run twice for the same order",
+    "reference": "CWE-840"
+  },
+  {
+    "id": "TOTAL-INCREMENT",
+    "pattern": "\\.(Total|GrandTotal|Balance|Subtotal|Stock|Quantity|AvailableQty)\\s*\\+=\\s*",
+    "globs": ["*.cs"],
+    "severity_hint": "Medium",
+    "description": "Running total mutated in place; confirm the method is not re-entrant or derive the value instead",
+    "reference": "CWE-840"
+  },
+  {
+    "id": "CLIENT-TOTAL-BOUND",
+    "pattern": "public\\s+(decimal|double|float|int|long)\\??\\s+(Total|GrandTotal|NetAmount|DiscountAmount|TaxAmount|Status|RoleId|IsApproved)\\s*\\{\\s*get;\\s*set;",
+    "globs": ["*Dto.cs", "*Model.cs", "*Request.cs", "*HostModel*.cs"],
+    "severity_hint": "Medium",
+    "description": "Request DTO exposes a server-owned field (total/status/role); check the mapper ignores it",
+    "reference": "CWE-915"
+  },
+  {
+    "id": "ADMIN-OVERRIDE",
+    "pattern": "(Force|Override|MarkAs|Manual)(Paid|Approve|Complete|Cancel|Adjust)\\w*\\s*\\(|Impersonat",
+    "globs": ["*.cs"],
+    "severity_hint": "Medium",
+    "description": "Admin override or impersonation path; verify audit trail and limits",
+    "reference": "CWE-840"
+  }
+]

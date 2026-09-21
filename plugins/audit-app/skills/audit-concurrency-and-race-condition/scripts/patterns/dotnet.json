@@ -1,0 +1,130 @@
+[
+  {
+    "id": "CHECK-THEN-ACT",
+    "pattern": "if\\s*\\(\\s*!?\\s*(await\\s+)?_?\\w+(\\.\\w+)*\\.(Any|AnyAsync|Exists|ExistsAsync|Count|CountAsync)\\s*\\(|if\\s*\\(\\s*\\w+\\.(Balance|Quantity|Qty|Stock|Available|Credit)\\w*\\s*(>=|>|<|<=)",
+    "globs": ["*.cs"],
+    "severity_hint": "High",
+    "description": "Existence/threshold check; if an insert or decrement follows outside a lock/transaction/conditional update, it races",
+    "reference": "CWE-367"
+  },
+  {
+    "id": "STATUS-GUARD-IN-MEMORY",
+    "pattern": "if\\s*\\(\\s*\\w+\\.(Status|State)\\s*(==|!=)\\s*\\w+(Status|State)?\\.\\w+\\s*\\)",
+    "globs": ["*.cs"],
+    "severity_hint": "Medium",
+    "description": "Status checked in memory; the later write needs a WHERE Status = ... or rowversion to be safe under concurrent calls",
+    "reference": "CWE-367"
+  },
+  {
+    "id": "STATIC-MUTABLE",
+    "pattern": "\\b(public|internal|private|protected)?\\s*static\\s+(?!readonly|const|class|void|async|event|partial|extern|implicit|explicit|operator)(Dictionary|List|HashSet|Queue|Stack|IDictionary|IList|ICollection|int|long|string|bool|decimal|double|[A-Z]\\w*(?<!Logger)(?<!Options))\\s*(<[^>]*>)?\\??\\s+\\w+\\s*(=|;|\\{\\s*get)",
+    "globs": ["*.cs"],
+    "severity_hint": "Medium",
+    "description": "Static mutable field; shared by every request and thread in the process",
+    "reference": "CWE-662"
+  },
+  {
+    "id": "STATIC-TENANT-STATE",
+    "pattern": "static\\s+\\w*\\s*(DbName|ConnectionString|TenantId|CompanyId|CurrentUser|CurrentTenant)\\w*\\s*(\\{|=|;)",
+    "globs": ["*.cs"],
+    "severity_hint": "Critical",
+    "description": "Per-request tenant/connection value held in a static; concurrent requests overwrite each other",
+    "reference": "CWE-362"
+  },
+  {
+    "id": "UNSAFE-COLLECTION-SINGLETON",
+    "pattern": "new\\s+(Dictionary|List|HashSet|Queue|Stack)\\s*<[^>]*>\\s*\\(\\s*\\)\\s*;.*//.*(cache|shared)|(private|internal|public)\\s+(readonly\\s+)?(Dictionary|List|HashSet)\\s*<[^>]*>\\s+_?\\w*(cache|Cache|map|Map|store|Store|sessions|Sessions|counters?)\\w*\\s*=",
+    "globs": ["*.cs"],
+    "severity_hint": "Medium",
+    "description": "Non-thread-safe collection used as a cache/store; if the owning class is a singleton it races",
+    "reference": "CWE-662"
+  },
+  {
+    "id": "PAYMENT-NO-KEY",
+    "pattern": "\\[Http(Post|Put)[^\\]]*\\]|public\\s+(async\\s+)?\\w+(<\\w+>)?\\s+(Charge|Pay|Refund|Capture|Debit|Credit|Transfer|Withdraw|Deposit|Checkout|PlaceOrder|Redeem)\\w*\\s*\\(",
+    "globs": ["*Payment*.cs", "*Pay*.cs", "*Checkout*.cs", "*Wallet*.cs", "*Refund*.cs", "*Order*.cs", "*Billing*.cs"],
+    "severity_hint": "High",
+    "description": "Money-moving handler; confirm an Idempotency-Key / request id is read and stored before the side effect",
+    "reference": "CWE-362"
+  },
+  {
+    "id": "IDEMPOTENCY-PRESENT",
+    "pattern": "Idempotency-Key|IdempotencyKey|idempotency_key|RequestId|EventId|event\\.Id",
+    "globs": ["*.cs"],
+    "severity_hint": "Info",
+    "description": "Idempotency marker present; record in the inventory (absence on money handlers is the finding)",
+    "reference": "CWE-362"
+  },
+  {
+    "id": "WEBHOOK-HANDLER",
+    "pattern": "\\[Route\\(\\s*\"[^\"]*(webhook|callback)|\\[AllowAnonymous\\]|\\[Http(Post|Put)[^\\]]*\\]|Stripe-Signature|X-Hub-Signature|constructEvent",
+    "globs": ["*Webhook*.cs", "*Callback*.cs", "*Hook*.cs", "*Notify*.cs"],
+    "severity_hint": "High",
+    "description": "Provider callback handler; confirm event-id dedupe with a unique constraint before processing",
+    "reference": "CWE-362"
+  },
+  {
+    "id": "ROWVERSION-DEFINED",
+    "pattern": "IsRowVersion\\(\\)|IsConcurrencyToken\\(|\\[Timestamp\\]|\\[ConcurrencyCheck\\]|byte\\[\\]\\s+RowVersion",
+    "globs": ["*.cs"],
+    "severity_hint": "Info",
+    "description": "Optimistic concurrency token defined; pair with CONCURRENCY-EXCEPTION-HANDLED",
+    "reference": "CWE-362"
+  },
+  {
+    "id": "CONCURRENCY-EXCEPTION-HANDLED",
+    "pattern": "catch\\s*\\(\\s*DbUpdateConcurrencyException",
+    "globs": ["*.cs"],
+    "severity_hint": "Info",
+    "description": "Concurrency exception handled; if ROWVERSION-DEFINED hits but this never does, updates fail unhandled",
+    "reference": "CWE-362"
+  },
+  {
+    "id": "UNIQUE-INDEX",
+    "pattern": "IsUnique\\(\\)|\\[Index\\([^)]*IsUnique\\s*=\\s*true|UNIQUE\\s+(NONCLUSTERED\\s+)?INDEX|UNIQUE\\s*\\(|CREATE\\s+UNIQUE",
+    "globs": ["*.cs", "*.sql"],
+    "severity_hint": "Info",
+    "description": "Unique constraint present; match against each CHECK-THEN-ACT existence check",
+    "reference": "CWE-362"
+  },
+  {
+    "id": "RETRY-ON-POST",
+    "pattern": "AddTransientHttpErrorPolicy|WaitAndRetryAsync|Policy\\.Handle<|\\.RetryAsync\\(",
+    "globs": ["*.cs"],
+    "severity_hint": "Medium",
+    "description": "Retry policy; if it wraps a POST that moves money without a key, each retry is a replay",
+    "reference": "CWE-362"
+  },
+  {
+    "id": "JOB-NO-LOCK",
+    "pattern": "RecurringJob\\.AddOrUpdate|BackgroundJob\\.Schedule|IJob\\b|ExecuteAsync\\(\\s*CancellationToken",
+    "globs": ["*.cs"],
+    "severity_hint": "Low",
+    "description": "Scheduled/background job; confirm [DisableConcurrentExecution] / [DisallowConcurrentExecution] or a distributed lock, and an idempotent body",
+    "reference": "CWE-362"
+  },
+  {
+    "id": "JOB-LOCK-PRESENT",
+    "pattern": "DisableConcurrentExecution|DisallowConcurrentExecution|DistributedLock|SET\\s+\\w+\\s+\\w+\\s+NX",
+    "globs": ["*.cs"],
+    "severity_hint": "Info",
+    "description": "Job concurrency guard present; record in the inventory",
+    "reference": "CWE-362"
+  },
+  {
+    "id": "TRANSACTION-PRESENT",
+    "pattern": "BeginTransaction(Async)?\\(|TransactionScope\\(|IsolationLevel\\.|ExecuteUpdate(Async)?\\(|ExecuteDelete(Async)?\\(|ExecuteSql(Raw|Interpolated)?(Async)?\\(",
+    "globs": ["*.cs"],
+    "severity_hint": "Info",
+    "description": "Transaction or atomic update present; record in the inventory",
+    "reference": "CWE-362"
+  },
+  {
+    "id": "LOCK-ON-THIS",
+    "pattern": "lock\\s*\\(\\s*(this|typeof\\s*\\([^)]*\\)|\"[^\"]*\")\\s*\\)",
+    "globs": ["*.cs"],
+    "severity_hint": "Low",
+    "description": "lock on this/typeof/string; publicly reachable lock object, and a process lock does not protect a multi-instance deployment",
+    "reference": "CWE-662"
+  }
+]

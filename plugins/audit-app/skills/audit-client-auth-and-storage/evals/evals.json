@@ -1,0 +1,47 @@
+{
+  "skill_name": "audit-client-auth-and-storage",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Review how the Angular app in evals/files/sample-app handles auth on the client: where the JWT is stored, what the interceptor does, logout, guards, and whether anything secret is in the environment files. Draw the auth flow.",
+      "expected_output": "Stack detected as angular; grep pass with scripts/patterns/angular.json and scan_secrets.py run; a Mermaid auth-flow diagram (login -> token -> storage -> refresh -> logout) with real symbol names; findings with CAUTH- ids: (1) High/Medium - access and refresh tokens in localStorage (auth.service.ts setSession); (2) High - token.interceptor.ts attaches the bearer token to every request including maps.googleapis.com via map.service.ts; (3) Critical/High - smsApiKey sk_live_ in environment.prod.ts; (4) Medium - logout removes only access_token; (5) Low/Medium - refreshToken has no single-flight guard; auth.guard.ts reported as Info/UX-only; mapsBrowserKey reported as a public identifier (Info) with a restriction check. Report includes the storage/flow table, the secrets table, a Not checked list, and findings.json validates.",
+      "files": ["evals/files/sample-app/package.json", "evals/files/sample-app/src/environments/environment.prod.ts", "evals/files/sample-app/src/app/core/auth.service.ts", "evals/files/sample-app/src/app/core/token.interceptor.ts", "evals/files/sample-app/src/app/core/auth.guard.ts", "evals/files/sample-app/src/app/map/map.service.ts"],
+      "expectations": [
+        "A finding with id starting CAUTH- points at src/app/core/auth.service.ts at the localStorage.setItem lines for access_token/refresh_token with severity High or Medium and references CWE-922",
+        "A finding with id starting CAUTH- points at src/app/core/token.interceptor.ts with severity High, states the token is sent to every host, and names map.service.ts / maps.googleapis.com as the third-party call",
+        "A finding with id starting CAUTH- points at src/environments/environment.prod.ts smsApiKey with severity Critical or High and references CWE-798",
+        "A finding points at the logout method in auth.service.ts noting refresh_token and user are not removed",
+        "The mapsBrowserKey is classified as a public identifier (Info), not as a Critical/High secret",
+        "auth.guard.ts is reported as UX-only / Info, not as a High or Medium finding",
+        "The report contains a mermaid flowchart covering login, storage, interceptor, refresh and logout",
+        "The report contains a secrets table and a Not checked section (mentioning that no built bundle was available)",
+        "audit/findings/audit-client-auth-and-storage.json validates with ../audit-finding-writer/scripts/findings.py validate",
+        "No file under evals/files/sample-app was modified"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "We ship environment.prod.ts in evals/files/sample-app/src/environments - is there anything in there that should not be in a browser bundle?",
+      "expected_output": "scan_secrets.py run (bundle not found -> env files only); smsApiKey (sk_live_...) flagged as a secret that grants SMS sending, Critical/High, rotate and move server-side; mapsBrowserKey classified as a public identifier with the advice to verify referrer restrictions; the http(s) API URLs are fine.",
+      "files": ["evals/files/sample-app/src/environments/environment.prod.ts", "evals/files/sample-app/package.json"],
+      "expectations": [
+        "smsApiKey is reported as a secret with severity Critical or High and remediation mentions rotating it and moving the SMS call to the server",
+        "mapsBrowserKey is reported as a public identifier / Info with a note to verify API key restrictions",
+        "The output states whether a built bundle was scanned (it was not available)",
+        "apiUrl / reportsUrl / mapsUrl are not reported as secrets"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Our interceptor in evals/files/sample-app/src/app/core/token.interceptor.ts - does it leak the token anywhere? And is logout clean?",
+      "expected_output": "Two findings: the interceptor attaches Authorization to all requests (High, evidence includes map.service.ts calling maps.googleapis.com through HttpClient; remediation: req.url.startsWith(environment.apiUrl) check or HttpBackend for third-party calls), and logout leaves refresh_token and user in localStorage (Medium; remediation: remove every key written by setSession or clear the app's namespace, reset in-memory state, navigate after clearing).",
+      "files": ["evals/files/sample-app/src/app/core/token.interceptor.ts", "evals/files/sample-app/src/app/core/auth.service.ts", "evals/files/sample-app/src/app/map/map.service.ts", "evals/files/sample-app/src/environments/environment.prod.ts", "evals/files/sample-app/package.json"],
+      "expectations": [
+        "The interceptor finding has severity High and its remediation mentions checking req.url against environment.apiUrl or using HttpBackend for third-party calls",
+        "The logout finding names refresh_token (and user) as keys left behind, severity Medium",
+        "Both findings use the CAUTH- prefix and the standard block fields",
+        "The refresh flow's lack of single-flight guard is mentioned (finding or note)"
+      ]
+    }
+  ]
+}

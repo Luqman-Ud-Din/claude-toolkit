@@ -1,0 +1,50 @@
+[
+  {
+    "id": "TEST-SKIP-JEST",
+    "pattern": "\\b(?:it|test|describe)\\.skip\\s*\\(|\\b(?:xit|xtest|xdescribe)\\s*\\(",
+    "globs": ["*.test.js", "*.test.jsx", "*.test.ts", "*.test.tsx", "*.spec.tsx", "*.spec.ts"],
+    "severity_hint": "Medium",
+    "description": "Jest/Vitest test skipped",
+    "reference": "CWE-1120"
+  },
+  {
+    "id": "TEST-FOCUSED-JEST",
+    "pattern": "\\b(?:it|test|describe)\\.only\\s*\\(",
+    "globs": ["*.test.js", "*.test.jsx", "*.test.ts", "*.test.tsx", "*.spec.tsx", "*.spec.ts"],
+    "severity_hint": "High",
+    "description": "Focused test - the rest of the file does not run",
+    "reference": "CWE-1120"
+  },
+  {
+    "id": "TEST-SNAPSHOT-ONLY",
+    "pattern": "toMatchSnapshot\\(\\)",
+    "globs": ["*.test.tsx", "*.test.jsx", "*.spec.tsx"],
+    "severity_hint": "Low",
+    "description": "Snapshot assertion - proves markup did not change, asserts nothing about behaviour; check the file has real assertions too",
+    "reference": "CWE-1120"
+  },
+  {
+    "id": "TEST-NO-USER-EVENT",
+    "pattern": "fireEvent\\.(?:click|change)\\(",
+    "globs": ["*.test.tsx", "*.test.jsx"],
+    "severity_hint": "Low",
+    "description": "fireEvent instead of user-event - misses focus/keyboard behaviour a real user hits",
+    "reference": "CWE-1120"
+  },
+  {
+    "id": "TEST-CI-ADVISORY",
+    "pattern": "(npm|yarn|pnpm) (run )?test[^\\n]*\\|\\|\\s*true|--passWithNoTests|continue-on-error:\\s*true",
+    "globs": ["*.yml", "*.yaml", "Jenkinsfile*", "package.json"],
+    "severity_hint": "High",
+    "description": "Test step cannot fail the build, or passes with zero tests",
+    "reference": "ASVS-1.14.4"
+  },
+  {
+    "id": "TEST-NO-E2E",
+    "pattern": "\"(cypress|playwright)\"\\s*:",
+    "globs": ["package.json"],
+    "severity_hint": "Info",
+    "description": "E2E tooling declared - confirm the suite actually runs in CI, not only locally",
+    "reference": "ASVS-1.14.4"
+  }
+]

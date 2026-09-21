@@ -1,0 +1,12 @@
+{
+  "Routes": [
+    {
+      "UpstreamPathTemplate": "/ordersapi/{everything}",
+      "DownstreamPathTemplate": "/api/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [ { "Host": "orders-api", "Port": 8080 } ],
+      "AuthenticationOptions": { "AuthenticationProviderKey": "Bearer" }
+    }
+  ],
+  "GlobalConfiguration": { "BaseUrl": "http://gateway:8080" }
+}

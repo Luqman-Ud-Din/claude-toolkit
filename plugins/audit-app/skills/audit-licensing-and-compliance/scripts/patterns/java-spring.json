@@ -1,0 +1,7 @@
+[
+  {"id": "LIC-VENDORED-GPL-HEADER", "pattern": "GNU (Affero )?General Public License|SPDX-License-Identifier:\\s*(A?GPL|SSPL|BUSL)", "globs": ["*.java", "*.kt"], "severity_hint": "High", "description": "Copyleft licence header inside copied source", "reference": "CWE-1104"},
+  {"id": "LIC-POM-LICENSE-COPYLEFT", "pattern": "<name>[^<]*(GNU|Affero|GPL|SSPL|Business Source)", "globs": ["pom.xml"], "severity_hint": "High", "description": "POM declares a copyleft/restricted licence", "reference": "CWE-1104"},
+  {"id": "LIC-SYSTEM-SCOPE-JAR", "pattern": "<scope>system</scope>|<systemPath>", "globs": ["pom.xml"], "severity_hint": "Medium", "description": "System-scoped jar outside the repository - licence must be checked by hand", "reference": "CWE-1104"},
+  {"id": "LIC-KNOWN-COPYLEFT-MAVEN", "pattern": "<artifactId>(itextpdf|itext7-core|mysql-connector-java|mysql-connector-j|jasperreports|hibernate-core|javassist)</artifactId>|(itextpdf|itext7-core|mysql-connector|jasperreports|hibernate-core):", "globs": ["pom.xml", "build.gradle", "build.gradle.kts"], "severity_hint": "Medium", "description": "Artifacts with AGPL/GPL/LGPL terms that need a decision", "reference": "CWE-1104"},
+  {"id": "LIC-CONTAINER-BASE-IMAGE", "pattern": "^\\s*FROM\\s+", "globs": ["Dockerfile", "*.dockerfile"], "severity_hint": "Low", "description": "Base image - licence lives in OCI labels", "reference": ""}
+]

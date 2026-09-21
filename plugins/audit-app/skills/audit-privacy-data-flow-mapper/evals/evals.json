@@ -1,0 +1,64 @@
+{
+  "skill_name": "audit-privacy-data-flow-mapper",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Build a data inventory and data-flow map for the .NET service in evals/files/sample-repo. I need to know every place a customer's email ends up and which third parties get it, before we start the GDPR review.",
+      "expected_output": "data-inventory.json plus a Markdown table and a Mermaid diagram. The email field is classified contact and found in all four planted places: the Customer entity (Entities/Customer.cs, storage table Customer), the log statement (Services/CustomerService.cs line with LogInformation and {Email}), the cache key (SetStringAsync($\"customer:{customer.Email}\")) and the outbound Mailchimp call (PostAsJsonAsync to us1.api.mailchimp.com with email_address). Mailchimp is listed as a marketing third party receiving email, first_name and last_name (not phone). The second log line that only logs CustomerId is NOT reported as PII. support@example.com in the template is treated as a generic mailbox, not a data subject. Retention is reported as unknown because no purge job exists. Findings PII-001 (email in logs, High) and PII-002 (email in cache key, Medium) and PII-003 (email/name sent to Mailchimp, Medium, likely) with locations.",
+      "files": [
+        "evals/files/sample-repo/Inventory.Api/Inventory.Api.csproj",
+        "evals/files/sample-repo/Inventory.Api/Entities/Customer.cs",
+        "evals/files/sample-repo/Inventory.Api/HostModel/CustomerRequest.cs",
+        "evals/files/sample-repo/Inventory.Api/Controllers/CustomersController.cs",
+        "evals/files/sample-repo/Inventory.Api/Services/CustomerService.cs",
+        "evals/files/sample-repo/Inventory.Api/Templates/Emails/Welcome.cshtml",
+        "evals/files/sample-repo/Inventory.Api/appsettings.json"
+      ],
+      "expectations": [
+        "data-inventory.json is written and valid JSON with a fields array containing an entry whose field is email",
+        "The email entry lists storage table Customer with file Entities/Customer.cs",
+        "The email entry lists a log processor at Services/CustomerService.cs on the LogInformation line",
+        "The email entry lists a cache processor at Services/CustomerService.cs on the SetStringAsync line",
+        "The email entry lists Mailchimp as a third party via the outbound PostAsJsonAsync call",
+        "Mailchimp's fields do not include phone",
+        "The log line that logs only CustomerId is not reported as a PII occurrence",
+        "The Markdown table has columns Field, Classification, Storage locations, Processors, Third parties, Retention",
+        "A Mermaid flowchart shows edges from Customer storage to logs, cache and Mailchimp",
+        "Retention for email is reported as unknown with the reason that no purge/retention job was found",
+        "Findings use the PII- prefix and the log finding is rated High"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Which third parties receive personal data from evals/files/sample-repo/Inventory.Api and what exactly do they get? Just the processor list, I don't need the whole map.",
+      "expected_output": "A processor table with one row: Mailchimp, category marketing, fields email, first_name, last_name, location Services/CustomerService.cs (PostAsJsonAsync line) and appsettings.json (BaseUrl), DPA status unknown - organisational. A note that Serilog MSSqlServer sink is an internal log store, not a third party, and that no unresolved outbound hosts were found.",
+      "files": [
+        "evals/files/sample-repo/Inventory.Api/Services/CustomerService.cs",
+        "evals/files/sample-repo/Inventory.Api/appsettings.json"
+      ],
+      "expectations": [
+        "Mailchimp is identified as the only third party",
+        "Fields sent are listed as email, first_name and last_name (from email_address and merge_fields FNAME/LNAME)",
+        "The location of the outbound call in CustomerService.cs is given with a line number",
+        "DPA status is marked unknown / needs organisational owner",
+        "No internal host is reported as a third party"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Do we log any PII in the sample service under evals/files/sample-repo? Give me a finding I can hand to the team.",
+      "expected_output": "One High finding PII-001: customer email written to application logs at Services/CustomerService.cs (LogInformation with {Email}); Evidence shows the line; Impact mentions the Serilog MSSqlServer sink from appsettings.json and that logs sit outside the deletion path; Remediation is to log customer.Id instead or add a destructuring/masking policy, plus log retention; References include CWE-532 and GDPR-Art.5(1)(c). The CustomerId-only log line is cited as the correct pattern, not as a finding.",
+      "files": [
+        "evals/files/sample-repo/Inventory.Api/Services/CustomerService.cs",
+        "evals/files/sample-repo/Inventory.Api/appsettings.json"
+      ],
+      "expectations": [
+        "Exactly one log-related finding, rated High, with id starting PII-",
+        "Location is Services/CustomerService.cs with the LogInformation line number",
+        "Remediation says to log the customer id instead of the email or to mask it",
+        "References include CWE-532",
+        "The CustomerId-only log line is not reported as a finding"
+      ]
+    }
+  ]
+}

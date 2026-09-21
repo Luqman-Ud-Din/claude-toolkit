@@ -1,0 +1,75 @@
+{
+  "skill_name": "audit-backend-resource-leak",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Our API's memory keeps climbing over a day and we restart it every night. Can you audit evals/files/sample-repo for memory and resource leaks and give us a procedure to prove whether the fix works?",
+      "expected_output": "Findings with the LEAK prefix for: the undisposed FileStream in ReportService.Export, the static List in RequestAudit that only grows, the unbounded user-keyed IMemoryCache in ProductCache.Remember (with AddMemoryCache() lacking SizeLimit), and the StockSyncWorker empty catch plus growing _processed list. No findings for ReadTemplateAsync, SubmitAsync, _routeNames or GetOrLoad. A report containing the 15-minute load-test procedure with working set, gen2, handle count metrics and pass/fail thresholds, and the dotnet-counters commands.",
+      "files": [
+        "evals/files/sample-repo/Inventory.Api/Inventory.Api.csproj",
+        "evals/files/sample-repo/Inventory.Api/Program.cs",
+        "evals/files/sample-repo/Inventory.Api/Services/ReportService.cs",
+        "evals/files/sample-repo/Inventory.Api/Services/RequestAudit.cs",
+        "evals/files/sample-repo/Inventory.Api/Services/ProductCache.cs",
+        "evals/files/sample-repo/Inventory.Api/Workers/StockSyncWorker.cs"
+      ],
+      "expectations": [
+        "Detects the stack as dotnet and loads only references/dotnet.md",
+        "Runs ../audit-code-scan/scripts/grep_scan.py with scripts/patterns/dotnet.json and records hits under audit/evidence/audit-backend-resource-leak/",
+        "Emits a finding for ReportService.Export FileStream without using, referencing CWE-772",
+        "Emits a finding for the static _requests list in RequestAudit rated Critical or High, referencing CWE-401 or CWE-770",
+        "Emits a finding for ProductCache.Remember / AddMemoryCache() without SizeLimit or expiration",
+        "Emits a finding for StockSyncWorker's empty catch block (CWE-390) and mentions the growing _processed list",
+        "Does not emit findings for ReadTemplateAsync, SubmitAsync, _routeNames, or GetOrLoad",
+        "Report contains a 15-minute load-test procedure with working set, gen2, and handle count metrics and explicit pass/fail thresholds",
+        "Report lists dotnet-counters (or dotnet-gcdump) commands",
+        "Report includes a Not checked section",
+        "All finding ids start with LEAK-",
+        "findings.json validates with ../audit-finding-writer/scripts/findings.py validate"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "We ran the leak load test and got evals/files/samples-leaking.csv (15 s samples, 2 min warm-up). Does it pass? What should we do next?",
+      "expected_output": "Runs scripts/leak_loadtest.py grade on the CSV, reports FAIL with the working-set slope in MB/min, notes handles rising, and recommends a heap diff (dotnet-gcdump / MAT / DevTools) to find the holder of the growing type.",
+      "files": [
+        "evals/files/samples-leaking.csv"
+      ],
+      "expectations": [
+        "Uses scripts/leak_loadtest.py grade with --baseline-minutes",
+        "Reports an overall FAIL verdict",
+        "States the working set slope in MB/min and that it exceeds the 5 MB/min fail threshold",
+        "Notes that handle count grew by more than 10%",
+        "Recommends a before/after heap diff as the next step"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Check the background worker in evals/files/sample-repo/Inventory.Api/Workers/StockSyncWorker.cs - is it stable for production?",
+      "expected_output": "One or two findings: empty catch block swallowing all exceptions in the worker loop (High), and the _processed list growing without bound across iterations. Remediation shows scope-per-iteration (already present), logging in the catch, OperationCanceledException handling, and dropping or bounding _processed.",
+      "files": [
+        "evals/files/sample-repo/Inventory.Api/Workers/StockSyncWorker.cs"
+      ],
+      "expectations": [
+        "Flags the empty catch (Exception) block with CWE-390",
+        "Flags _processed as unbounded growth",
+        "Remediation includes logging the exception with ILogger and rethrowing/exiting on OperationCanceledException when cancellation was requested",
+        "Acknowledges that the scope-per-iteration pattern is correct"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Second run of the leak test after we fixed the cache: samples are in evals/files/samples-flat.csv (15 s samples, 2 min warm-up). Can we call the memory stable now?",
+      "expected_output": "leak_loadtest.py grade is run on the CSV; working-set slope after the baseline is under 2 MB/min, last-5-min mean is within 10% of the first-5-min mean, gen2 collections stay at a steady low rate, handle and thread counts are flat. Overall PASS, with the caveat that a 15-minute run at one load level proves stability only for that load.",
+      "files": [
+        "evals/files/samples-flat.csv"
+      ],
+      "expectations": [
+        "The grade subcommand of leak_loadtest.py is run on the CSV",
+        "Overall verdict reported is PASS",
+        "No metric row is reported as FAIL",
+        "The reply notes the result covers only the tested load level and duration"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,344 @@
+[
+  {
+    "id": "STORE-WEBSTORAGE-TOKEN",
+    "pattern": "(localStorage|sessionStorage)\\.setItem\\s*\\(\\s*['\"`][^'\"`]*(token|jwt|auth|session|refresh|credential|bearer)[^'\"`]*['\"`]",
+    "globs": [
+      "*.ts",
+      "*.tsx",
+      "*.js",
+      "*.jsx"
+    ],
+    "severity_hint": "High",
+    "description": "Token-like key written to web storage (readable by any script)",
+    "reference": "CWE-922"
+  },
+  {
+    "id": "STORE-WEBSTORAGE-ANY",
+    "pattern": "(localStorage|sessionStorage)\\.setItem\\s*\\(",
+    "globs": [
+      "*.ts",
+      "*.tsx",
+      "*.js",
+      "*.jsx"
+    ],
+    "severity_hint": "Info",
+    "description": "Web storage write - confirm the value is not a credential",
+    "reference": "CWE-922"
+  },
+  {
+    "id": "STORE-PERSISTED-AUTH-SLICE",
+    "pattern": "whitelist\\s*:\\s*\\[[^\\]]*['\"](auth|token|session|user)['\"]|persist\\s*\\(\\s*\\([^)]*\\)\\s*=>[^,]*(token|auth)|partialize\\s*:\\s*\\([^)]*\\)\\s*=>\\s*\\(?\\{[^}]*(token|auth)",
+    "globs": [
+      "*.ts",
+      "*.tsx",
+      "*.js",
+      "*.jsx"
+    ],
+    "severity_hint": "High",
+    "description": "redux-persist / zustand persist including the auth slice (ends up in localStorage)",
+    "reference": "CWE-922"
+  },
+  {
+    "id": "STORE-ASYNCSTORAGE-TOKEN",
+    "pattern": "AsyncStorage\\.(setItem|multiSet)\\s*\\(\\s*['\"`][^'\"`]*(token|jwt|auth|refresh|credential)",
+    "globs": [
+      "*.ts",
+      "*.tsx",
+      "*.js",
+      "*.jsx"
+    ],
+    "severity_hint": "High",
+    "description": "React Native AsyncStorage holding a token - use Keychain/SecureStore",
+    "reference": "CWE-922"
+  },
+  {
+    "id": "STORE-COOKIE-SCRIPT",
+    "pattern": "Cookies\\.set\\s*\\(\\s*['\\\"`][^'\\\"`]*(token|jwt|auth|session)|document\\.cookie\\s*=\\s*[^;]*(token|jwt|auth|session)|cookies\\(\\)\\.set\\s*\\((?![^)]*httpOnly:\\s*true)[^)]*\\)",
+    "globs": [
+      "*.ts",
+      "*.tsx",
+      "*.js",
+      "*.jsx"
+    ],
+    "severity_hint": "High",
+    "description": "Credential cookie written by script or without httpOnly",
+    "reference": "CWE-1004"
+  },
+  {
+    "id": "INTERCEPT-AXIOS-GLOBAL",
+    "pattern": "\\baxios\\.interceptors\\.request\\.use\\s*\\(",
+    "globs": [
+      "*.ts",
+      "*.tsx",
+      "*.js",
+      "*.jsx"
+    ],
+    "severity_hint": "Medium",
+    "description": "Interceptor on the global axios instance applies to every host",
+    "reference": "CWE-522"
+  },
+  {
+    "id": "INTERCEPT-SET-AUTH-HEADER",
+    "pattern": "headers(\\.common)?\\s*\\[?\\.?['\"]?Authorization['\"]?\\]?\\s*=|Authorization\\s*:\\s*`Bearer|headers\\.set\\s*\\(\\s*['\"]Authorization",
+    "globs": [
+      "*.ts",
+      "*.tsx",
+      "*.js",
+      "*.jsx"
+    ],
+    "severity_hint": "Medium",
+    "description": "Authorization header attached - check the URL condition (own API origin only)",
+    "reference": "CWE-522"
+  },
+  {
+    "id": "INTERCEPT-ORIGIN-CHECK",
+    "pattern": "(config|cfg|request)\\.url\\??\\.(startsWith|includes|match)\\s*\\(|baseURL\\)|isOwnApi|isApiUrl",
+    "globs": [
+      "*.ts",
+      "*.tsx",
+      "*.js",
+      "*.jsx"
+    ],
+    "severity_hint": "Info",
+    "description": "Origin check near the interceptor - evidence the token is scoped",
+    "reference": "CWE-522"
+  },
+  {
+    "id": "INTERCEPT-WITH-CREDENTIALS-GLOBAL",
+    "pattern": "axios\\.defaults\\.withCredentials\\s*=\\s*true|withCredentials\\s*:\\s*true|credentials\\s*:\\s*['\"]include['\"]",
+    "globs": [
+      "*.ts",
+      "*.tsx",
+      "*.js",
+      "*.jsx"
+    ],
+    "severity_hint": "Low",
+    "description": "Credentials sent with requests - fine for own-origin cookie auth; check scope",
+    "reference": "CWE-522"
+  },
+  {
+    "id": "INTERCEPT-TOKEN-IN-QUERY",
+    "pattern": "params\\s*:\\s*\\{[^}]*(token|access_token|jwt)|[?&](token|access_token|jwt)=\\$\\{",
+    "globs": [
+      "*.ts",
+      "*.tsx",
+      "*.js",
+      "*.jsx"
+    ],
+    "severity_hint": "High",
+    "description": "Token sent in a query string",
+    "reference": "CWE-598"
+  },
+  {
+    "id": "REFRESH-CALL",
+    "pattern": "refreshToken\\s*\\(|/refresh['\"`]|refreshAccessToken|renewToken",
+    "globs": [
+      "*.ts",
+      "*.tsx",
+      "*.js",
+      "*.jsx"
+    ],
+    "severity_hint": "Info",
+    "description": "Refresh logic present - check single-flight and failure -> logout",
+    "reference": "CWE-613"
+  },
+  {
+    "id": "REFRESH-SINGLE-FLIGHT",
+    "pattern": "isRefreshing|failedQueue|refreshPromise|refreshing\\s*\\?\\?=|_retry",
+    "globs": [
+      "*.ts",
+      "*.tsx",
+      "*.js",
+      "*.jsx"
+    ],
+    "severity_hint": "Info",
+    "description": "Single-flight / retry guard present",
+    "reference": "CWE-613"
+  },
+  {
+    "id": "REFRESH-EXP-DECODE",
+    "pattern": "jwtDecode\\s*\\(|jwt_decode\\s*\\(|\\.exp\\s*[*<>]",
+    "globs": [
+      "*.ts",
+      "*.tsx",
+      "*.js",
+      "*.jsx"
+    ],
+    "severity_hint": "Info",
+    "description": "Expiry detection by decoding the JWT on the client",
+    "reference": "CWE-613"
+  },
+  {
+    "id": "REFRESH-401-HANDLER",
+    "pattern": "status\\s*===?\\s*401",
+    "globs": [
+      "*.ts",
+      "*.tsx",
+      "*.js",
+      "*.jsx"
+    ],
+    "severity_hint": "Info",
+    "description": "401 handling location - trace what it does",
+    "reference": "CWE-613"
+  },
+  {
+    "id": "LOGOUT-METHOD",
+    "pattern": "(const|function|async)\\s+(logout|signOut|handleLogout)\\b|\\blogout\\s*=\\s*(async\\s*)?\\(",
+    "globs": [
+      "*.ts",
+      "*.tsx",
+      "*.js",
+      "*.jsx"
+    ],
+    "severity_hint": "Info",
+    "description": "Logout implementation - compare what it clears with every writer (storage, persistor, query cache, axios defaults)",
+    "reference": "CWE-613"
+  },
+  {
+    "id": "LOGOUT-PARTIAL-CLEAR",
+    "pattern": "(localStorage|sessionStorage|AsyncStorage)\\.removeItem\\s*\\(",
+    "globs": [
+      "*.ts",
+      "*.tsx",
+      "*.js",
+      "*.jsx"
+    ],
+    "severity_hint": "Info",
+    "description": "Single-key removal - check other keys, persistor.purge, queryClient.clear",
+    "reference": "CWE-613"
+  },
+  {
+    "id": "GUARD-DEFINITION",
+    "pattern": "(PrivateRoute|ProtectedRoute|RequireAuth|AuthGuard)\\b|<Navigate\\s+to\\s*=\\s*['\"{]/?login|export\\s+(const|default)\\s+(async\\s+)?function\\s+middleware|export\\s+const\\s+config\\s*=\\s*\\{\\s*matcher",
+    "globs": [
+      "*.ts",
+      "*.tsx",
+      "*.js",
+      "*.jsx"
+    ],
+    "severity_hint": "Info",
+    "description": "Route guard / Next middleware - UX only unless it verifies the JWT signature; cross-reference authz",
+    "reference": "CWE-602"
+  },
+  {
+    "id": "GUARD-ROLE-FROM-JWT",
+    "pattern": "(jwtDecode|jwt_decode)\\s*\\([^)]*\\)\\s*[\\.\\[]\\s*['\"]?(role|roles|permissions|isAdmin)",
+    "globs": [
+      "*.ts",
+      "*.tsx",
+      "*.js",
+      "*.jsx"
+    ],
+    "severity_hint": "Info",
+    "description": "Roles read from the client-decoded JWT - UI only",
+    "reference": "CWE-602"
+  },
+  {
+    "id": "SECRET-PUBLIC-ENV-PREFIX",
+    "pattern": "^\\s*(REACT_APP|VITE|NEXT_PUBLIC|EXPO_PUBLIC)_[A-Z0-9_]*(SECRET|PRIVATE|PASSWORD|TOKEN|SERVICE_ACCOUNT|SIGNING|CLIENT_SECRET|API_KEY|APIKEY)[A-Z0-9_]*\\s*=\\s*\\S{8,}",
+    "globs": [
+      ".env",
+      ".env.*",
+      "*.env"
+    ],
+    "severity_hint": "High",
+    "description": "Public-prefixed env var with a secret-looking name (inlined into the bundle)",
+    "reference": "CWE-798"
+  },
+  {
+    "id": "SECRET-NEXT-CONFIG-ENV",
+    "pattern": "env\\s*:\\s*\\{[^}]*(SECRET|PRIVATE|PASSWORD|API_KEY|TOKEN)",
+    "globs": [
+      "next.config.js",
+      "next.config.mjs",
+      "next.config.ts",
+      "app.config.js",
+      "app.config.ts"
+    ],
+    "severity_hint": "High",
+    "description": "next.config env / Expo extra inlining a secret-looking value",
+    "reference": "CWE-798"
+  },
+  {
+    "id": "SECRET-KEY-NAME-LITERAL",
+    "pattern": "(apiKey|api_key|secret|secretKey|clientSecret|client_secret|privateKey|private_key|encryptionKey|jwtSecret|smsApiKey|sendgridKey|awsSecret\\w*|accessKeyId|connectionString|dbPassword)\\s*[:=]\\s*['\"`][^'\"`]{8,}['\"`]",
+    "globs": [
+      "*.ts",
+      "*.tsx",
+      "*.js",
+      "*.jsx",
+      "*.json"
+    ],
+    "severity_hint": "High",
+    "description": "Secret-looking literal in client source",
+    "reference": "CWE-798"
+  },
+  {
+    "id": "SECRET-BASIC-AUTH-LITERAL",
+    "pattern": "Authorization\\s*:\\s*['\"`]\\s*Basic\\s+[A-Za-z0-9+/=]{8,}",
+    "globs": [
+      "*.ts",
+      "*.tsx",
+      "*.js",
+      "*.jsx"
+    ],
+    "severity_hint": "High",
+    "description": "Hard-coded Basic credentials",
+    "reference": "CWE-798"
+  },
+  {
+    "id": "SECRET-PROVIDER-PREFIX",
+    "pattern": "(sk_live_[0-9a-zA-Z]{8,}|sk_test_[0-9a-zA-Z]{8,}|AKIA[0-9A-Z]{16}|AIza[0-9A-Za-z_-]{30,}|SG\\.[A-Za-z0-9_-]{16,}\\.[A-Za-z0-9_-]{16,}|xox[abp]-[0-9A-Za-z-]{10,}|ghp_[0-9A-Za-z]{30,}|-----BEGIN [A-Z ]*PRIVATE KEY-----|eyJ[A-Za-z0-9_-]{10,}\\.eyJ[A-Za-z0-9_-]{10,}\\.[A-Za-z0-9_-]{10,})",
+    "globs": [
+      "*.ts",
+      "*.tsx",
+      "*.js",
+      "*.jsx",
+      "*.json",
+      ".env*",
+      "*.env",
+      "*.html"
+    ],
+    "severity_hint": "Critical",
+    "description": "Known provider secret prefix, private key, or embedded JWT",
+    "reference": "CWE-798"
+  },
+  {
+    "id": "TRANSPORT-HTTP-API-URL",
+    "pattern": "(REACT_APP|VITE|NEXT_PUBLIC|EXPO_PUBLIC)_[A-Z_]*(API|BASE|SERVER)[A-Z_]*URL\\s*=\\s*http://(?!localhost|127\\.0\\.0\\.1)",
+    "globs": [
+      ".env.production",
+      ".env.prod",
+      ".env.staging"
+    ],
+    "severity_hint": "Medium",
+    "description": "Plain-http API URL in a production env file",
+    "reference": "CWE-319"
+  },
+  {
+    "id": "TRANSPORT-TOKEN-LOGGED",
+    "pattern": "console\\.(log|debug|info)\\s*\\([^)]*(token|jwt|password|secret)",
+    "globs": [
+      "*.ts",
+      "*.tsx",
+      "*.js",
+      "*.jsx"
+    ],
+    "severity_hint": "Low",
+    "description": "Credential written to the console",
+    "reference": "CWE-532"
+  },
+  {
+    "id": "TRANSPORT-POSTMESSAGE-ANY",
+    "pattern": "postMessage\\s*\\([^)]*,\\s*['\"]\\*['\"]",
+    "globs": [
+      "*.ts",
+      "*.tsx",
+      "*.js",
+      "*.jsx"
+    ],
+    "severity_hint": "Low",
+    "description": "postMessage to any origin - check payload for tokens",
+    "reference": "CWE-346"
+  }
+]

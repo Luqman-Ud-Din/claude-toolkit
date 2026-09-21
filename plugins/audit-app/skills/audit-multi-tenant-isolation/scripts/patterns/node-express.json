@@ -1,0 +1,42 @@
+[
+  {
+    "id": "RAW-QUERY",
+    "pattern": "\\.query\\(\\s*[`'\"]|sequelize\\.query\\(|knex\\.raw\\(|\\$queryRaw",
+    "globs": ["*.js", "*.ts"],
+    "severity_hint": "High",
+    "description": "Raw SQL query - confirm it filters by tenantId; ORM scopes/hooks do not apply to raw queries",
+    "reference": "CWE-284"
+  },
+  {
+    "id": "UNSCOPED",
+    "pattern": "unscoped\\(|withoutGlobalScope|paranoid:\\s*false",
+    "globs": ["*.js", "*.ts"],
+    "severity_hint": "High",
+    "description": "ORM default scope disabled - the query may span all tenants",
+    "reference": "CWE-284"
+  },
+  {
+    "id": "TENANT-FROM-INPUT",
+    "pattern": "req\\.(body|query|params|headers)\\.[A-Za-z]*(tenantId|companyId|orgId|organizationId|accountId)",
+    "globs": ["*.js", "*.ts"],
+    "severity_hint": "High",
+    "description": "Tenant id from request input - derive it from req.user/token, never trust the client",
+    "reference": "CWE-639"
+  },
+  {
+    "id": "CACHE-KEY",
+    "pattern": "(redis|cache|memcached)\\.(get|set|setex)\\(|cacheKey\\s*=",
+    "globs": ["*.js", "*.ts"],
+    "severity_hint": "Medium",
+    "description": "Cache key - confirm it includes the tenant id",
+    "reference": "CWE-524"
+  },
+  {
+    "id": "BACKGROUND-JOB",
+    "pattern": "cron\\.schedule|new Worker\\(|\\.process\\(|agenda\\.define|bull|setInterval\\(",
+    "globs": ["*.js", "*.ts"],
+    "severity_hint": "Medium",
+    "description": "Worker / scheduled task - confirm it carries and enforces tenant context per job",
+    "reference": "CWE-284"
+  }
+]

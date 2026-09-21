@@ -1,0 +1,49 @@
+{
+  "skill_name": "audit-injection-vulnerabilities",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Run an injection audit on the .NET service in evals/files/sample-repo. I want SQL injection, command injection and path traversal covered, and I want to know which grep hits are real and which are noise.",
+      "expected_output": "Stack detected as dotnet; grep pass run with scripts/patterns/dotnet.json; three findings with INJ- ids: (1) High/Critical SQL injection in ReportsController.GetSalesReport (string-concatenated ORDER BY from model.SortColumn), (2) High command injection in ExportController.ConvertToPdf (cmd.exe /c with model.FileName), (3) High path traversal in FilesController.Download (Path.Combine(_root, name) from the route). ProductRepository's FromSqlRaw with {0} and FromSqlInterpolated are labelled false-positive or not listed at all, with the reason stated. Report at audit/reports/audit-injection-vulnerabilities.md with a hit-triage table and a Not checked list; findings.json validates.",
+      "files": ["evals/files/sample-repo/Inventory.Api/Inventory.Api.csproj", "evals/files/sample-repo/Inventory.Api/Controllers/ReportsController.cs", "evals/files/sample-repo/Inventory.Api/Controllers/ExportController.cs", "evals/files/sample-repo/Inventory.Api/Controllers/FilesController.cs", "evals/files/sample-repo/Inventory.Api/Repositories/ProductRepository.cs", "evals/files/sample-repo/Inventory.Api/Models/Requests.cs"],
+      "expectations": [
+        "A finding with id starting INJ- points at Controllers/ReportsController.cs with the FromSqlRaw/concatenation line and references CWE-89",
+        "A finding with id starting INJ- points at Controllers/ExportController.cs with the Arguments or Process.Start line and references CWE-78",
+        "A finding with id starting INJ- points at Controllers/FilesController.cs with the Path.Combine line and references CWE-22",
+        "Each of the three findings has confidence 'confirmed' and severity High or Critical",
+        "Repositories/ProductRepository.cs GetBySkuAsync (FromSqlRaw with {0} placeholder) is NOT reported as a High/Critical/Medium finding; if mentioned it is labelled false-positive or Info with the reason that {0} plus an argument is parameterized",
+        "Repositories/ProductRepository.cs GetByBranchAsync (FromSqlInterpolated) is NOT reported as a finding above Info",
+        "The report contains a hit-triage table with a Label column using confirmed/likely/false-positive",
+        "The report contains a Not checked section",
+        "audit/findings/audit-injection-vulnerabilities.json validates with ../audit-finding-writer/scripts/findings.py validate",
+        "No file under evals/files/sample-repo was modified"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Is the query in evals/files/sample-repo/Inventory.Api/Repositories/ProductRepository.cs vulnerable to SQL injection? Someone on the team flagged FromSqlRaw in a code review.",
+      "expected_output": "A short verdict: both queries are parameterized (FromSqlRaw with a {0} placeholder plus argument becomes @p0; FromSqlInterpolated converts holes to parameters), so no finding above Info; optionally one Info/false-positive entry recording the review question and pointing at the difference between FromSqlRaw($\"...\") and FromSqlRaw(\"... {0}\", x).",
+      "files": ["evals/files/sample-repo/Inventory.Api/Repositories/ProductRepository.cs", "evals/files/sample-repo/Inventory.Api/Inventory.Api.csproj"],
+      "expectations": [
+        "The answer states the queries are parameterized and not vulnerable",
+        "No finding with severity Critical, High, Medium or Low is emitted for ProductRepository.cs",
+        "The explanation names the {0} placeholder / parameter argument or FromSqlInterpolated as the reason",
+        "If a findings entry is written its confidence is false-positive or its severity is Info"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "We're going to prod next week - do a backend security scan of evals/files/sample-repo for SSRF, deserialization and any injection issues and give me the findings in the standard format.",
+      "expected_output": "Stack resolved to dotnet, grep pass run, the three planted injection issues reported as findings, SSRF and deserialization classes reported as checked with no hits, safe queries not flagged, output files under audit/ and a status file with status completed.",
+      "files": ["evals/files/sample-repo/Inventory.Api/Inventory.Api.csproj", "evals/files/sample-repo/Inventory.Api/Controllers/ReportsController.cs", "evals/files/sample-repo/Inventory.Api/Controllers/ExportController.cs", "evals/files/sample-repo/Inventory.Api/Controllers/FilesController.cs", "evals/files/sample-repo/Inventory.Api/Repositories/ProductRepository.cs"],
+      "expectations": [
+        "Exactly three findings above Info are produced, covering SQL injection, OS command injection and path traversal",
+        "The scope or report states that SSRF and deserialization patterns were run and produced no confirmed hits",
+        "ProductRepository.cs is not the location of any finding above Info",
+        "audit/status/audit-injection-vulnerabilities.json is written with status completed",
+        "Remediation for the SQL finding mentions parameterization (FromSqlInterpolated or {0} placeholders) and an allow-list for the sort column",
+        "Remediation for the path finding mentions Path.GetFileName and/or a GetFullPath prefix check"
+      ]
+    }
+  ]
+}

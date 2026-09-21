@@ -1,0 +1,42 @@
+[
+  {
+    "id": "CLIENT-SENDS-MONEY",
+    "pattern": "\\b(total|grandTotal|netAmount|discountAmount|taxAmount|unitPrice|amountPaid)\\s*:\\s*(this\\.|\\w+\\.)?\\w+|\\.(post|put|patch)\\s*(<[^>]*>)?\\([^,]+,\\s*\\{[^}]*\\b(total|grandTotal|discountAmount|taxAmount)\\b",
+    "globs": ["*.ts"],
+    "severity_hint": "Medium",
+    "description": "Client builds or posts a computed money field; verify the server ignores it and recomputes",
+    "reference": "CWE-602"
+  },
+  {
+    "id": "CLIENT-SENDS-STATUS",
+    "pattern": "\\b(status|isApproved|roleId|role|companyId|branchId)\\s*:\\s*(this\\.|\\w+\\.)?\\w+.*\\}\\s*\\)|\\.(post|put|patch)\\s*(<[^>]*>)?\\([^,]+,\\s*\\{[^}]*\\b(status|isApproved|roleId)\\b",
+    "globs": ["*.ts"],
+    "severity_hint": "Medium",
+    "description": "Client posts status/role/tenant fields in a user action; each is a rule to verify server-side",
+    "reference": "CWE-602"
+  },
+  {
+    "id": "UI-ONLY-RULE",
+    "pattern": "\\[disabled\\]=\"[^\"]*\\.(status|state)\\b|\\*ngIf=\"[^\"]*(isAdmin|canApprove|canCancel|status\\s*===?)|@if\\s*\\([^)]*(isAdmin|status\\s*===?)",
+    "globs": ["*.html", "*.ts"],
+    "severity_hint": "Info",
+    "description": "Business rule enforced in the template; add it to the flow rules table and verify on the server",
+    "reference": "CWE-602"
+  },
+  {
+    "id": "DISCOUNT-APPLY-UI",
+    "pattern": "\\b(apply|add|redeem)(Discount|Coupon|Promo|Voucher)\\w*\\s*\\(|valueChanges[\\s\\S]{0,80}(coupon|discount)",
+    "globs": ["*.ts"],
+    "severity_hint": "Info",
+    "description": "Coupon/discount trigger in the client; check the button disables and the server dedupes",
+    "reference": "CWE-840"
+  },
+  {
+    "id": "MUTATION-RETRY",
+    "pattern": "retry\\(\\s*\\d+\\s*\\)|retryWhen\\(",
+    "globs": ["*.ts"],
+    "severity_hint": "Info",
+    "description": "Retry on an HTTP call; if it wraps a POST that moves money/stock, hand the replay case to audit-concurrency-and-race-condition",
+    "reference": "CWE-840"
+  }
+]

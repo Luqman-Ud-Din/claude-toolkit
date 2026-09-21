@@ -1,0 +1,106 @@
+[
+  {
+    "id": "CHECK-THEN-ACT",
+    "pattern": "if\\s*\\(\\s*!?\\s*(await\\s+)?\\w+(\\.\\w+)*\\.(findOne|findFirst|findUnique|exists|count|countDocuments)\\s*\\(|if\\s*\\(\\s*!\\s*(existing|exists|found|user|account|record)\\w*\\s*\\)|if\\s*\\(\\s*\\w+\\.(balance|quantity|qty|stock|available|credit)\\w*\\s*(>=|>|<|<=)",
+    "globs": ["*.js", "*.ts", "*.mjs", "*.cjs"],
+    "severity_hint": "High",
+    "description": "Existence/threshold check; an await between this and the following create/update lets two requests interleave",
+    "reference": "CWE-367"
+  },
+  {
+    "id": "STATUS-GUARD-IN-MEMORY",
+    "pattern": "if\\s*\\(\\s*\\w+\\.(status|state)\\s*(===?|!==?)\\s*['\"]\\w+['\"]",
+    "globs": ["*.js", "*.ts", "*.mjs", "*.cjs"],
+    "severity_hint": "Medium",
+    "description": "Status checked in memory; the later write needs the condition in the WHERE (updateMany + count) or a version field",
+    "reference": "CWE-367"
+  },
+  {
+    "id": "MODULE-MUTABLE-STATE",
+    "pattern": "^\\s*(export\\s+)?(const|let|var)\\s+\\w*(cache|Cache|store|Store|sessions|Sessions|map|Map|counter|Counter|registry|locks|pending)\\w*\\s*(:\\s*[^=]+)?=\\s*(new\\s+(Map|Set)\\s*\\(|\\{\\s*\\}|\\[\\s*\\]|0\\b)",
+    "globs": ["*.js", "*.ts", "*.mjs", "*.cjs"],
+    "severity_hint": "Medium",
+    "description": "Module-level mutable state; shared by all requests in the process, invisible to other replicas",
+    "reference": "CWE-662"
+  },
+  {
+    "id": "MEMORY-RATE-LIMIT",
+    "pattern": "rateLimit\\(\\s*\\{(?![^}]*store)|new\\s+MemoryStore\\(",
+    "globs": ["*.js", "*.ts", "*.mjs", "*.cjs"],
+    "severity_hint": "Low",
+    "description": "In-memory rate limiter/session store; per-process state in a multi-replica deployment",
+    "reference": "CWE-662"
+  },
+  {
+    "id": "PAYMENT-NO-KEY",
+    "pattern": "router\\.(post|put)\\(|@(Post|Put)\\(|app\\.(post|put)\\(|(async\\s+)?(function\\s+)?(charge|pay|refund|capture|debit|credit|transfer|withdraw|deposit|checkout|placeOrder|redeem)\\w*\\s*(=\\s*)?(async\\s*)?\\(",
+    "globs": ["*payment*", "*pay*", "*checkout*", "*wallet*", "*refund*", "*order*", "*billing*"],
+    "severity_hint": "High",
+    "description": "Money-moving handler; confirm an Idempotency-Key is read and stored before the side effect and passed to the provider",
+    "reference": "CWE-362"
+  },
+  {
+    "id": "IDEMPOTENCY-PRESENT",
+    "pattern": "idempotency-key|idempotencyKey|idempotency_key|event\\.id|eventId|jobId\\s*:",
+    "globs": ["*.js", "*.ts", "*.mjs", "*.cjs"],
+    "severity_hint": "Info",
+    "description": "Idempotency marker present; record in the inventory",
+    "reference": "CWE-362"
+  },
+  {
+    "id": "WEBHOOK-HANDLER",
+    "pattern": "webhook|constructEvent\\(|raw\\(\\s*\\{\\s*type",
+    "globs": ["*.js", "*.ts", "*.mjs", "*.cjs"],
+    "severity_hint": "High",
+    "description": "Provider callback handler; confirm event-id dedupe with a unique constraint before processing",
+    "reference": "CWE-362"
+  },
+  {
+    "id": "RETRY-ON-SIDE-EFFECT",
+    "pattern": "axiosRetry\\(|pRetry\\(|retry:\\s*[1-9]|retries:\\s*[1-9]|attempts:\\s*[2-9]",
+    "globs": ["*.js", "*.ts", "*.mjs", "*.cjs"],
+    "severity_hint": "Medium",
+    "description": "Retry configured; if it covers POSTs or jobs that create side effects without a key, each retry is a replay",
+    "reference": "CWE-362"
+  },
+  {
+    "id": "VERSION-DEFINED",
+    "pattern": "@VersionColumn|version:\\s*true|optimisticConcurrency:\\s*true|version\\s+Int\\s+@default\\(0\\)",
+    "globs": ["*.js", "*.ts", "*.prisma"],
+    "severity_hint": "Info",
+    "description": "Optimistic version present; check updates include it in the WHERE and 0-count is handled",
+    "reference": "CWE-362"
+  },
+  {
+    "id": "UNIQUE-CONSTRAINT",
+    "pattern": "@unique\\b|@@unique\\(|unique:\\s*true|\\.unique\\(\\)|@Unique\\(|@Index\\([^)]*unique:\\s*true|UNIQUE\\s*\\(|CREATE\\s+UNIQUE",
+    "globs": ["*.js", "*.ts", "*.prisma", "*.sql"],
+    "severity_hint": "Info",
+    "description": "Unique constraint present; match against each CHECK-THEN-ACT existence check",
+    "reference": "CWE-362"
+  },
+  {
+    "id": "TRANSACTION-PRESENT",
+    "pattern": "\\$transaction\\(|\\.transaction\\(|startTransaction\\(|withTransaction\\(|startSession\\(|updateMany\\(\\s*\\{\\s*where|findOneAndUpdate\\(",
+    "globs": ["*.js", "*.ts", "*.mjs", "*.cjs"],
+    "severity_hint": "Info",
+    "description": "Transaction or atomic conditional update present; record in the inventory",
+    "reference": "CWE-362"
+  },
+  {
+    "id": "JOB-NO-LOCK",
+    "pattern": "cron\\.schedule\\(|new\\s+CronJob\\(|@Cron\\(|@Interval\\(|setInterval\\(|repeat:\\s*\\{",
+    "globs": ["*.js", "*.ts", "*.mjs", "*.cjs"],
+    "severity_hint": "Low",
+    "description": "Scheduled job; runs in every replica unless a lock/leader election or a single repeatable jobId exists",
+    "reference": "CWE-362"
+  },
+  {
+    "id": "JOB-LOCK-PRESENT",
+    "pattern": "redlock|Redlock|['\"]NX['\"]|nx:\\s*true|acquireLock|leaderElection",
+    "globs": ["*.js", "*.ts", "*.mjs", "*.cjs"],
+    "severity_hint": "Info",
+    "description": "Distributed lock present; record in the inventory",
+    "reference": "CWE-362"
+  }
+]

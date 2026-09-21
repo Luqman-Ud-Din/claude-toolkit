@@ -1,0 +1,10 @@
+[
+  {"id": "SOURCEMAP-PROD", "pattern": "GENERATE_SOURCEMAP\\s*=\\s*true|productionBrowserSourceMaps\\s*:\\s*true|sourcemap\\s*:\\s*true", "globs": [".env.production", "next.config.*", "vite.config.*"], "severity_hint": "Low", "description": "Source maps shipped to production", "reference": "CWE-540"},
+  {"id": "PROD-API-URL-LOCALHOST", "pattern": "(NEXT_PUBLIC|VITE|REACT_APP)_\\w*(URL|API)\\w*\\s*=\\s*https?://(localhost|127\\.0\\.0\\.1)", "globs": [".env.production", ".env.prod"], "severity_hint": "High", "description": "Production env points at localhost", "reference": ""},
+  {"id": "SERVER-SECRET-PUBLIC", "pattern": "(NEXT_PUBLIC|VITE|REACT_APP)_\\w*(SECRET|PRIVATE|PASSWORD)\\w*\\s*=", "globs": [".env*"], "severity_hint": "Critical", "description": "Secret exposed through a public build-time variable", "reference": "CWE-798"},
+  {"id": "COMMITTED-ENV-PRODUCTION", "pattern": "^(DATABASE_URL|JWT_SECRET|\\w*API_KEY|\\w*SECRET)\\s*=\\s*(?!\\s*$|\\$\\{|<|changeme)[^\\s]{6,}", "globs": [".env.production", ".env.prod", ".env"], "severity_hint": "Critical", "description": "Secret value in a committed .env file", "reference": "CWE-798"},
+  {"id": "CONSOLE-LOG", "pattern": "console\\.(log|debug)\\(", "globs": ["*.ts", "*.tsx", "*.js", "*.jsx"], "severity_hint": "Info", "description": "Console logging; confirm stripped in production build", "reference": ""},
+  {"id": "ERROR-BOUNDARY", "pattern": "ErrorBoundary|global-error|componentDidCatch", "globs": ["*.tsx", "*.jsx", "*.ts"], "severity_hint": "Info", "description": "Error boundary present (absence is a finding)", "reference": ""},
+  {"id": "FETCH-NO-TIMEOUT", "pattern": "\\bfetch\\((?![^)]*signal)", "globs": ["*.ts", "*.tsx", "*.js", "*.jsx"], "severity_hint": "Low", "description": "fetch without AbortSignal timeout", "reference": "CWE-400"},
+  {"id": "NEXT-HEALTH-ROUTE", "pattern": "api/health|/healthz", "globs": ["*.ts", "*.js"], "severity_hint": "Info", "description": "Health route present for the Next.js server", "reference": ""}
+]

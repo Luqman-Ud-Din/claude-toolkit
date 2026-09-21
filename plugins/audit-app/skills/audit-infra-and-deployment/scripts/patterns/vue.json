@@ -1,0 +1,26 @@
+[
+  {
+    "id": "VUE-DEV-SERVER",
+    "pattern": "vue-cli-service['\"]?,?\\s*['\"]?serve|nuxi?['\"]?,?\\s*['\"]?dev\\b|vite['\"]?,?\\s*['\"]?preview|npm['\"]?,?\\s*['\"]?run['\"]?,?\\s*['\"]?(dev|serve)\\b",
+    "globs": ["Dockerfile*", "*.dockerfile", "*.yml", "*.yaml", "*.sh"],
+    "severity_hint": "High",
+    "description": "Dev/preview server used in a container/deployment definition",
+    "reference": "CWE-489"
+  },
+  {
+    "id": "VUE-SECRET-BUILD-ARG",
+    "pattern": "(ARG|ENV)\\s+(VITE|VUE_APP|NUXT_PUBLIC)_\\w*(SECRET|TOKEN|PASSWORD|PRIVATE)",
+    "globs": ["Dockerfile*", "*.dockerfile"],
+    "severity_hint": "High",
+    "description": "Secret passed as a public build-time variable - ends up in the JS bundle and image history",
+    "reference": "CWE-540; CWE-798"
+  },
+  {
+    "id": "FE-NGINX-ROOT-IMAGE",
+    "pattern": "^\\s*FROM\\s+(--platform=\\S+\\s+)?nginx(:|\\s|$)",
+    "globs": ["Dockerfile*", "*.dockerfile"],
+    "severity_hint": "Low",
+    "description": "Stock nginx image (root master, port 80) - consider nginxinc/nginx-unprivileged",
+    "reference": "CIS-Docker-4.1"
+  }
+]

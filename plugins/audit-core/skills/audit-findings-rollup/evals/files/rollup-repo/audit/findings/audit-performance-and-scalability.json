@@ -1,0 +1,46 @@
+{
+  "skill": "audit-performance-and-scalability",
+  "generated_at": "2026-09-10T10:00:00Z",
+  "target": {"root": ".", "commit": "a1b2c3d"},
+  "stack": {"primary_backend": "dotnet", "primary_frontend": "angular"},
+  "scope": {"checked": ["EF query shapes", "list endpoints"], "not_checked": [{"item": "load test", "reason": "no running environment"}]},
+  "findings": [
+    {
+      "id": "PERF-001",
+      "title": "Stock report loads every sale detail row into memory",
+      "severity": "High",
+      "confidence": "confirmed",
+      "location": {"file": "Product.Managers/StockReportManager.cs", "line": 88, "symbol": "BuildReport"},
+      "evidence": "var rows = _context.SaleDetails.ToList();",
+      "impact": "A tenant with a year of sales exhausts API memory and takes the service down for every tenant.",
+      "remediation": "Aggregate in SQL with GroupBy/Sum and page the result.",
+      "references": ["CWE-400"],
+      "tags": ["unbounded-query"]
+    },
+    {
+      "id": "PERF-002",
+      "title": "Product search runs a LIKE '%term%' scan without an index",
+      "severity": "High",
+      "confidence": "confirmed",
+      "location": {"file": "Product.Managers/ProductManager.cs", "line": 120, "symbol": "Search"},
+      "evidence": "_context.Products.Where(p => p.Name.Contains(term))",
+      "impact": "Search latency grows linearly with catalogue size; large tenants time out.",
+      "remediation": "Add a full-text index or a prefix search.",
+      "references": ["CWE-1176"],
+      "tags": []
+    },
+    {
+      "id": "PERF-003",
+      "title": "Dashboard widgets are fetched sequentially",
+      "severity": "Low",
+      "confidence": "confirmed",
+      "location": {"file": "src/app/features/dashboard/dashboard.component.ts", "line": 54},
+      "evidence": "await this.loadSales(); await this.loadStock(); await this.loadExpenses();",
+      "impact": "Dashboard takes three round trips longer than needed.",
+      "remediation": "Load the widgets in parallel with forkJoin.",
+      "references": [],
+      "tags": ["no-standard"]
+    }
+  ],
+  "summary": {"Critical": 0, "High": 2, "Medium": 0, "Low": 1, "Info": 0}
+}

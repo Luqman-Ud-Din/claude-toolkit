@@ -1,0 +1,29 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Restore
+        run: dotnet restore Shop.sln
+      - name: Build
+        run: dotnet build Shop.sln --no-restore --configuration Release
+      # Tests disabled until the SQL Server 2022 migration settles (see #412)
+      # - name: Test
+      #   run: dotnet test Shop.sln --no-build --configuration Release
+      - name: Publish
+        run: dotnet publish src/Shop.Api/Shop.Api.csproj --no-build --configuration Release -o out
+      - uses: actions/upload-artifact@v4
+        with:
+          name: shop-api
+          path: out

@@ -1,0 +1,18 @@
+[
+  {
+    "id": "CLIENT-SETS-TENANT",
+    "pattern": "(tenantId|companyId|orgId)\\s*[:=]\\s*(this\\.|localStorage|user\\.|params)",
+    "globs": ["*.ts"],
+    "severity_hint": "Info",
+    "description": "Client puts a tenant id into a request - fine for convenience, but the server must derive tenant from the token and ignore this value",
+    "reference": "CWE-639"
+  },
+  {
+    "id": "TENANT-IN-URL",
+    "pattern": "`[^`]*\\$\\{[^}]*tenant[^}]*\\}",
+    "globs": ["*.ts"],
+    "severity_hint": "Info",
+    "description": "Tenant id interpolated into an API URL - confirm the backend re-derives and enforces tenant, not this path segment",
+    "reference": "CWE-639"
+  }
+]

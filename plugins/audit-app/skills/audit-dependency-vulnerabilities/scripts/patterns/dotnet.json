@@ -1,0 +1,66 @@
+[
+  {
+    "id": "NUGET-NEWTONSOFT-LT-13.0.1",
+    "pattern": "Include=\"Newtonsoft\\.Json\"[^>]*Version=\"(?:[1-9]|1[0-2])\\.\\d",
+    "globs": ["*.csproj", "*.fsproj", "Directory.Packages.props", "packages.config"],
+    "severity_hint": "High",
+    "description": "Newtonsoft.Json below 13.0.1: stack-overflow DoS on deeply nested JSON (CVE-2024-21907)",
+    "reference": "CVE-2024-21907"
+  },
+  {
+    "id": "NUGET-SYSTEM-TEXT-JSON-OLD",
+    "pattern": "Include=\"System\\.Text\\.Json\"[^>]*Version=\"(?:[1-7]\\.|8\\.0\\.[0-3]\\b)",
+    "globs": ["*.csproj", "*.fsproj", "Directory.Packages.props"],
+    "severity_hint": "High",
+    "description": "System.Text.Json below 8.0.4/8.0.5: DoS advisories CVE-2024-30105, CVE-2024-43485",
+    "reference": "CVE-2024-30105"
+  },
+  {
+    "id": "NUGET-SHARPZIPLIB-LT-1.3.3",
+    "pattern": "Include=\"SharpZipLib\"[^>]*Version=\"(?:0\\.|1\\.[0-2]\\.|1\\.3\\.[0-2]\\b)",
+    "globs": ["*.csproj", "*.fsproj", "Directory.Packages.props"],
+    "severity_hint": "High",
+    "description": "SharpZipLib below 1.3.3: path traversal on extraction (CVE-2021-32840)",
+    "reference": "CVE-2021-32840"
+  },
+  {
+    "id": "NUGET-BOUNCYCASTLE-LT-2.2.1",
+    "pattern": "Include=\"(?:BouncyCastle|Portable\\.BouncyCastle|BouncyCastle\\.Cryptography)\"[^>]*Version=\"(?:1\\.|2\\.[01]\\.|2\\.2\\.0\\b)",
+    "globs": ["*.csproj", "*.fsproj", "Directory.Packages.props"],
+    "severity_hint": "Medium",
+    "description": "BouncyCastle below 2.2.1: LDAP injection in certificate handling (CVE-2023-33201)",
+    "reference": "CVE-2023-33201"
+  },
+  {
+    "id": "NUGET-FLOATING-VERSION",
+    "pattern": "<PackageReference[^>]*Version=\"[^\"]*\\*[^\"]*\"",
+    "globs": ["*.csproj", "*.fsproj", "Directory.Packages.props"],
+    "severity_hint": "Low",
+    "description": "Floating NuGet version (wildcard): builds are not reproducible and a compromised release is pulled automatically",
+    "reference": "CWE-1104"
+  },
+  {
+    "id": "NUGET-NO-PACKAGE-LOCK",
+    "pattern": "<RestorePackagesWithLockFile>\\s*false",
+    "globs": ["*.csproj", "*.fsproj", "Directory.Build.props"],
+    "severity_hint": "Info",
+    "description": "Lock-file restore explicitly disabled; consider packages.lock.json for reproducible restores",
+    "reference": "CWE-1104"
+  },
+  {
+    "id": "NUGET-AUDIT-DISABLED",
+    "pattern": "<NuGetAudit>\\s*false|<NuGetAuditLevel>\\s*(?:critical)",
+    "globs": ["*.csproj", "*.fsproj", "Directory.Build.props", "nuget.config"],
+    "severity_hint": "Medium",
+    "description": "NuGet's built-in vulnerability audit (SDK 8+) turned off or limited to critical only",
+    "reference": "OWASP-A06:2021"
+  },
+  {
+    "id": "NUGET-HTTP-FEED",
+    "pattern": "<add\\s+key=\"[^\"]+\"\\s+value=\"http://",
+    "globs": ["nuget.config", "NuGet.Config"],
+    "severity_hint": "High",
+    "description": "Package source over plain HTTP: packages can be substituted in transit",
+    "reference": "CWE-494"
+  }
+]

@@ -1,0 +1,9 @@
+{
+  "name": "shop-nuxt",
+  "private": true,
+  "dependencies": {
+    "@prisma/client": "5.17.0",
+    "nuxt": "3.12.4",
+    "vue": "3.4.38"
+  }
+}

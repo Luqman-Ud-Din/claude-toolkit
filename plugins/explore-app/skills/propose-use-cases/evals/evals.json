@@ -1,0 +1,41 @@
+{
+  "skill_name": "propose-use-cases",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "We're taking Orderly into Germany, the UAE and Pakistan next year. Here's the business-logic document: evals/files/sample-bld.md. What are we missing compared with a normal B2B wholesale ordering product, and what do we need for those markets specifically? Give me a prioritised list. Write it under docs/analysis/ in the current directory.",
+      "expected_output": "A report that states the domain (B2B wholesale ordering / order and stock management) and the BLD source; a prioritised P-xxx proposal list led by compliance items (multi-currency, tax-by-jurisdiction replacing the country conditional, invoicing and e-invoicing for UAE FTA / Pakistan FBR, data residency, local payment methods), then operational (returns/refunds, roles/permissions, time zones per customer), then expectation items; a country-specific section for DE, UAE, PK; a domain checklist table; a full i18n checklist table with every I18N-xx item classified PRESENT/PARTIAL/MISSING with BLD citations for PRESENT; UC-xxx findings for every PARTIAL/MISSING with all fields; a Beyond the checklist section.",
+      "files": [
+        "evals/files/sample-bld.md"
+      ],
+      "expectations": [
+        "Header states the confirmed domain, the source BLD path and the target markets Germany, UAE, Pakistan",
+        "Proposed use cases come before the checklist tables and findings",
+        "Every I18N item ID from references/i18n-checklist.md (A1..K4, 53 items) appears in the i18n results table with a status of PRESENT, PARTIAL or MISSING",
+        "Every PRESENT row cites a BLD workflow, rule (BR-xxx) or entity by name",
+        "Every PARTIAL/MISSING item has a UC-xxx finding containing all eight fields: ID, Label, Severity, Area, BLD reference, Location, Impact, Remediation",
+        "Proposal items are ordered with legal/compliance items (e.g. tax by jurisdiction, e-invoicing, data residency, multi-currency) before revenue/operational items before user-expectation items, and each states its priority basis and rationale",
+        "Every UC finding's Remediation cites a P-xxx item and every P-xxx lists the UC findings it resolves",
+        "Multi-currency is reported as MISSING or PARTIAL citing BR-012 (EUR only)",
+        "Tax-by-jurisdiction is reported as PARTIAL or MISSING citing BR-003 (hard-coded NL/BE/DE conditional)",
+        "Country-specific section mentions e-invoicing/fiscal obligations for UAE and Pakistan (FTA/FBR or equivalent) and German VAT invoice requirements",
+        "A Beyond the checklist section exists with at least one issue-format item",
+        "The document is written to docs/analysis/propose-use-cases/<date>.md and the reply states the path",
+        "Domain checklist rows carry stable DOM-xx IDs",
+        "Ten spot-checked findings have a BLD reference (BR-xxx, workflow or entity name) that exists in the sample BLD, or 'none'",
+        "Stated PRESENT/PARTIAL/MISSING counts for each checklist equal the number of rows with that status in the corresponding table"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "are we ready to go international? do a gap analysis of our ordering app",
+      "expected_output": "No BLD was supplied. The skill must not proceed: it offers to generate one with explore-business-logic (if available) or asks for the BLD, and produces no analysis file.",
+      "files": [],
+      "expectations": [
+        "The reply contains no checklist results, findings, severities or remediation plan - only the BLD offer/question - and no file is written under docs/",
+        "The response asks for a BLD or offers to generate one with explore-business-logic",
+        "The run halts after the offer: it does not analyse any application, repository or guessed product"
+      ]
+    }
+  ]
+}

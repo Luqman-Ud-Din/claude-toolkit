@@ -1,0 +1,9 @@
+<h2>Reports</h2>
+<p *ngIf="rows.length === 0">No reports yet.</p>
+<table *ngIf="rows.length > 0">
+  <tr *ngFor="let r of rows">
+    <td>{{ r.name }}</td>
+    <td>{{ r.total }}</td>
+  </tr>
+</table>
+<small>Generated {{ generatedAt }}</small>

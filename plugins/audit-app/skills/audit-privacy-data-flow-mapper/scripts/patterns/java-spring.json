@@ -1,0 +1,74 @@
+[
+  {
+    "id": "PII-JAVA-LOG-VALUE",
+    "pattern": "\\b(?:log|logger|LOG|LOGGER)\\.(?:info|debug|warn|error|trace)\\s*\\([^;]*\\b(?:get)?(?:Email|Phone|Mobile|FirstName|LastName|FullName|Address|Dob|DateOfBirth|Ssn|NationalId|Iban|CardNumber)\\b",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "High",
+    "description": "SLF4J/Log4j call whose arguments include a PII getter or field",
+    "reference": "CWE-532"
+  },
+  {
+    "id": "PII-JAVA-LOG-TOSTRING-ENTITY",
+    "pattern": "\\b(?:log|logger|LOG|LOGGER)\\.(?:info|debug|warn|error)\\s*\\([^;]*\\b(?:user|customer|patient|employee|account|profile)\\w*\\s*[),]",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "Medium",
+    "description": "Entity object passed to a log call - Lombok @Data/@ToString prints every field including PII",
+    "reference": "CWE-532"
+  },
+  {
+    "id": "PII-JAVA-MDC-PII",
+    "pattern": "MDC\\.put\\s*\\(\\s*\"[^\"]*(?:email|phone|name|user)[^\"]*\"",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "Medium",
+    "description": "PII placed in the logging MDC - attached to every subsequent log line in the request",
+    "reference": "CWE-532"
+  },
+  {
+    "id": "PII-JAVA-CACHE-KEY",
+    "pattern": "@Cacheable\\s*\\([^)]*key\\s*=\\s*\"[^\"]*#\\w*\\.?(?:email|phone|mobile|name)|(?:redisTemplate|cache|cacheManager)\\.\\w*(?:put|set|get|opsForValue\\(\\)\\.set)\\s*\\([^;]*(?:email|phone|mobile)",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "Medium",
+    "description": "PII used as a Spring cache / Redis key",
+    "reference": "CWE-359"
+  },
+  {
+    "id": "PII-JAVA-OUTBOUND-HTTP",
+    "pattern": "\\b(?:restTemplate|webClient|WebClient|RestTemplate|RestClient|HttpClient|OkHttpClient|Unirest)\\b[^;]*\\bhttps?://|@FeignClient\\s*\\([^)]*url\\s*=",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "Info",
+    "description": "Outbound HTTP client with a literal URL / Feign client - a third-party endpoint; inspect the request body",
+    "reference": "GDPR-Art.28"
+  },
+  {
+    "id": "PII-JAVA-THIRD-PARTY-SDK",
+    "pattern": "\\b(?:SendGrid|Twilio|Message\\.creator|MailchimpClient|Stripe|Sentry|Mixpanel|AmazonS3|S3Client|BlobContainerClient|JavaMailSender|SimpleMailMessage|MimeMessageHelper|FirebaseMessaging)\\b",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "Info",
+    "description": "Third-party SDK / mail sender in use - a processor for the inventory",
+    "reference": "GDPR-Art.28"
+  },
+  {
+    "id": "PII-JAVA-PII-IN-PATH-OR-PARAM",
+    "pattern": "@(?:GetMapping|DeleteMapping|RequestMapping)\\s*\\([^)]*\\{(?:email|phone|mobile|ssn|iban)\\}|@RequestParam\\s*(?:\\([^)]*\\))?\\s*\\w+\\s+(?:email|phone|mobile|ssn|iban)\\b",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "Medium",
+    "description": "PII in a path variable or request parameter - visible in access logs and proxies",
+    "reference": "CWE-598"
+  },
+  {
+    "id": "PII-JAVA-ENTITY-PII-COLUMN",
+    "pattern": "@Column\\s*\\([^)]*name\\s*=\\s*\"(?:email|phone|mobile|first_name|last_name|full_name|address|dob|date_of_birth|ssn|national_id|iban|card_number)\"|private\\s+String\\s+(?:email|phone|mobile|firstName|lastName|fullName|address|ssn|nationalId|iban|cardNumber)\\s*;",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "Info",
+    "description": "PII column on a JPA entity or field on a DTO",
+    "reference": "GDPR-Art.30"
+  },
+  {
+    "id": "PII-JAVA-TEMPLATE-PLACEHOLDER",
+    "pattern": "\\$\\{[^}]*(?:email|phone|mobile|firstName|lastName|fullName|address)[^}]*\\}|th:text\\s*=\\s*\"\\$\\{[^}]*(?:email|phone|name)",
+    "globs": ["*.html", "*.ftl", "*.txt", "*.vm"],
+    "severity_hint": "Info",
+    "description": "PII placeholder in a Thymeleaf/FreeMarker/Velocity notification template",
+    "reference": "GDPR-Art.30"
+  }
+]

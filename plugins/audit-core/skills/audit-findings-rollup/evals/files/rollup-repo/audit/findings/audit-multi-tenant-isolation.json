@@ -1,0 +1,35 @@
+{
+  "skill": "audit-multi-tenant-isolation",
+  "generated_at": "2026-09-10T09:30:00Z",
+  "target": {"root": ".", "commit": "a1b2c3d"},
+  "stack": {"primary_backend": "dotnet", "primary_frontend": "angular"},
+  "scope": {"checked": ["Product.Managers", "CustomConnectionString usage"], "not_checked": [{"item": "production tenant databases", "reason": "no read access"}]},
+  "findings": [
+    {
+      "id": "TENANT-001",
+      "title": "Batch list query is not filtered by BranchId",
+      "severity": "Medium",
+      "confidence": "likely",
+      "location": {"file": "Product.Managers/BatchManager.cs", "line": 31, "symbol": "GetAll"},
+      "evidence": "return _context.Batches.Where(b => b.CompanyId == companyId).ToList();",
+      "impact": "Branch users see batches of other branches in the same company.",
+      "remediation": "Same fix as the order lookup: filter by BranchId in RepositoryBaseManager.",
+      "references": ["CWE-284", "ASVS-4.1.3"],
+      "tags": ["cross-branch"],
+      "root_cause_key": "base-repository:missing-branch-filter"
+    },
+    {
+      "id": "TENANT-002",
+      "title": "Static CustomConnectionString can leak a tenant database across concurrent requests",
+      "severity": "High",
+      "confidence": "confirmed",
+      "location": {"file": "SharedLibrary/OptionsModel/CustomConnectionString.cs", "line": 5},
+      "evidence": "public static string DbName { get; set; }",
+      "impact": "Under concurrent load a request can run against another tenant's database.",
+      "remediation": "Resolve the tenant connection string per request through a scoped service.",
+      "references": ["CWE-362", "CWE-668"],
+      "tags": ["tenant-db"]
+    }
+  ],
+  "summary": {"Critical": 0, "High": 1, "Medium": 1, "Low": 0, "Info": 0}
+}

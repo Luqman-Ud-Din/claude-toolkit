@@ -1,0 +1,34 @@
+[
+  {
+    "id": "REACT-DEV-SERVER",
+    "pattern": "react-scripts['\"]?,?\\s*['\"]?start|next['\"]?,?\\s*['\"]?dev\\b|vite['\"]?,?\\s*['\"]?preview|npm['\"]?,?\\s*['\"]?run['\"]?,?\\s*['\"]?dev\\b",
+    "globs": ["Dockerfile*", "*.dockerfile", "*.yml", "*.yaml", "*.sh"],
+    "severity_hint": "High",
+    "description": "Dev/preview server used in a container/deployment definition",
+    "reference": "CWE-489"
+  },
+  {
+    "id": "REACT-SECRET-BUILD-ARG",
+    "pattern": "(ARG|ENV)\\s+(VITE|REACT_APP|NEXT_PUBLIC)_\\w*(SECRET|TOKEN|PASSWORD|PRIVATE)",
+    "globs": ["Dockerfile*", "*.dockerfile"],
+    "severity_hint": "High",
+    "description": "Secret passed as a public build-time variable - ends up in the JS bundle and image history",
+    "reference": "CWE-540; CWE-798"
+  },
+  {
+    "id": "FE-NODE-STATIC-SERVER",
+    "pattern": "\\bserve\\s+-s\\b|\\bhttp-server\\b",
+    "globs": ["Dockerfile*", "*.dockerfile"],
+    "severity_hint": "Low",
+    "description": "Node static server for SPA output - prefer nginx/caddy or a CDN",
+    "reference": "CIS-Docker-4.3"
+  },
+  {
+    "id": "FE-NGINX-ROOT-IMAGE",
+    "pattern": "^\\s*FROM\\s+(--platform=\\S+\\s+)?nginx(:|\\s|$)",
+    "globs": ["Dockerfile*", "*.dockerfile"],
+    "severity_hint": "Low",
+    "description": "Stock nginx image (root master, port 80) - consider nginxinc/nginx-unprivileged",
+    "reference": "CIS-Docker-4.1"
+  }
+]

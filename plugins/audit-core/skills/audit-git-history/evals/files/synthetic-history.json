@@ -1,0 +1,47 @@
+{
+  "_comment": "Synthetic history mirroring build_sample_repo.py, for runs without git. Format: references/githist-contract.md. Exercises a rename (src/legacy/Util.cs -> src/common/Util.cs), a committed then deleted secret (config/.env), ticket ids (PROJ-101, SEC-7, #42, AB#1234, PROJ-200, #57), a TODO line blamed to 2023-02-10, an unmerged branch (feature/spike) and a merge commit.",
+  "head_date": "2026-08-27T09:00:00Z",
+  "repo": {"branch": "main", "remote": "https://github.com/example-org/sample-shop.git", "tags": ["v1.0"], "shallow": false},
+  "commits": [
+    {"hash": "m08", "date": "2026-08-27T09:00:00Z", "author": "imran", "message": "Merge branch 'feature/export' (#57)",
+     "parents": ["c06", "c07"], "refs": ["refs/heads/main"], "files": []},
+    {"hash": "s01", "date": "2026-08-26T10:00:00Z", "author": "bilal", "message": "Spike: GraphQL endpoint",
+     "parents": ["c06"], "refs": ["refs/heads/feature/spike"],
+     "files": [{"path": "src/GraphQl.cs", "added": 3, "deleted": 0, "status": "A"}]},
+    {"hash": "c07", "date": "2026-08-25T10:00:00Z", "author": "sana", "message": "PROJ-200 CSV export",
+     "parents": ["c06"], "refs": ["refs/heads/main", "refs/heads/feature/export"],
+     "files": [{"path": "src/CsvExport.cs", "added": 3, "deleted": 0, "status": "A"}]},
+    {"hash": "c06", "date": "2026-08-20T16:00:00Z", "author": "bilal", "message": "fix typo",
+     "parents": ["c05"], "refs": ["refs/heads/main", "refs/heads/feature/export", "refs/heads/feature/spike"],
+     "files": [{"path": "README.md", "added": 1, "deleted": 1, "status": "M", "hunks": [[3, 3]]}]},
+    {"hash": "c05", "date": "2025-11-03T08:30:00Z", "author": "sana", "message": "AB#1234 Order totals rounding",
+     "parents": ["c04"], "refs": ["refs/heads/main", "refs/heads/feature/export", "refs/heads/feature/spike"],
+     "files": [{"path": "src/OrderService.cs", "added": 3, "deleted": 1, "status": "M", "hunks": [[7, 7], [9, 10]]}]},
+    {"hash": "c04", "date": "2024-01-15T14:00:00Z", "author": "bilal", "message": "Move Util to common, see #42",
+     "parents": ["c03"], "refs": ["refs/heads/main", "refs/heads/feature/export", "refs/heads/feature/spike", "refs/tags/v1.0"],
+     "files": [{"path": "src/common/Util.cs", "old_path": "src/legacy/Util.cs", "added": 1, "deleted": 0, "status": "R", "hunks": [[7, 7]]}]},
+    {"hash": "c03", "date": "2023-06-20T09:00:00Z", "author": "sana", "message": "Remove committed secrets (SEC-7)\n\nRotated the Stripe key; see incident notes.",
+     "parents": ["c02"], "refs": ["refs/heads/main", "refs/heads/feature/export", "refs/heads/feature/spike", "refs/tags/v1.0"],
+     "files": [{"path": "config/.env", "added": 0, "deleted": 2, "status": "D"},
+               {"path": "config/appsettings.Production.json", "added": 1, "deleted": 1, "status": "M", "hunks": [[3, 3]],
+                "added_lines": [{"line": 3, "text": "    \"Default\": \"Server=db;Database=shop;User Id=sa;Password=${DB_PASSWORD};\""}]}]},
+    {"hash": "c02", "date": "2023-06-14T11:20:00Z", "author": "imran", "message": "Add deploy settings",
+     "parents": ["c01"], "refs": ["refs/heads/main", "refs/heads/feature/export", "refs/heads/feature/spike", "refs/tags/v1.0"],
+     "files": [{"path": "config/.env", "added": 2, "deleted": 0, "status": "A",
+                "added_lines": [{"line": 1, "text": "STRIPE_SECRET_KEY=<fake-stripe-live-key>"}, {"line": 2, "text": "LOG_LEVEL=info"}]},
+               {"path": "config/appsettings.Production.json", "added": 5, "deleted": 0, "status": "A",
+                "added_lines": [{"line": 3, "text": "    \"Default\": \"Server=db;Database=shop;User Id=sa;Password=<fake-password>;\""}]}]},
+    {"hash": "c01", "date": "2023-02-10T10:00:00Z", "author": "imran", "message": "PROJ-101 Initial import",
+     "parents": [], "refs": ["refs/heads/main", "refs/heads/feature/export", "refs/heads/feature/spike", "refs/tags/v1.0"],
+     "files": [{"path": "src/OrderService.cs", "added": 9, "deleted": 0, "status": "A", "hunks": [[1, 9]],
+                "added_lines": [{"line": 6, "text": "    {   // TODO(imran): remove legacy tax path PROJ-99"}]},
+               {"path": "src/legacy/Util.cs", "added": 6, "deleted": 0, "status": "A"},
+               {"path": "README.md", "added": 3, "deleted": 0, "status": "A"}]}
+  ],
+  "blame": {
+    "src/OrderService.cs": [
+      {"lines": "1-11", "date": "2025-11-03T08:30:00Z", "author": "sana", "commit": "c05"},
+      {"lines": "1-6", "date": "2023-02-10T10:00:00Z", "author": "imran", "commit": "c01"}
+    ]
+  }
+}

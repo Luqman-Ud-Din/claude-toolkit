@@ -1,0 +1,50 @@
+[
+  {
+    "id": "SOC2-BRANCH-PROTECTION-OFF",
+    "pattern": "protection\\s*:\\s*(?:null|~|false)|required_pull_request_reviews\\s*:\\s*(?:null|~)|required_status_checks\\s*:\\s*(?:null|~)|enforce_admins\\s*:\\s*false|Branch not protected",
+    "globs": ["*.yml", "*.yaml", "*.json"],
+    "severity_hint": "High",
+    "description": "Branch protection disabled or reviews/status checks not required",
+    "reference": "SOC2-CC8.1"
+  },
+  {
+    "id": "SOC2-CI-SCAN-STEP",
+    "pattern": "npm audit|pnpm audit|yarn audit|github/codeql-action|trivy|snyk|semgrep|gitleaks|sonar|dependency-review-action",
+    "globs": ["*.yml", "*.yaml", "Jenkinsfile"],
+    "severity_hint": "Info",
+    "description": "Security scan for the SPA in CI. ZERO hits means no CI security scan (CC7.1)",
+    "reference": "SOC2-CC7.1"
+  },
+  {
+    "id": "SOC2-FE-SSO-CLIENT",
+    "pattern": "angular-auth-oidc-client|@azure/msal-angular|angular-oauth2-oidc|keycloak-angular|@auth0/auth0-angular",
+    "globs": ["*.ts", "package.json"],
+    "severity_hint": "Info",
+    "description": "OIDC/SSO client in the SPA - supporting evidence for CC6.1 (MFA itself is enforced at the IdP)",
+    "reference": "SOC2-CC6.1"
+  },
+  {
+    "id": "SOC2-FE-PROD-SOURCEMAP",
+    "pattern": "\"sourceMap\"\\s*:\\s*true",
+    "globs": ["angular.json"],
+    "severity_hint": "Low",
+    "description": "Source maps enabled - check the production configuration (C1.1 confidentiality of code)",
+    "reference": "SOC2-C1.1"
+  },
+  {
+    "id": "SOC2-FE-ENV-SECRET",
+    "pattern": "(?:secret|apiKey|clientSecret|password|token)\\s*:\\s*['\"][A-Za-z0-9+/_\\-]{12,}['\"]",
+    "globs": ["environment*.ts"],
+    "severity_hint": "High",
+    "description": "Secret-looking value in an environment file shipped to the browser",
+    "reference": "SOC2-C1.1"
+  },
+  {
+    "id": "SOC2-FE-CI-TEST",
+    "pattern": "ng test|npm (?:run )?test|--watch=false|karma|jest|vitest|playwright|cypress",
+    "globs": ["*.yml", "*.yaml", "Jenkinsfile"],
+    "severity_hint": "Info",
+    "description": "Frontend test gate in CI (CC8.1). ZERO hits means the SPA ships without an automated test gate",
+    "reference": "SOC2-CC8.1"
+  }
+]

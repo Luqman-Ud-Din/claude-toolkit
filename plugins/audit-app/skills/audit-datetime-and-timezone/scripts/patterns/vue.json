@@ -1,0 +1,66 @@
+[
+  {
+    "id": "FE-NAIVE-PARSE",
+    "pattern": "new Date\\(\\s*['\"]\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}(:\\d{2})?)?['\"]\\s*\\)|new Date\\(\\s*\\w+(\\.\\w+)*\\.(date|Date|At|On|createdAt|updatedAt|dueDate|expiry|expiresAt)\\w*\\s*\\)|\\bdayjs\\(\\s*\\w+\\.\\w+\\s*\\)(?!\\.utc)|\\bmoment\\(\\s*\\w+\\.\\w+\\s*\\)|Date\\.parse\\(",
+    "globs": ["*.ts", "*.js", "*.vue"],
+    "severity_hint": "Medium",
+    "description": "Date parsed from an API/user string; without an offset each browser interprets it in its own zone",
+    "reference": "CWE-704"
+  },
+  {
+    "id": "FE-DATEONLY-TO-INSTANT",
+    "pattern": "\\.toISOString\\(\\)|value-format\\s*=\\s*\"x\"",
+    "globs": ["*.ts", "*.js", "*.vue"],
+    "severity_hint": "Low",
+    "description": "toISOString / epoch value-format on a value that may be a date-only picker result; shifts the day east of UTC",
+    "reference": "CWE-682"
+  },
+  {
+    "id": "FE-PICKER-NO-VALUE-FORMAT",
+    "pattern": "<el-date-picker(?![^>]*value-format)[^>]*type=\"date\"|<v-date-picker(?![^>]*format)",
+    "globs": ["*.vue"],
+    "severity_hint": "Low",
+    "description": "Date-only picker emitting a local Date object; set value-format=\"YYYY-MM-DD\"",
+    "reference": "CWE-682"
+  },
+  {
+    "id": "FE-LOCAL-DAY-BOUNDARY",
+    "pattern": "setHours\\(\\s*0\\s*,\\s*0|startOf\\(\\s*['\"](day|month|week)['\"]|endOf\\(\\s*['\"](day|month)['\"]|toDateString\\(\\)",
+    "globs": ["*.ts", "*.js", "*.vue"],
+    "severity_hint": "Medium",
+    "description": "Day boundary computed in the browser zone; if sent to the server as an instant it ignores the branch/user zone",
+    "reference": "CWE-682"
+  },
+  {
+    "id": "FE-NON-ISO-OUT",
+    "pattern": "toLocaleDateString\\(|toLocaleString\\(|\\.format\\(\\s*['\"](DD|MM)[/.-](MM|DD)[/.-]YYYY|\\.format\\(\\s*['\"]YYYY-MM-DD HH:mm",
+    "globs": ["*.ts", "*.js", "*.vue"],
+    "severity_hint": "Low",
+    "description": "Locale/offset-less formatting; fine for display, a defect if posted to the API, used for sorting, or rendered during SSR",
+    "reference": "CWE-20"
+  },
+  {
+    "id": "FE-TZ-GUESS",
+    "pattern": "resolvedOptions\\(\\)\\.timeZone|getTimezoneOffset\\(\\)",
+    "globs": ["*.ts", "*.js", "*.vue"],
+    "severity_hint": "Low",
+    "description": "User zone inferred from the browser; check it is stored server-side",
+    "reference": "CWE-682"
+  },
+  {
+    "id": "FE-STRING-SORT",
+    "pattern": "localeCompare\\(\\s*\\w+\\.\\w*(date|Date|At|On)\\w*\\s*\\)|sort\\([^)]*(dateLabel|formattedDate|dateStr)",
+    "globs": ["*.ts", "*.js", "*.vue"],
+    "severity_hint": "Low",
+    "description": "Sorting on a formatted date string",
+    "reference": "CWE-682"
+  },
+  {
+    "id": "FE-TEST-REAL-TIME",
+    "pattern": "new Date\\(\\)|Date\\.now\\(\\)",
+    "globs": ["*.spec.ts", "*.test.ts", "*.spec.js", "*.test.js"],
+    "severity_hint": "Low",
+    "description": "Test uses real time; use vi fake timers with setSystemTime",
+    "reference": "CWE-682"
+  }
+]

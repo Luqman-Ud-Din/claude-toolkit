@@ -1,0 +1,57 @@
+{
+  "skill_name": "audit-owasp-asvs-mapper",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "The authz, XSS and headers audits have finished on evals/files/sample-repo. Map their findings to OWASP Top 10, ASVS and CWE and give me the coverage matrix.",
+      "expected_output": "map_findings.py is run against the sample repo. AUTHZ-001 (IDOR) gets OWASP-A01:2021, ASVS-4.2.1 and CWE-639; XSS-001 gets OWASP-A03:2021, ASVS-5.3.3 and CWE-79; HDR-001 (missing HSTS) gets OWASP-A05:2021, ASVS-14.4.5 and CWE-319. The three findings.json files are updated with those references (nothing removed) and audit/reports/audit-owasp-asvs-mapper.md contains the Top 10 table, the ASVS section matrix with Verified/Failed/Not assessed, and a not-assessed list.",
+      "files": [
+        "evals/files/sample-repo/audit/findings/audit-authz-and-access-control.json",
+        "evals/files/sample-repo/audit/findings/audit-frontend-xss-and-dom-safety.json",
+        "evals/files/sample-repo/audit/findings/audit-security-headers-and-middleware.json",
+        "evals/files/sample-repo/audit/status/audit-authz-and-access-control.json",
+        "evals/files/sample-repo/Api/Api.csproj",
+        "evals/files/sample-repo/web/package.json"
+      ],
+      "expectations": [
+        "AUTHZ-001 references include OWASP-A01:2021, ASVS-4.2.1 and CWE-639",
+        "XSS-001 references include OWASP-A03:2021, ASVS-5.3.3 and CWE-79",
+        "HDR-001 references include OWASP-A05:2021, ASVS-14.4.5 and CWE-319",
+        "The report contains a table row for V4.2 with status Failed linking AUTHZ-001",
+        "The report contains a table row for V14.4 with status Failed linking HDR-001",
+        "The report lists ASVS sections that were not assessed (for example V2.1 Password Security)",
+        "ASVS-14.4.4 is reported as Verified because the headers skill recorded it in scope.checked",
+        "No pre-existing reference was removed from any finding"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "which OWASP categories did we actually cover in this audit and which ASVS controls did nobody look at? repo is evals/files/sample-repo",
+      "expected_output": "A summary derived from the coverage matrix: A01, A03 and A05 have failing findings; A02 is assessed through V9.1 (headers skill completed); A04, A06, A07, A08, A09, A10 are not assessed. The ASVS not-assessed list is given (V2.x authentication, V6.x cryptography, V7.x logging, V11.1 business logic, V12.x files, V13.x API, V14.1/14.2/14.3 configuration, etc.) with the skill that owns each, and MAP-001 is written as an Info finding.",
+      "files": [
+        "evals/files/sample-repo/audit/findings/audit-authz-and-access-control.json",
+        "evals/files/sample-repo/audit/findings/audit-frontend-xss-and-dom-safety.json",
+        "evals/files/sample-repo/audit/findings/audit-security-headers-and-middleware.json"
+      ],
+      "expectations": [
+        "Answer names A01, A03 and A05 as the categories with failing findings",
+        "Answer lists at least five ASVS sections as not assessed and names the skill that would assess them",
+        "Answer does not claim ASVS sections were verified when no skill covering them ran",
+        "audit/findings/audit-owasp-asvs-mapper.json contains an Info finding with id MAP-001 about not-assessed sections",
+        "audit/status/audit-owasp-asvs-mapper.json is written with status completed"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Add standard references (CWE, ASVS, OWASP) to the HSTS finding in evals/files/sample-repo/audit/findings/audit-security-headers-and-middleware.json - but do a dry run first and show me what would change.",
+      "expected_output": "map_findings.py --dry-run output is shown with HDR-001 mapped by the hsts rule to OWASP-A05:2021, ASVS-14.4.5 (L1) and CWE-319, and the explanation that A05 (misconfiguration) is chosen over A02 because the defect is a missing header. Only after confirmation is the file updated.",
+      "files": ["evals/files/sample-repo/audit/findings/audit-security-headers-and-middleware.json"],
+      "expectations": [
+        "The dry run shows HDR-001 mapped to OWASP-A05:2021, ASVS-14.4.5 and CWE-319",
+        "The dry run does not modify the findings file",
+        "The explanation mentions the hsts rule and why A05 rather than A02 applies",
+        "The ASVS level (L1) of 14.4.5 is stated"
+      ]
+    }
+  ]
+}

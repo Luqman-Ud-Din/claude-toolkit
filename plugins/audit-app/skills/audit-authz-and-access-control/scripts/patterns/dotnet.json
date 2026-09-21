@@ -1,0 +1,50 @@
+[
+  {
+    "id": "CONTROLLER-NO-AUTHORIZE",
+    "pattern": ":\\s*ControllerBase|:\\s*Controller\\b",
+    "globs": ["*Controller.cs"],
+    "severity_hint": "High",
+    "description": "Controller declaration - confirm the class or every action has [Authorize]; a class with no [Authorize] and no [AllowAnonymous] is a candidate missing-auth finding",
+    "reference": "CWE-306"
+  },
+  {
+    "id": "ALLOW-ANONYMOUS",
+    "pattern": "\\[AllowAnonymous\\]",
+    "globs": ["*.cs"],
+    "severity_hint": "Medium",
+    "description": "Explicit anonymous access - confirm it is intended (login/register/health) and not a hole",
+    "reference": "CWE-306"
+  },
+  {
+    "id": "FIND-BY-ID-NO-OWNER",
+    "pattern": "\\.(Find|FindAsync|SingleOrDefault|FirstOrDefault|Single|First)\\(",
+    "globs": ["*Controller.cs", "*Manager.cs", "*Service.cs"],
+    "severity_hint": "High",
+    "description": "Entity loaded by id - check the query also filters by the caller's CompanyId/UserId (IDOR risk if not)",
+    "reference": "CWE-639"
+  },
+  {
+    "id": "DTO-ROLE-FIELD",
+    "pattern": "(public\\s+\\w+\\s+(Role|Roles|IsAdmin|IsSuperAdmin|Permission[s]?|Claims)\\s*\\{\\s*get)",
+    "globs": ["*Dto.cs", "*Request.cs", "*Model.cs", "*.cs"],
+    "severity_hint": "High",
+    "description": "Role/privilege field on a bound request shape - mass-assignment / privilege-escalation candidate",
+    "reference": "CWE-915"
+  },
+  {
+    "id": "ENTITY-FROMBODY",
+    "pattern": "\\[FromBody\\]\\s+(User|Account|Role|Order|Product|Company|Customer)\\b",
+    "globs": ["*Controller.cs"],
+    "severity_hint": "High",
+    "description": "Domain entity bound straight from the request body - mass assignment; bind a request DTO instead",
+    "reference": "CWE-915"
+  },
+  {
+    "id": "MINIMAL-API-MAP",
+    "pattern": "\\.Map(Get|Post|Put|Delete|Patch)\\(",
+    "globs": ["Program.cs", "*.cs"],
+    "severity_hint": "Medium",
+    "description": "Minimal-API route - confirm .RequireAuthorization() or a global fallback policy applies",
+    "reference": "CWE-306"
+  }
+]

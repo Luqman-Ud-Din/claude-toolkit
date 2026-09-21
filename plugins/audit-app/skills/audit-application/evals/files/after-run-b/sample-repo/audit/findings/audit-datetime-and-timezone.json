@@ -1,0 +1,38 @@
+{
+  "skill": "audit-datetime-and-timezone",
+  "generated_at": "2026-09-11T12:23:32.002277+00:00",
+  "target": {
+    "root": ".",
+    "commit": null
+  },
+  "stack": {
+    "primary_backend": "dotnet",
+    "primary_frontend": "angular"
+  },
+  "scope": {
+    "checked": [
+      "order entity dates"
+    ],
+    "not_checked": []
+  },
+  "findings": [
+    {
+      "id": "TIME-001",
+      "title": "No timestamp is recorded when an order is paid",
+      "severity": "Low",
+      "confidence": "confirmed",
+      "location": {
+        "file": "Inventory.Api/Controllers/OrdersController.cs",
+        "line": 33
+      },
+      "evidence": "Inventory.Api/Controllers/OrdersController.cs:33",
+      "impact": "Payment time cannot be reported per user time zone.",
+      "remediation": "Store PaidAt as DateTimeOffset UTC.",
+      "references": [
+        "CWE-1339"
+      ],
+      "tags": []
+    }
+  ],
+  "summary": {}
+}

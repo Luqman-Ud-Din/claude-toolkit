@@ -1,0 +1,106 @@
+[
+  {
+    "id": "SPEC-EXPOSED",
+    "pattern": "swaggerUi\\.serve|SwaggerModule\\.setup\\(|@fastify/swagger-ui|swagger-ui-express|app\\.use\\(\\s*['\"]/(api-)?docs",
+    "globs": ["*.js", "*.ts", "*.mjs"],
+    "severity_hint": "Medium",
+    "description": "Swagger UI mounted; confirm it is guarded by NODE_ENV or authentication in production",
+    "reference": "OWASP-API8:2023"
+  },
+  {
+    "id": "ENTITY-RETURNED",
+    "pattern": "res\\.(json|send)\\(\\s*(await\\s+)?\\w+\\.(find|findOne|findById|findMany|findFirst|findUnique|findAll|findByPk)\\(|return\\s+(await\\s+)?this\\.\\w*(repo|repository|model|prisma)\\w*\\.\\w*\\.?(find|findOne|findMany|findFirst|findUnique|findAll)\\w*\\(",
+    "globs": ["*.js", "*.ts", "*.mjs"],
+    "severity_hint": "High",
+    "description": "ORM result returned directly; check the model for secret/internal fields and for a select/omit/exclude projection",
+    "reference": "CWE-200"
+  },
+  {
+    "id": "SENSITIVE-FIELD-SERIALISABLE",
+    "pattern": "\\b(password|passwordHash|hash|salt|refreshToken|accessToken|apiKey|secretKey|otp|pin)\\s*[:?]\\s*(string|String|\\{\\s*type)",
+    "globs": ["*.ts", "*.js", "*.prisma"],
+    "severity_hint": "High",
+    "description": "Credential-like model field; confirm select:false / @Exclude / omit keeps it out of responses",
+    "reference": "CWE-200"
+  },
+  {
+    "id": "UNPAGINATED-LIST",
+    "pattern": "\\.(find|findMany|findAll)\\(\\s*(\\{\\s*\\})?\\s*\\)(?![^\\n]*(limit|take|skip|offset))|\\.find\\(\\s*\\{[^}]*\\}\\s*\\)\\s*;?\\s*$",
+    "globs": ["*.js", "*.ts", "*.mjs"],
+    "severity_hint": "Medium",
+    "description": "Collection query without limit/take on the same line; confirm pagination and a cap",
+    "reference": "CWE-770"
+  },
+  {
+    "id": "UNCAPPED-LIMIT",
+    "pattern": "(limit|take|pageSize|page_size)\\s*[:=]\\s*(parseInt|Number|\\+)\\(?\\s*(req\\.query|query|q)\\.\\w+",
+    "globs": ["*.js", "*.ts", "*.mjs"],
+    "severity_hint": "Medium",
+    "description": "Page size taken from the query; confirm Math.min(..., MAX) or schema le/max",
+    "reference": "CWE-770"
+  },
+  {
+    "id": "ADHOC-ERROR-SHAPE",
+    "pattern": "res\\.status\\(\\s*[45]\\d\\d\\s*\\)\\.(json|send)\\(\\s*\\{\\s*(error|message|msg|success|err)\\b|res\\.(json|send)\\(\\s*(err|error|e)\\s*\\)|\\.send\\(\\s*(err|e|error)\\.(message|stack)",
+    "globs": ["*.js", "*.ts", "*.mjs"],
+    "severity_hint": "Low",
+    "description": "Ad-hoc error body or raw error object; collect shapes per route file and compare with the global error handler",
+    "reference": "CWE-209"
+  },
+  {
+    "id": "GLOBAL-ERROR-HANDLER",
+    "pattern": "app\\.use\\(\\s*\\(\\s*err\\s*,|useGlobalFilters\\(|@Catch\\(|setErrorHandler\\(|problem\\+json",
+    "globs": ["*.js", "*.ts", "*.mjs"],
+    "severity_hint": "Info",
+    "description": "Global error handler / problem+json marker present; record as the expected shape",
+    "reference": "CWE-209"
+  },
+  {
+    "id": "SUCCESS-FALSE-200",
+    "pattern": "res\\.(json|send)\\(\\s*\\{[^}]*success\\s*:\\s*false",
+    "globs": ["*.js", "*.ts", "*.mjs"],
+    "severity_hint": "Medium",
+    "description": "Error returned as HTTP 200 with success:false",
+    "reference": "ASVS-13.2"
+  },
+  {
+    "id": "UNVALIDATED-BODY",
+    "pattern": "req\\.body\\.\\w+|readBody\\(event\\)|await\\s+req\\.json\\(\\)",
+    "globs": ["*.js", "*.ts", "*.mjs"],
+    "severity_hint": "Medium",
+    "description": "Body read directly; confirm a zod/joi/class-validator schema validates it first",
+    "reference": "CWE-20"
+  },
+  {
+    "id": "VALIDATION-PRESENT",
+    "pattern": "\\.parse\\(|safeParse\\(|celebrate\\(|Joi\\.object|@Is(String|Int|Number|Email|Optional|NotEmpty|Array|Enum|Positive|Min|Max)\\b|ValidationPipe\\(|schema:\\s*\\{",
+    "globs": ["*.js", "*.ts", "*.mjs"],
+    "severity_hint": "Info",
+    "description": "Validation marker present; record in the endpoint table (also check whitelist/forbidNonWhitelisted/.strict())",
+    "reference": "CWE-20"
+  },
+  {
+    "id": "CREATE-RETURNS-200",
+    "pattern": "router\\.post\\([\\s\\S]{0,300}res\\.json\\(|@Post\\((?![\\s\\S]{0,120}@HttpCode)",
+    "globs": ["*.js", "*.ts", "*.mjs"],
+    "severity_hint": "Info",
+    "description": "POST handler; confirm creates return 201",
+    "reference": "ASVS-13.2"
+  },
+  {
+    "id": "NON-ISO-DATE-OUT",
+    "pattern": "\\.format\\(\\s*['\"](DD|MM|D)[/.-](MM|DD|M)[/.-]Y{2,4}|toLocaleDateString\\(",
+    "globs": ["*.js", "*.ts", "*.mjs"],
+    "severity_hint": "Low",
+    "description": "Non-ISO date formatting on the way out; hand the zone question to audit-datetime-and-timezone",
+    "reference": "ASVS-13.1"
+  },
+  {
+    "id": "UNVERSIONED-ROUTE",
+    "pattern": "app\\.use\\(\\s*['\"]/api/(?!v\\d)|@Controller\\(\\s*['\"](?!v\\d)|register\\([^)]*prefix:\\s*['\"]/api(?!/v\\d)",
+    "globs": ["*.js", "*.ts", "*.mjs"],
+    "severity_hint": "Low",
+    "description": "Router/controller mounted without a version segment; compare with enableVersioning / other mounts",
+    "reference": "ASVS-13.1"
+  }
+]

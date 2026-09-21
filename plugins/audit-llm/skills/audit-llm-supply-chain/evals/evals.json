@@ -1,0 +1,17 @@
+{
+  "skill_name": "audit-llm-supply-chain",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "We're using 'gpt-4o' with no dated version in our config - is that a problem?",
+      "expected_output": "Flags the floating model alias as a supply-chain finding (behavior/safety can change with no code change), explains the staying-current vs. stability trade-off in the remediation rather than treating pinning as unconditionally correct.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "We just added a community-built MCP server to give our agent web search - anything to check before we ship it?",
+      "expected_output": "Walks through the MCP/plugin review checklist (source, actual tool list vs. advertised, transport trust, version pinning, data exposure) and treats it with the same scrutiny as a new production dependency rather than as simple configuration.",
+      "files": []
+    }
+  ]
+}

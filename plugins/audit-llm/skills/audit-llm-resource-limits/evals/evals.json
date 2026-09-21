@@ -1,0 +1,17 @@
+{
+  "skill_name": "audit-llm-resource-limits",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Our agent occasionally seems to loop for a really long time - can you check what's actually stopping it?",
+      "expected_output": "Uses the architecture map if present, checks step cap/timeout/loop detection specifically, traces failure propagation (does a failed tool call retry unboundedly), and writes an LLM-RL-NNN finding with a concrete worst-case impact statement.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "We have two agents that can call each other - could they get stuck looping each other even though each one individually has a step cap?",
+      "expected_output": "Specifically checks for a global cross-agent budget in addition to each agent's own cap, flagging the gap if only per-agent caps exist.",
+      "files": []
+    }
+  ]
+}

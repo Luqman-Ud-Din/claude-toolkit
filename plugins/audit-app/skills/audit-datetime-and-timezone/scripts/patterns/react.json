@@ -1,0 +1,66 @@
+[
+  {
+    "id": "FE-NAIVE-PARSE",
+    "pattern": "new Date\\(\\s*['\"]\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}(:\\d{2})?)?['\"]\\s*\\)|new Date\\(\\s*\\w+(\\.\\w+)*\\.(date|Date|At|On|createdAt|updatedAt|dueDate|expiry|expiresAt)\\w*\\s*\\)|parseISO\\(\\s*\\w+\\.\\w+\\s*\\)|Date\\.parse\\(|z\\.coerce\\.date\\(\\)",
+    "globs": ["*.ts", "*.tsx", "*.js", "*.jsx"],
+    "severity_hint": "Medium",
+    "description": "Date parsed from an API/user string; without an offset each browser interprets it in its own zone",
+    "reference": "CWE-704"
+  },
+  {
+    "id": "FE-DATEONLY-TO-INSTANT",
+    "pattern": "\\.toISOString\\(\\)|formatISO\\(",
+    "globs": ["*.ts", "*.tsx", "*.js", "*.jsx"],
+    "severity_hint": "Low",
+    "description": "toISOString/formatISO on a value that may be a date-only picker result; shifts the day east of UTC",
+    "reference": "CWE-682"
+  },
+  {
+    "id": "FE-LOCAL-DAY-BOUNDARY",
+    "pattern": "setHours\\(\\s*0\\s*,\\s*0|startOf(Day|Month|Week)\\(|endOf(Day|Month)\\(|startOf\\(\\s*['\"](day|month)['\"]|toDateString\\(\\)",
+    "globs": ["*.ts", "*.tsx", "*.js", "*.jsx"],
+    "severity_hint": "Medium",
+    "description": "Day boundary computed in the browser zone; if sent to the server as an instant it ignores the branch/user zone",
+    "reference": "CWE-682"
+  },
+  {
+    "id": "FE-NON-ISO-OUT",
+    "pattern": "format\\([^)]*['\"](dd|MM)/(MM|dd)/yyyy|toLocaleDateString\\(|toLocaleString\\(|\\.format\\(\\s*['\"](DD|MM)[/.-](MM|DD)[/.-]YYYY|\\.format\\(\\s*['\"]YYYY-MM-DD HH:mm",
+    "globs": ["*.ts", "*.tsx", "*.js", "*.jsx"],
+    "severity_hint": "Low",
+    "description": "Locale/offset-less formatting; fine for display, a defect if posted to the API, used for sorting, or rendered on the server (hydration mismatch)",
+    "reference": "CWE-20"
+  },
+  {
+    "id": "FE-HYDRATION-HIDE",
+    "pattern": "suppressHydrationWarning",
+    "globs": ["*.tsx", "*.jsx"],
+    "severity_hint": "Info",
+    "description": "Hydration warning suppressed; often hides a server/client zone formatting mismatch",
+    "reference": "CWE-682"
+  },
+  {
+    "id": "FE-TZ-GUESS",
+    "pattern": "resolvedOptions\\(\\)\\.timeZone|getTimezoneOffset\\(\\)",
+    "globs": ["*.ts", "*.tsx", "*.js", "*.jsx"],
+    "severity_hint": "Low",
+    "description": "User zone inferred from the browser; check it is stored server-side",
+    "reference": "CWE-682"
+  },
+  {
+    "id": "FE-STRING-SORT",
+    "pattern": "localeCompare\\(\\s*\\w+\\.\\w*(date|Date|At|On)\\w*\\s*\\)|sort\\([^)]*(dateLabel|formattedDate|dateStr)",
+    "globs": ["*.ts", "*.tsx", "*.js", "*.jsx"],
+    "severity_hint": "Low",
+    "description": "Sorting on a formatted date string",
+    "reference": "CWE-682"
+  },
+  {
+    "id": "FE-TEST-REAL-TIME",
+    "pattern": "new Date\\(\\)|Date\\.now\\(\\)",
+    "globs": ["*.test.ts", "*.test.tsx", "*.spec.ts", "*.spec.tsx", "*.test.js", "*.test.jsx"],
+    "severity_hint": "Low",
+    "description": "Test uses real time; use vi/jest fake timers with setSystemTime",
+    "reference": "CWE-682"
+  }
+]

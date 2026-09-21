@@ -1,0 +1,30 @@
+<h2>Checkout</h2>
+
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <label for="name">{{ 'CHECKOUT.NAME' | translate }}</label>
+  <input id="name" formControlName="name" autocomplete="name">
+
+  <!-- unlabeled: placeholder is the only hint -->
+  <input formControlName="email" type="email" placeholder="Email">
+
+  <mat-form-field>
+    <mat-label>{{ 'CHECKOUT.PHONE' | translate }}</mat-label>
+    <input matInput formControlName="phone">
+  </mat-form-field>
+
+  <img [src]="product.image">
+  <img src="assets/logo.png" alt="Digital Inventory">
+
+  <div class="coupon" (click)="applyCoupon()">Apply coupon</div>
+
+  <p>{{ items.length }} items - {{ total | currency:'PKR' }}</p>
+
+  <button type="button" (click)="removeItem()"><mat-icon>delete</mat-icon></button>
+  <button type="submit">Confirm order</button>
+</form>
+
+<div *ngIf="confirmOpen" class="modal" role="dialog">
+  <p>Are you sure you want to place this order?</p>
+  <button type="button" (click)="confirm()">Yes</button>
+  <button type="button" (click)="cancel()">Cancel</button>
+</div>

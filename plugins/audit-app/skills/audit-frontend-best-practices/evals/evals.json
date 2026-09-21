@@ -1,0 +1,47 @@
+{
+  "skill_name": "audit-frontend-best-practices",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Review our Angular app in evals/files/sample-repo against current best practices. I want a scorecard and findings we can put in the audit report. Don't change any code.",
+      "expected_output": "A scorecard with pass/partial/fail per category and counts: Strict type checking = fail (strict:false, strictTemplates:false in tsconfig.json), Production build = fail (sourceMap:true in the production configuration, webpack builder), Lazy routes = partial (1 of 3 feature routes eager: reports), Bundle budgets = fail (none), Lint config = partial (ng lint script but no @angular-eslint packages), Legacy/modern mixing = partial (*ngIf/*ngFor in reports while home uses @if/@for). Findings with FEBP- ids in the standard block, home.component.ts not flagged, bundle-size report marked not run (no node_modules), and a Not checked list.",
+      "files": ["evals/files/sample-repo/package.json", "evals/files/sample-repo/angular.json", "evals/files/sample-repo/tsconfig.json", "evals/files/sample-repo/tsconfig.app.json", "evals/files/sample-repo/src/app/app.routes.ts", "evals/files/sample-repo/src/app/features/reports/reports.component.ts", "evals/files/sample-repo/src/app/features/reports/reports.component.html", "evals/files/sample-repo/src/app/features/home/home.component.ts"],
+      "expectations": [
+        "Output contains a scorecard table with pass/partial/fail per category",
+        "Strict type checking is rated fail and cites tsconfig.json strict:false",
+        "A finding with severity Medium or higher cites angular.json production sourceMap: true",
+        "A finding cites app.routes.ts reports route as eager / not lazy-loaded",
+        "home.component.ts is not the subject of any finding",
+        "Finding ids start with FEBP-",
+        "Report states the bundle-size report was not produced and why",
+        "Report contains a Not checked section",
+        "No file outside audit/ is modified"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "why is our first load so slow? the frontend is in evals/files/sample-repo - check the bundle setup and lazy loading",
+      "expected_output": "Runs route_scan.py and config_check.py, reports that the reports feature is imported statically into the initial bundle (app.routes.ts), that lodash and moment are imported whole (reports.component.ts), that no budgets exist and the legacy webpack builder is used; explains it cannot measure the bundle without node_modules and offers the bundle_report.py --run command.",
+      "files": ["evals/files/sample-repo/angular.json", "evals/files/sample-repo/src/app/app.routes.ts", "evals/files/sample-repo/src/app/features/reports/reports.component.ts"],
+      "expectations": [
+        "Identifies the reports route as eager with file:line",
+        "Flags whole-library imports of lodash and moment",
+        "Mentions missing bundle budgets",
+        "States the bundle could not be measured and names the command to do so",
+        "Does not recommend changes to home.component.ts"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Quick check of the React app in evals/files/react-sample - are routes code-split and is the prod build configured right?",
+      "expected_output": "Route inventory: / (Home) eager, /reports (Reports) eager, /settings lazy, * redirect. Finding that vite.config.ts enables sourcemap in the production build (Medium). Lint config rated pass (eslint.config.js + eslint-plugin-react-hooks). Bundle budgets partial (chunkSizeWarningLimit only, warning-level).",
+      "files": ["evals/files/react-sample/package.json", "evals/files/react-sample/vite.config.ts", "evals/files/react-sample/eslint.config.js", "evals/files/react-sample/src/router.tsx"],
+      "expectations": [
+        "Lists /reports and / as eager and /settings as lazy",
+        "Finding cites vite.config.ts sourcemap: true",
+        "Lint config is not reported as a failure",
+        "Finding ids start with FEBP-"
+      ]
+    }
+  ]
+}

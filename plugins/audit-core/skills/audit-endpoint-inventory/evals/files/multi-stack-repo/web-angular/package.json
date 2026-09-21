@@ -1,0 +1,8 @@
+{
+  "name": "shop-web",
+  "private": true,
+  "dependencies": {
+    "@angular/core": "^19.2.0",
+    "@angular/router": "^19.2.0"
+  }
+}

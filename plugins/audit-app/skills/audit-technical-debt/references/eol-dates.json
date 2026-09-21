@@ -1,0 +1,165 @@
+{
+  "as_of": "2026-05-31",
+  "refresh": "Compiled from endoflife.date and vendor lifecycle pages as of the as_of date. EOL dates move (vendors extend support, new releases arrive every few months): refresh this file at least quarterly and before every audit report that will be shared. A cycle missing from the table is reported as 'unknown', never as supported.",
+  "sources": [
+    "https://endoflife.date",
+    "https://dotnet.microsoft.com/platform/support/policy/dotnet-core",
+    "https://github.com/nodejs/Release",
+    "https://devguide.python.org/versions/",
+    "https://angular.dev/reference/releases",
+    "https://www.djangoproject.com/download/#supported-versions",
+    "https://spring.io/projects/spring-boot#support"
+  ],
+  "products": {
+    "dotnet": {
+      "kind": "runtime", "label": ".NET", "cycle_key": "tfm", "source": "https://endoflife.date/dotnet",
+      "successor": ".NET 10 (LTS)",
+      "cycles": {
+        "netcoreapp1.0": "2019-06-27", "netcoreapp1.1": "2019-06-27", "netcoreapp2.0": "2018-10-01",
+        "netcoreapp2.1": "2021-08-21", "netcoreapp2.2": "2019-12-23", "netcoreapp3.0": "2020-03-03",
+        "netcoreapp3.1": "2022-12-13", "net5.0": "2022-05-10", "net6.0": "2024-11-12", "net7.0": "2024-05-14",
+        "net8.0": "2026-11-10", "net9.0": "2026-11-10", "net10.0": "2028-11-14"
+      }
+    },
+    "dotnet-framework": {
+      "kind": "runtime", "label": ".NET Framework", "cycle_key": "tfm", "source": "https://endoflife.date/dotnetfx",
+      "successor": ".NET Framework 4.8.1 or .NET 10",
+      "cycles": {
+        "net40": "2016-01-12", "net45": "2016-01-12", "net451": "2016-01-12", "net452": "2022-04-26",
+        "net46": "2022-04-26", "net461": "2022-04-26", "net462": null, "net47": null, "net471": null,
+        "net472": null, "net48": null, "net481": null
+      }
+    },
+    "nodejs": {
+      "kind": "runtime", "label": "Node.js", "cycle_key": "major", "source": "https://endoflife.date/nodejs",
+      "successor": "Node.js 24 (LTS)",
+      "cycles": {
+        "8": "2019-12-31", "10": "2021-04-30", "12": "2022-04-30", "14": "2023-04-30", "16": "2023-09-11",
+        "17": "2022-06-01", "18": "2025-04-30", "19": "2023-06-01", "20": "2026-04-30", "21": "2024-06-01",
+        "22": "2027-04-30", "23": "2025-06-01", "24": "2028-04-30", "25": "2026-06-01"
+      }
+    },
+    "python": {
+      "kind": "runtime", "label": "Python", "cycle_key": "major.minor", "source": "https://endoflife.date/python",
+      "successor": "Python 3.13 or 3.14",
+      "cycles": {
+        "2.7": "2020-01-01", "3.5": "2020-09-13", "3.6": "2021-12-23", "3.7": "2023-06-27", "3.8": "2024-10-07",
+        "3.9": "2025-10-31", "3.10": "2026-10-31", "3.11": "2027-10-31", "3.12": "2028-10-31",
+        "3.13": "2029-10-31", "3.14": "2030-10-31"
+      }
+    },
+    "java": {
+      "kind": "runtime", "label": "Java (Eclipse Temurin community builds)", "cycle_key": "major",
+      "source": "https://endoflife.date/eclipse-temurin",
+      "successor": "Java 21 or 25 (LTS)",
+      "note": "Java support is vendor-specific (Oracle, Temurin, Corretto, Azul, Red Hat differ). These are Temurin community dates; check the vendor the service actually runs on.",
+      "cycles": {
+        "8": "2026-11-30", "11": "2027-10-31", "17": "2027-10-31", "21": "2029-12-31", "25": "2031-09-30",
+        "9": "2018-03-20", "10": "2018-09-25", "12": "2019-09-17", "13": "2020-03-17", "14": "2020-09-15",
+        "15": "2021-03-16", "16": "2021-09-14", "18": "2022-09-20", "19": "2023-03-21", "20": "2023-09-19",
+        "22": "2024-09-17", "23": "2025-03-18", "24": "2025-09-16"
+      }
+    },
+    "spring-boot": {
+      "kind": "framework", "label": "Spring Boot (OSS support)", "cycle_key": "major.minor",
+      "source": "https://spring.io/projects/spring-boot#support", "successor": "latest Spring Boot 3.x/4.x",
+      "security_sensitive": false,
+      "cycles": {
+        "2.5": "2022-05-19", "2.6": "2022-11-24", "2.7": "2023-11-24", "3.0": "2023-11-24", "3.1": "2024-05-18",
+        "3.2": "2024-11-23", "3.3": "2025-05-23"
+      }
+    },
+    "django": {
+      "kind": "framework", "label": "Django", "cycle_key": "major.minor", "source": "https://endoflife.date/django",
+      "successor": "Django 5.2 (LTS)",
+      "cycles": {
+        "2.2": "2022-04-11", "3.0": "2021-04-06", "3.1": "2021-12-07", "3.2": "2024-04-01", "4.0": "2023-04-01",
+        "4.1": "2023-12-01", "4.2": "2026-04-30", "5.0": "2025-04-02", "5.1": "2025-12-03", "5.2": "2028-04-30"
+      }
+    },
+    "angular": {
+      "kind": "framework", "label": "Angular", "cycle_key": "major", "source": "https://angular.dev/reference/releases",
+      "successor": "the current Angular major (each major gets 18 months of support)",
+      "cycles": {
+        "8": "2020-11-28", "9": "2021-08-06", "10": "2021-12-31", "11": "2022-05-11", "12": "2022-11-12",
+        "13": "2023-05-04", "14": "2023-11-18", "15": "2024-05-18", "16": "2024-11-08", "17": "2025-05-15",
+        "18": "2025-11-21", "19": "2026-05-19", "20": "2026-11-28"
+      }
+    },
+    "angularjs": {
+      "kind": "framework", "label": "AngularJS 1.x", "cycle_key": "any", "source": "https://endoflife.date/angularjs",
+      "successor": "Angular", "security_sensitive": true,
+      "cycles": {"*": "2021-12-31"}
+    },
+    "vue": {
+      "kind": "framework", "label": "Vue", "cycle_key": "major", "source": "https://endoflife.date/vue",
+      "successor": "Vue 3",
+      "cycles": {"2": "2023-12-31", "3": null}
+    },
+    "nuxt": {
+      "kind": "framework", "label": "Nuxt", "cycle_key": "major", "source": "https://endoflife.date/nuxt",
+      "successor": "Nuxt 3/4",
+      "cycles": {"2": "2024-06-30"}
+    },
+    "react": {
+      "kind": "framework", "label": "React", "cycle_key": "major", "source": "https://react.dev/community/versioning-policy",
+      "successor": "React 19",
+      "note": "React has no published EOL dates; only the latest major receives fixes. Older majors carry the release date of their successor.",
+      "cycles": {"15": "2017-09-26", "16": "2020-10-20", "17": "2022-03-29", "18": "2024-12-05", "19": null}
+    },
+    "express": {
+      "kind": "framework", "label": "Express", "cycle_key": "major", "source": "https://expressjs.com/en/support/",
+      "successor": "Express 5",
+      "note": "Express 4 end of life announced as no earlier than 2026-10-01; confirm on the support page.",
+      "cycles": {"3": "2015-07-31", "4": "2026-10-01", "5": null}
+    },
+    "IdentityServer4": {
+      "kind": "package", "label": "IdentityServer4 (NuGet)", "cycle_key": "any", "ecosystem": "nuget",
+      "source": "https://duendesoftware.com/products/identityserver", "security_sensitive": true,
+      "successor": "Duende IdentityServer (commercial) or OpenIddict",
+      "cycles": {"*": "2022-12-13"}
+    },
+    "WindowsAzure.Storage": {
+      "kind": "package", "label": "WindowsAzure.Storage (legacy Azure SDK)", "cycle_key": "any", "ecosystem": "nuget",
+      "source": "https://aka.ms/azsdk/deprecated", "successor": "Azure.Storage.Blobs",
+      "cycles": {"*": "2024-03-31"}
+    },
+    "Microsoft.Azure.Storage.Blob": {
+      "kind": "package", "label": "Microsoft.Azure.Storage.Blob (legacy Azure SDK)", "cycle_key": "any", "ecosystem": "nuget",
+      "source": "https://aka.ms/azsdk/deprecated", "successor": "Azure.Storage.Blobs",
+      "cycles": {"*": "2024-03-31"}
+    },
+    "System.Data.SqlClient": {
+      "kind": "package", "label": "System.Data.SqlClient (deprecated)", "cycle_key": "any", "ecosystem": "nuget",
+      "source": "https://techcommunity.microsoft.com/blog/sqlserver/announcement-system-data-sqlclient-package-is-now-deprecated/4227205",
+      "successor": "Microsoft.Data.SqlClient", "security_sensitive": true,
+      "cycles": {"*": "2025-12-31"}
+    },
+    "Microsoft.EntityFrameworkCore": {
+      "kind": "package", "label": "Entity Framework Core", "cycle_key": "major", "ecosystem": "nuget", "prefix": true,
+      "source": "https://learn.microsoft.com/ef/core/what-is-new/", "successor": "EF Core 10",
+      "cycles": {"2": "2021-08-21", "3": "2022-12-13", "5": "2022-05-10", "6": "2024-11-12", "7": "2024-05-14",
+                 "8": "2026-11-10", "9": "2026-11-10", "10": "2028-11-14"}
+    },
+    "request": {
+      "kind": "package", "label": "request (npm, deprecated)", "cycle_key": "any", "ecosystem": "npm",
+      "source": "https://github.com/request/request/issues/3142", "successor": "fetch / undici / axios",
+      "cycles": {"*": "2020-02-11"}
+    },
+    "tslint": {
+      "kind": "package", "label": "TSLint (deprecated)", "cycle_key": "any", "ecosystem": "npm",
+      "source": "https://github.com/palantir/tslint/issues/4534", "successor": "typescript-eslint",
+      "cycles": {"*": "2020-12-01"}
+    },
+    "protractor": {
+      "kind": "package", "label": "Protractor", "cycle_key": "any", "ecosystem": "npm",
+      "source": "https://github.com/angular/protractor/issues/5502", "successor": "Playwright or Cypress",
+      "cycles": {"*": "2023-08-31"}
+    },
+    "log4j": {
+      "kind": "package", "label": "Log4j 1.x", "cycle_key": "major", "ecosystem": "maven",
+      "source": "https://logging.apache.org/log4j/1.x/", "successor": "Log4j 2 or Logback via SLF4J", "security_sensitive": true,
+      "cycles": {"1": "2015-08-05"}
+    }
+  }
+}

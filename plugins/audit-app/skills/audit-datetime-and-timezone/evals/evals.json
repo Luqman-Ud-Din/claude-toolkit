@@ -1,0 +1,46 @@
+{
+  "skill_name": "audit-datetime-and-timezone",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Audit evals/files/sample-repo for timezone and DST bugs. Our branches are in Pakistan and the UAE, servers run in UTC.",
+      "expected_output": "A date-field map covering Subscription.CreatedAt (datetimeoffset, ok), TrialEndsAt (datetime2, zone-less, TIME finding), BillingAnchorDate (date-only, ok); findings for DateTime.Today cutoff in ReportService.TrialsStartedToday, DateTime.Now comparison in IsTrialExpired, TrialEndsAt datetime2 column with GETDATE() default, the Hangfire 'statements' cron with no zone, the k8s nightly-statements CronJob without timeZone, and the Angular InvoiceComponent parsing dueDate without an offset; TrialsStartedOn, the trial-expiry Hangfire job, retention-purge CronJob and createdAt parsing recorded as verified; a decision-flows table and an Environment table; findings written to audit/findings/audit-datetime-and-timezone.json.",
+      "files": ["evals/files/sample-repo"],
+      "expectations": [
+        "Report contains a date-field map table with a row for TrialEndsAt marked zone-less/unknown and a row for CreatedAt marked offset-aware",
+        "A TIME- finding flags DateTime.Today in ReportService.TrialsStartedToday as a local-time cutoff, rated Medium or higher",
+        "A TIME- finding flags the TrialEndsAt datetime2 column (and/or its GETDATE() default) as a timestamp without timezone",
+        "A TIME- finding flags the Hangfire 'statements' registration and/or the k8s nightly-statements CronJob as a cron without an explicit zone",
+        "A TIME- finding flags InvoiceComponent parsing dueDate (no offset) with new Date()",
+        "ReportService.TrialsStartedOn is listed as verified, not flagged",
+        "The trial-expiry Hangfire job, the retention-purge CronJob, and the createdAt parse are not flagged",
+        "Report contains a date-driven decision flows table and an Environment table",
+        "findings.json validates with ../audit-finding-writer/scripts/findings.py validate"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Does our 'trials started today' report in evals/files/sample-repo/Billing.Api/Reports/ReportService.cs give the right answer for a branch in Karachi? What about on DST days?",
+      "expected_output": "Explanation that DateTime.Today is server-local (UTC in prod) so Karachi sales after 19:00 UTC fall into the next day and the window length varies on DST days in zones that observe it; a Medium TIME finding with a remediation using the stored branch IanaTimeZone and TimeProvider, modelled on the correct TrialsStartedOn method in the same file.",
+      "files": ["evals/files/sample-repo/Billing.Api/Reports/ReportService.cs", "evals/files/sample-repo/Billing.Api/Subscriptions/Subscription.cs", "evals/files/sample-repo/Billing.Api/Billing.Api.csproj"],
+      "expectations": [
+        "Output states the zone DateTime.Today uses and why it differs from the branch zone",
+        "A TIME- finding rated Medium points at TrialsStartedToday with a file:line",
+        "Remediation references the stored branch zone (IanaTimeZone) and an injectable clock/TimeProvider",
+        "TrialsStartedOn is cited as the correct pattern, not flagged"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Check the frontend in evals/files/sample-repo/web for date parsing problems.",
+      "expected_output": "A finding on InvoiceComponent: dueDate arrives without an offset and is parsed with new Date(), so each browser assigns its own zone and the overdue badge differs per user; remediation is for the API to send ISO 8601 with offset (hand to the backend side) and for the client to parse with an explicit zone meanwhile; createdAt (with Z) is noted as correct; the 'Due' display lacking a zone label noted as Low/Info.",
+      "files": ["evals/files/sample-repo/web"],
+      "expectations": [
+        "A TIME- finding names invoice.component.ts and the dueDate parse",
+        "The finding explains that the string lacks an offset and the browser zone is applied",
+        "createdAt parsing is not flagged",
+        "Remediation mentions ISO 8601 with offset from the API and/or an explicit zone when parsing"
+      ]
+    }
+  ]
+}

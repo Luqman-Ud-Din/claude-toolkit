@@ -1,0 +1,47 @@
+{
+  "skill_name": "explore-business-logic",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Map the business logic of the app in evals/files/sample-repo. I need a business-logic document I can hand to the team before we do a schema review - workflows, the rules that are actually enforced and where, the order state machine, validations and integrations. Be explicit about what you inferred versus what you found in code. Write it under docs/analysis/ in the current directory.",
+      "expected_output": "A BLD in the fixed format: Domain overview; Entities (Customer, Product, Order, OrderLine, Payment, Shipment); Workflows (create customer, place/confirm order, pay, ship/deliver, cancel, reminder job); Business rules BR-001.. each with file:line or 'not enforced' - including the credit-limit rule in customer.service.ts, the volume discount in pricing.service.ts, VAT computed in orders.controller.ts by country conditional (and the unused tax.provider.ts noted), email uniqueness enforced only in the service, the transition table in order.service.ts; Validations from order.schema.ts including the Dutch-only postcode regex; Integrations (Stripe EUR-only, SMTP); Assumptions and gaps listing at least the naive timestamps/server TZ, no tenancy, dead tax provider.",
+      "files": [
+        "evals/files/sample-repo"
+      ],
+      "expectations": [
+        "Output file has exactly the seven BLD top-level sections in the spec order: Domain overview, Entities, Workflows, Business rules, Validations, Integrations, Assumptions and gaps",
+        "Every business rule entry (BR-xxx) has a file:line citation or the literal 'not enforced'",
+        "Every workflow's entities-touched list names only entities that have a subsection under Entities",
+        "A rule about the credit limit cites src/services/customer.service.ts with a line number in the assertWithinCreditLimit method",
+        "A rule about VAT/tax cites src/controllers/orders.controller.ts (the controller, not only tax.provider.ts) and notes that tax.provider.ts is unused or disagrees",
+        "A rule about customer e-mail uniqueness records that it is enforced only in application code (customer.service.ts) with no database constraint",
+        "The order lifecycle draft -> confirmed -> paid -> shipped -> delivered with cancellation from draft/confirmed is recorded, citing order.service.ts",
+        "Validations table includes the Dutch-only postcode regex from order.schema.ts with the format assumption noted",
+        "Integrations list Stripe with the EUR-only assumption and SMTP e-mail",
+        "Assumptions and gaps mentions naive timestamps or server time zone, and the absence of users/tenants",
+        "The document is written to docs/analysis/explore-business-logic/<date>.md and the reply states the path",
+        "At least ten of the cited file:line references, when checked against the sample repo, point to the stated construct (no fabricated or drifted line numbers)",
+        "The BLD records, as facts in Notes, at least one rule that is enforced in more than one place with differing logic (the VAT rate tables or the 'open/unpaid order' definitions)",
+        "No section contains a ranked backlog, severities or recommendations"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "what does the orderly app in evals/files/sample-repo actually do with orders? just the order side - I don't care about customers/products setup. list the workflows and rules with where they're enforced",
+      "expected_output": "A scoped BLD (order subsystem) in the fixed section order that still lists the Customer and Product entities the order workflows touch, notes the scope in the header, and records that shipments.controller.ts and orders.controller.ts write order state outside the transition method (pre-checks, paid_at patch) as facts/notes rather than as issues.",
+      "files": [
+        "evals/files/sample-repo"
+      ],
+      "expectations": [
+        "Output is still in the seven-section BLD format and states the scope (orders) in the header",
+        "Entities section includes Customer and Product because order workflows touch them, even though the user scoped to orders",
+        "The confirm, pay, cancel, ship/deliver workflows and the reminder job are all present with trigger locations",
+        "Every BR entry has a file:line citation or 'not enforced'",
+        "Notes record that controllers patch order fields (tax/total or paid_at) directly outside OrderService.transition",
+        "No section titled Issues/Findings exists; uncertainties are in Assumptions and gaps",
+        "Cited file:line references, when spot-checked against the sample repo, are exact",
+        "The header carries a Scope note naming entry points outside the order scope that write order entities, or stating none were found"
+      ]
+    }
+  ]
+}

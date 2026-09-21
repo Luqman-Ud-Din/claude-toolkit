@@ -1,0 +1,5 @@
+[
+  {"id": "DEBUG-TRUE", "pattern": "^\\s*DEBUG\\s*=\\s*True", "globs": ["settings*.py", "production.py", "prod.py", "base.py"], "severity_hint": "High", "description": "DEBUG=True: static files served without caching and tracebacks exposed; confirm which settings module production uses", "reference": "CWE-215"},
+  {"id": "DJANGO-SERVES-STATIC", "pattern": "django\\.views\\.static\\.serve|^\\s*urlpatterns\\s*\\+=\\s*static\\(", "globs": ["urls.py"], "severity_hint": "Low", "description": "Django serving static files directly; fine only inside `if settings.DEBUG`", "reference": "docs.djangoproject.com/en/stable/howto/static-files/deployment"},
+  {"id": "NO-MANIFEST-STORAGE", "pattern": "STATICFILES_STORAGE\\s*=\\s*[\"']django\\.contrib\\.staticfiles\\.storage\\.StaticFilesStorage", "globs": ["settings*.py", "production.py", "base.py"], "severity_hint": "Low", "description": "Non-manifest static storage: no cache busting", "reference": "docs.djangoproject.com/en/stable/ref/contrib/staticfiles"}
+]

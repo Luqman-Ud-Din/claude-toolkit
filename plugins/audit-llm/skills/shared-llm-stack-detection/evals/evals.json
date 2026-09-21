@@ -1,0 +1,17 @@
+{
+  "skill_name": "shared-llm-stack-detection",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Before we audit this app's LLM integration, figure out what LLM SDK and agent framework it's actually using.",
+      "expected_output": "Runs detect_llm_stack.py against the repo, reports llm_sdks/agent_frameworks/vector_stores/guardrails with evidence files, flags likely_agentic, and sanity-checks the result (e.g. notes if a framework wraps more than one provider) rather than reporting the raw JSON uncommented.",
+      "files": ["evals/files/langchain-pgvector-repo/worker/requirements.txt", "evals/files/langchain-pgvector-repo/worker/main.py"]
+    },
+    {
+      "id": 2,
+      "prompt": "This service calls a model provider but I don't think it uses any SDK - can you confirm before we skip the LLM audit on it?",
+      "expected_output": "Runs detection, finds no marker hits, and explicitly does NOT conclude 'not an LLM application' - flags the no-marker note and recommends checking for a raw HTTP client call to a model endpoint.",
+      "files": ["evals/files/raw-http-repo/Api/Api.csproj", "evals/files/raw-http-repo/Api/ModelClient.cs"]
+    }
+  ]
+}

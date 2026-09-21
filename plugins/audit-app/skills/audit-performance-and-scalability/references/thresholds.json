@@ -1,0 +1,9 @@
+{
+  "_comment": "Default thresholds for loadtest_plan.py grade. Latencies in ms. Override per project by copying to audit/evidence/audit-performance-and-scalability/thresholds.json and passing --thresholds.",
+  "read": {"p50_ms": 200, "p95_ms": 500, "p99_ms": 1500},
+  "write": {"p50_ms": 400, "p95_ms": 1000, "p99_ms": 2000},
+  "default": {"p50_ms": 300, "p95_ms": 800, "p99_ms": 1500},
+  "error_rate_max": 0.01,
+  "throughput_min_rps": null,
+  "web_vitals": {"lcp_ms": 2500, "inp_ms": 200, "cls": 0.1, "ttfb_ms": 800}
+}

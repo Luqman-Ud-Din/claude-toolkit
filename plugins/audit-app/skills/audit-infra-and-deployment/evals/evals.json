@@ -1,0 +1,67 @@
+{
+  "skill_name": "audit-infra-and-deployment",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "We're about to put evals/files/sample-repo into production on Kubernetes. Review the Dockerfiles and the k8s manifests and tell me what's wrong with our container and deployment setup. I want findings in the standard format and a scorecard per file.",
+      "expected_output": "INFRA findings for Api/Dockerfile: runs as root (USER root), copies secrets.json and bakes a connection-string password via ENV, single-stage SDK image with :latest, no .dockerignore. For deploy/k8s/api-deployment.yaml: no resource limits/requests, no liveness/readiness probes, no securityContext, literal connection-string password in env, :latest image, revisionHistoryLimit 0, Ingress without TLS, and no NetworkPolicy in the repo. A container/manifest scorecard (file -> check -> pass/fail/n/a) in which Worker/Dockerfile passes every check (multi-stage, digest-pinned, USER $APP_UID, .dockerignore, HEALTHCHECK, no secrets). A backup and rollback readiness statement.",
+      "files": [
+        "evals/files/sample-repo/Api/Dockerfile",
+        "evals/files/sample-repo/Api/Api.csproj",
+        "evals/files/sample-repo/Worker/Dockerfile",
+        "evals/files/sample-repo/Worker/.dockerignore",
+        "evals/files/sample-repo/Worker/Worker.csproj",
+        "evals/files/sample-repo/deploy/k8s/api-deployment.yaml",
+        "evals/files/sample-repo/docs/deploy-runbook.md"
+      ],
+      "expectations": [
+        "Detects the stack as dotnet and uses references/dotnet.md",
+        "Runs scripts/lint_infra.py and includes a scorecard table with File, Check and Result columns",
+        "Flags Api/Dockerfile running as root (USER root / DF-NONROOT fail)",
+        "Flags the secrets.json COPY and the ConnectionStrings__Default ENV password baked into the Api image",
+        "Flags the Api Dockerfile as single-stage with an SDK :latest base and no .dockerignore",
+        "Flags the Deployment for missing resources limits/requests",
+        "Flags the Deployment for missing livenessProbe and readinessProbe",
+        "Flags the literal connection-string password in the Deployment env instead of a secretKeyRef",
+        "Flags missing NetworkPolicy and/or the Ingress without tls",
+        "Does NOT raise any finding against Worker/Dockerfile; all its scorecard rows are pass or n/a",
+        "All finding ids start with INFRA- and findings.json validates with ../audit-finding-writer/scripts/findings.py validate",
+        "Lists hadolint/trivy/checkov as not checked when they are not installed"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Compare Api/Dockerfile and Worker/Dockerfile in evals/files/sample-repo. Is the Worker image built the way it should be for .NET? What exactly would I need to change in the Api one?",
+      "expected_output": "A per-check comparison showing the Worker Dockerfile is clean: multi-stage (sdk build, aspnet alpine runtime), base images pinned by tag and digest, non-root via USER $APP_UID, port 8080, .dockerignore excluding bin/obj/.git/.env/secrets, HEALTHCHECK, no secrets. The Api Dockerfile needs a build/runtime split, a pinned aspnet runtime base, USER $APP_UID with port 8080 instead of 80, removal of the secrets.json COPY and ENV connection string (supplied at runtime from a secret manager, with the password rotated), and a .dockerignore. Remediation is written in .NET idiom.",
+      "files": [
+        "evals/files/sample-repo/Api/Dockerfile",
+        "evals/files/sample-repo/Worker/Dockerfile",
+        "evals/files/sample-repo/Worker/.dockerignore"
+      ],
+      "expectations": [
+        "States that Worker/Dockerfile passes the non-root, multi-stage, pinned-base, no-secrets, minimal-image and .dockerignore checks",
+        "Does not invent problems in Worker/Dockerfile (for example does not flag the sdk image used in its build stage)",
+        "Recommends USER $APP_UID (or the app user) and port 8080 for the Api image, citing .NET 8 image behaviour",
+        "Recommends moving the connection string to a runtime secret source and rotating the exposed password",
+        "Provides a corrected multi-stage Dockerfile snippet for the Api"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Our client is asking whether we have tested restoring from backup and whether we can roll back a bad release of the inventory API. Based on what's in evals/files/sample-repo, what can we honestly tell them?",
+      "expected_output": "A backup and rollback readiness statement in the fixed form: 'Backup restore: never tested' and 'Rollback: never tested', each with its evidence: the runbook says the database is backed up nightly by the hosting provider but the restore procedure is TBD; the rollback is 'rebuild previous commit and re-push as latest', which has not been rehearsed; revisionHistoryLimit: 0 and :latest tags remove kubectl rollout undo and image-based rollback. Also no DR plan (no RTO/RPO). Findings for the missing restore test, the unrehearsed rollback, and revisionHistoryLimit 0 / latest tag, plus concrete next steps (a dated restore drill, pinned image tags, rollout undo or helm rollback rehearsal).",
+      "files": [
+        "evals/files/sample-repo/docs/deploy-runbook.md",
+        "evals/files/sample-repo/deploy/k8s/api-deployment.yaml"
+      ],
+      "expectations": [
+        "Uses the exact form 'never tested' for both backup restore and rollback (not a vague maybe)",
+        "Cites docs/deploy-runbook.md lines as the evidence for both statements",
+        "Notes that backup automation is claimed (provider nightly backup) but unverified",
+        "Flags revisionHistoryLimit: 0 and/or the :latest image tag as blocking a reliable rollback",
+        "Reports that no disaster-recovery plan (RTO/RPO) was found",
+        "Recommends a dated restore test and a rehearsed rollback as remediation"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "skill": "audit-orm-query-and-data-access",
+  "generated_at": "2026-09-11T08:00:00Z",
+  "target": {"root": ".", "commit": null},
+  "stack": {"primary_backend": "dotnet"},
+  "scope": {"checked": ["Product.Managers"], "not_checked": []},
+  "findings": [
+    {
+      "id": "ORM-001",
+      "title": "N+1 query loading sale lines",
+      "severity": "Medium",
+      "confidence": "confirmed",
+      "location": {"file": "Product.Managers/SaleManager.cs", "line": 64, "symbol": "GetInvoice"},
+      "evidence": "foreach (var s in sales) s.Lines = _context.SaleDetails.Where(d => d.SaleId == s.Id).ToList();",
+      "impact": "Invoice listing issues one query per sale.",
+      "remediation": "Use Include(s => s.Lines) or a projection.",
+      "references": ["CWE-1073"],
+      "tags": ["n-plus-one"],
+      "root_cause_key": "sale-manager:lazy-lines"
+    },
+    {
+      "id": "ORM-002",
+      "title": "Tracking queries used for read-only lists",
+      "severity": "Low",
+      "confidence": "confirmed",
+      "location": {"file": "Product.Managers/ProductManager.cs", "line": 40},
+      "evidence": "_context.Products.Where(p => !p.IsDeleted).ToList();",
+      "impact": "Change tracker overhead on every list call.",
+      "remediation": "Add AsNoTracking() to read-only queries.",
+      "references": [],
+      "tags": ["no-standard"]
+    },
+    {
+      "id": "ORM-003",
+      "title": "N+1 query loading purchase lines",
+      "severity": "High",
+      "confidence": "confirmed",
+      "location": {"file": "Product.Managers/PurchaseManager.cs", "line": 71, "symbol": "GetBill"},
+      "evidence": "foreach (var p in purchases) p.Lines = _context.PurchaseDetails.Where(d => d.PurchaseId == p.Id).ToList();",
+      "impact": "Bill listing for a large supplier issues thousands of queries and times out.",
+      "remediation": "Use Include(p => p.Lines) or a projection.",
+      "references": ["CWE-1073", "CWE-400"],
+      "tags": ["n-plus-one", "timeout"],
+      "root_cause_key": "sale-manager:lazy-lines"
+    },
+    {
+      "id": "ORM-004",
+      "title": "Raw SQL flagged in migration helper",
+      "severity": "Medium",
+      "confidence": "false-positive",
+      "location": {"file": "Product.Entity/SeedHelper.cs", "line": 12},
+      "evidence": "ExecuteSqlRaw(\"DELETE FROM TempImport\")",
+      "impact": "Constant string, no user input.",
+      "remediation": "None.",
+      "references": [],
+      "tags": [],
+      "root_cause_key": "sale-manager:lazy-lines"
+    }
+  ],
+  "summary": {"Critical": 0, "High": 1, "Medium": 1, "Low": 1, "Info": 0}
+}

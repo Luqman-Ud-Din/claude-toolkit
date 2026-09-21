@@ -1,0 +1,82 @@
+[
+  {
+    "id": "LOG-REQUEST-BODY",
+    "pattern": "\\b(?:logger|log|console|req\\.log|this\\.logger)\\.(?:info|debug|warn|error|trace|fatal|log)\\(.*\\b(?:req|request|ctx\\.request)\\.(?:body|headers|query)\\b",
+    "globs": ["*.js", "*.ts", "*.mjs", "*.cjs"],
+    "severity_hint": "High",
+    "description": "Whole request body/headers passed to a logger - passwords, tokens and PII go with it",
+    "reference": "CWE-532"
+  },
+  {
+    "id": "LOG-SENSITIVE-FIELD",
+    "pattern": "\\b(?:logger|log|console|req\\.log|this\\.logger)\\.(?:info|debug|warn|error|trace|fatal|log)\\(.*\\b\\w*(?:password|passwd|secret|token|apikey|api_key|authorization|cookie|cardnumber|cvv|ssn)\\b(?!\\s*(?:reset|policy|expir|hash))",
+    "globs": ["*.js", "*.ts", "*.mjs", "*.cjs"],
+    "severity_hint": "Critical",
+    "description": "Log call names a credential/token/card field - confirm a value (not a constant message) is logged",
+    "reference": "CWE-532"
+  },
+  {
+    "id": "LOG-CATCH-DEBUG",
+    "pattern": "\\.(?:debug|trace)\\(.*[,(]\\s*(?:err|error|e|ex|exception)\\s*\\)|catch\\s*\\(\\s*\\w*\\s*\\)\\s*\\{\\s*(?:logger|log|console)\\.(?:debug|trace)",
+    "globs": ["*.js", "*.ts", "*.mjs", "*.cjs"],
+    "severity_hint": "High",
+    "description": "Exception logged at debug/trace - invisible at the production level (multi-line catch blocks: log_scan.py)",
+    "reference": "CWE-778"
+  },
+  {
+    "id": "LOG-CONCAT-MESSAGE",
+    "pattern": "\\b(?:logger|log|this\\.logger|req\\.log)\\.(?:info|debug|warn|error|trace|fatal)\\(\\s*(?:['\"][^'\"]*['\"]\\s*\\+|`[^`]*\\$\\{)",
+    "globs": ["*.js", "*.ts", "*.mjs", "*.cjs"],
+    "severity_hint": "Low",
+    "description": "Message built by concatenation/template literal - unstructured, not redactable, log-injection prone",
+    "reference": "CWE-117"
+  },
+  {
+    "id": "LOG-CORRELATION-MARKER",
+    "pattern": "x-correlation-id|x-request-id|genReqId|pino-http|express-request-id|cls-rtracer|AsyncLocalStorage|traceparent|@opentelemetry/sdk-node|nestjs-cls",
+    "globs": ["*.js", "*.ts", "*.mjs", "*.cjs", "package.json"],
+    "severity_hint": "Info",
+    "description": "Correlation-id middleware marker. ZERO hits across the repo means there is no correlation-id middleware - write that finding",
+    "reference": "CWE-778"
+  },
+  {
+    "id": "LOG-ERROR-MESSAGE-ONLY",
+    "pattern": "\\.(?:error|warn)\\(\\s*(?:err|error|e|ex)\\.message\\s*\\)",
+    "globs": ["*.js", "*.ts", "*.mjs", "*.cjs"],
+    "severity_hint": "Medium",
+    "description": "Only err.message logged - the stack trace is lost (pino needs { err })",
+    "reference": "CWE-778"
+  },
+  {
+    "id": "LOG-SWALLOWED-ERROR",
+    "pattern": "\\.catch\\(\\s*\\(\\s*\\w*\\s*\\)\\s*=>\\s*\\{\\s*\\}\\s*\\)|\\.catch\\(\\s*\\(\\)\\s*=>\\s*(?:null|undefined)\\s*\\)|catch\\s*(?:\\(\\s*\\w*\\s*\\))?\\s*\\{\\s*\\}",
+    "globs": ["*.js", "*.ts", "*.mjs", "*.cjs"],
+    "severity_hint": "Medium",
+    "description": "Error swallowed with no log at all",
+    "reference": "CWE-390"
+  },
+  {
+    "id": "LOG-CONSOLE-IN-SERVER",
+    "pattern": "\\bconsole\\.(?:log|info|debug)\\(",
+    "globs": ["*.js", "*.ts", "*.mjs", "*.cjs"],
+    "severity_hint": "Low",
+    "description": "console.* in server code - no level, no structure, no redaction (ignore scripts/, seeds, tests)",
+    "reference": "CWE-778"
+  },
+  {
+    "id": "LOG-DEBUG-DEFAULT-LEVEL",
+    "pattern": "level\\s*:\\s*['\"](?:debug|trace)['\"]|LOG_LEVEL\\s*(?:\\|\\||\\?\\?)\\s*['\"](?:debug|trace)['\"]",
+    "globs": ["*.js", "*.ts", "*.mjs", "*.cjs"],
+    "severity_hint": "Low",
+    "description": "Logger defaults to debug/trace - noisy and more likely to capture payloads in production",
+    "reference": "CWE-532"
+  },
+  {
+    "id": "LOG-SENTRY-PII",
+    "pattern": "sendDefaultPii\\s*:\\s*true",
+    "globs": ["*.js", "*.ts", "*.mjs", "*.cjs"],
+    "severity_hint": "Medium",
+    "description": "Error tracker configured to send cookies, headers and user IP",
+    "reference": "CWE-532"
+  }
+]

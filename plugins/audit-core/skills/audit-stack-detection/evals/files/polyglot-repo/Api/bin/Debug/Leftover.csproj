@@ -1,0 +1,2 @@
+<!-- build output copy; detection must skip bin/ -->
+<Project Sdk="Microsoft.NET.Sdk" />

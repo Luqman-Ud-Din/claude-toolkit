@@ -1,0 +1,34 @@
+[
+  {
+    "id": "PERMISSION-ALLOWANY",
+    "pattern": "permission_classes\\s*=\\s*\\[[^\\]]*AllowAny",
+    "globs": ["*.py"],
+    "severity_hint": "High",
+    "description": "DRF view open to everyone - confirm it is meant to be public",
+    "reference": "CWE-306"
+  },
+  {
+    "id": "NO-PERMISSION-CLASSES",
+    "pattern": "class\\s+\\w+\\((?:generics\\.|viewsets\\.|APIView|ListAPIView|RetrieveAPIView)",
+    "globs": ["*.py"],
+    "severity_hint": "Medium",
+    "description": "DRF view - confirm permission_classes is set (defaults may be AllowAny)",
+    "reference": "CWE-306"
+  },
+  {
+    "id": "OBJECTS-GET-PK",
+    "pattern": "objects\\.(get|filter)\\(\\s*(pk|id)\\s*=",
+    "globs": ["*.py"],
+    "severity_hint": "High",
+    "description": "Fetch by pk/id - check it also filters by request.user/tenant (IDOR risk)",
+    "reference": "CWE-639"
+  },
+  {
+    "id": "SERIALIZER-FIELDS-ALL",
+    "pattern": "fields\\s*=\\s*['\"]__all__['\"]",
+    "globs": ["*.py"],
+    "severity_hint": "High",
+    "description": "Serializer exposes every field including role/is_staff - mass-assignment / privilege escalation",
+    "reference": "CWE-915"
+  }
+]

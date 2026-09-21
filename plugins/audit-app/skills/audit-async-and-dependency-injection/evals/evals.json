@@ -1,0 +1,48 @@
+{
+  "skill_name": "audit-async-and-dependency-injection",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Our billing API sometimes hangs under load and we occasionally see 'A second operation was started on this context'. Please review evals/files/sample-repo for async and dependency-injection problems.",
+      "expected_output": "ASYNC-prefixed findings for: the singleton ReportCache holding the scoped BillingDbContext (High, CAPTIVE-SCOPED, remediation IServiceScopeFactory or make it scoped, plus ValidateScopes/ValidateOnBuild), InvoiceService.PostSync blocking with .Result/GetAwaiter().GetResult() (High), InvoiceService.NotifyPosted async void (High/Medium), and InvoicesController.Pdf constructing HttpClient per request (Medium). No findings for PostAsync, TaxRateCache, FbrClient, or the Post action. Report includes the DI registration table with lifetimes and the mismatch flag.",
+      "files": ["evals/files/sample-repo/Billing.Api/Billing.Api.csproj", "evals/files/sample-repo/Billing.Api/Program.cs", "evals/files/sample-repo/Billing.Api/Services/ReportCache.cs", "evals/files/sample-repo/Billing.Api/Services/TaxRateCache.cs", "evals/files/sample-repo/Billing.Api/Services/InvoiceService.cs", "evals/files/sample-repo/Billing.Api/Controllers/InvoicesController.cs"],
+      "expectations": [
+        "Detects the stack as dotnet and loads only references/dotnet.md",
+        "Runs ../audit-code-scan/scripts/grep_scan.py with scripts/patterns/dotnet.json and di_lifetimes.py --stack dotnet",
+        "Emits a High finding for ReportCache (Singleton) depending on BillingDbContext (Scoped) with CAPTIVE-SCOPED and remediation using IServiceScopeFactory or a scoped registration",
+        "Emits a High finding for PostSync's .Result / GetAwaiter().GetResult() referencing CWE-833 or CWE-400",
+        "Emits a finding for the async void NotifyPosted method referencing CWE-248 or CWE-390",
+        "Emits a finding for new HttpClient() in InvoicesController.Pdf recommending IHttpClientFactory and a timeout",
+        "Does not flag PostAsync, TaxRateCache, FbrClient, or InvoicesController.Post",
+        "Report contains a DI registration table with columns for service, lifetime, dependencies with lifetimes, and mismatch flag",
+        "DI table shows ReportCache as Singleton with BillingDbContext (Scoped) and mismatch CAPTIVE-SCOPED, and TaxRateCache with mismatch -",
+        "Report includes a Not checked section",
+        "All finding ids start with ASYNC- and findings.json validates"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Build me the DI lifetime table for evals/files/sample-repo/Billing.Api and tell me which registrations are wrong.",
+      "expected_output": "Runs di_lifetimes.py --stack dotnet; a table listing BillingDbContext (Scoped), ReportCache (Singleton, deps BillingDbContext Scoped + ILogger Singleton, CAPTIVE-SCOPED), IInvoiceService/InvoiceService (Scoped, no mismatch), ITaxRateCache/TaxRateCache (Singleton, deps IServiceScopeFactory + IMemoryCache, no mismatch), IFbrClient/FbrClient (Transient typed client); identifies ReportCache as the wrong registration.",
+      "files": ["evals/files/sample-repo/Billing.Api/Program.cs", "evals/files/sample-repo/Billing.Api/Services/ReportCache.cs", "evals/files/sample-repo/Billing.Api/Services/TaxRateCache.cs", "evals/files/sample-repo/Billing.Api/Services/InvoiceService.cs"],
+      "expectations": [
+        "Uses scripts/di_lifetimes.py",
+        "Table lists ReportCache as Singleton with a Scoped BillingDbContext dependency flagged CAPTIVE-SCOPED",
+        "Table lists TaxRateCache and InvoiceService without a mismatch",
+        "Explains the rule: a consumer may only hold dependencies with an equal or longer lifetime"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Is there anything wrong with how evals/files/sample-repo/Billing.Api/Services/InvoiceService.cs uses async?",
+      "expected_output": "Two findings: PostSync blocks on async work (.Result, GetAwaiter().GetResult()) - make the interface async; NotifyPosted is async void so failures vanish - return Task and have the caller await, or enqueue a durable job. PostAsync is called out as correct.",
+      "files": ["evals/files/sample-repo/Billing.Api/Services/InvoiceService.cs"],
+      "expectations": [
+        "Flags PostSync's .Result and GetAwaiter().GetResult() as sync-over-async",
+        "Flags NotifyPosted as async void with lost exceptions",
+        "Recommends changing the IInvoiceService interface so callers await Task-returning methods",
+        "Notes that PostAsync is the correct pattern and threads its CancellationToken"
+      ]
+    }
+  ]
+}

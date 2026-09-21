@@ -1,0 +1,18 @@
+[
+  {
+    "id": "SECRET-IN-ENVIRONMENT",
+    "pattern": "(?i)(apiKey|api_key|secret|clientSecret|password|token|privateKey)\\s*:\\s*['\"][A-Za-z0-9_\\-/+]{12,}['\"]",
+    "globs": ["environment*.ts"],
+    "severity_hint": "High",
+    "description": "Secret in an Angular environment file - it ships in the browser bundle; only public keys belong here",
+    "reference": "CWE-798"
+  },
+  {
+    "id": "FIREBASE-PRIVATE",
+    "pattern": "(?i)(private_key|client_secret|serviceAccount)",
+    "globs": ["*.ts", "firebase*.ts", "*.json"],
+    "severity_hint": "Critical",
+    "description": "Server-side credential (service account / private key) in frontend code",
+    "reference": "CWE-798"
+  }
+]

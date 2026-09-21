@@ -1,0 +1,17 @@
+{
+  "skill_name": "explore-llm-application",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I just inherited this codebase and I know it has some AI agent feature somewhere - can you give me a full picture of how it works before I touch anything?",
+      "expected_output": "Runs stack detection, all four code-only explore-llm-* skills, asks before running explore-llm-behavior, merges the results into one readable inventory with cross-cutting observations, and writes explore-llm-application.json.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Just document the agent's architecture and prompts, we're not doing a security audit right now.",
+      "expected_output": "Runs the explore phase as a standalone deliverable with no audit follow-on assumed, confirming this matches design principle 1 (explore can run alone).",
+      "files": []
+    }
+  ]
+}

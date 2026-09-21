@@ -1,0 +1,26 @@
+Mixed sample with planted values. None of these values are real; they are format-valid fakes.
+
+== Personal data ==
+Customer contact: ayesha.khan@kh-traders.pk, phone +923001234567
+Role mailbox (not personal): support@kh-traders.pk
+Fixture mailbox (placeholder): john.doe@example.com
+Valid card (Luhn passes, not a test number): 4556 7375 8689 9855
+Invalid card (fails Luhn): 4556 7375 8689 9856
+Published Stripe test card (placeholder): 4242 4242 4242 4242
+IBAN: GB82 WEST 1234 5698 7654 32
+US SSN: 536-22-8741
+Pakistan CNIC: 35202-1234567-1
+
+== Secrets ==
+AWS_ACCESS_KEY_ID=AKIAQ3EGRV7TNXZL4K2M
+STRIPE_SECRET_KEY=${TOOLKIT_FIXTURE_STRIPE_SECRET}
+STRIPE_PUBLISHABLE_KEY=pk_live_51HqT9aKd83JfLm20AbCdEf9s
+Placeholder key: ${TOOLKIT_FIXTURE_STRIPE_PLACEHOLDER}
+SENDGRID_API_KEY=SG.aB3dEfGhIjKlMnOpQrStUv.wXyZ0123456789AbCdEfGhIjKlMn
+"ConnectionStrings": { "Default": "Server=db.prod.internal;Database=Inv;User Id=app;Password=Qx7!pLm29vTz;" }
+REDIS_URL=redis://cache:S3cr3tPass99@redis.prod.internal:6379
+DB_PASSWORD=changeme
+JWT_KEY=set-in-secret-manager
+auth: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkEifQ.c2lnbmF0dXJlLXZhbHVlLTEyMzQ
+-----BEGIN RSA PRIVATE KEY-----
+clientSecret: "pZ8vK2mQ9xL4rT7wN1bC"

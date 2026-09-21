@@ -1,0 +1,17 @@
+{
+  "skill_name": "propose-llm-application",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "We ran the full LLM audit and have a dozen findings across different Areas - can you turn this into one remediation plan we can actually work through?",
+      "expected_output": "Routes each finding to the right propose-llm-* child (some to controls, some to prompt-changes, some to both), runs them, and merges into one plan prioritized by severity and effort-vs-impact, split into must-fix vs fast-follow.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "An external pentest firm gave us a PDF with a few AI-related findings, not from your audit skills - can you still build a remediation plan from those?",
+      "expected_output": "Normalizes the external findings into the shared finding format (asking for missing severity/location info rather than guessing), then routes and merges them the same way as audit-llm-* output.",
+      "files": []
+    }
+  ]
+}

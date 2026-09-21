@@ -1,0 +1,66 @@
+[
+  {
+    "id": "TEST-SKIP-FACT",
+    "pattern": "\\[\\s*(?:Fact|Theory)\\s*\\(\\s*Skip\\s*=",
+    "globs": ["*.cs"],
+    "severity_hint": "Medium",
+    "description": "xUnit test permanently skipped via Skip=",
+    "reference": "CWE-1120"
+  },
+  {
+    "id": "TEST-SKIP-IGNORE",
+    "pattern": "\\[\\s*(?:Ignore|Explicit)\\s*[\\(\\]]",
+    "globs": ["*.cs"],
+    "severity_hint": "Medium",
+    "description": "NUnit/MSTest test ignored or marked Explicit so CI never runs it",
+    "reference": "CWE-1120"
+  },
+  {
+    "id": "TEST-INCONCLUSIVE",
+    "pattern": "Assert\\.Inconclusive\\s*\\(",
+    "globs": ["*.cs"],
+    "severity_hint": "Low",
+    "description": "Test bails out as inconclusive instead of asserting",
+    "reference": "CWE-1120"
+  },
+  {
+    "id": "TEST-INMEMORY-DB",
+    "pattern": "UseInMemoryDatabase\\(|DataSource=:memory:|Sqlite\\(\"DataSource=:memory:",
+    "globs": ["*.cs"],
+    "severity_hint": "Medium",
+    "description": "Relational behaviour (constraints, transactions, raw SQL, query filters) not exercised - in-memory provider substituted for the real database",
+    "reference": "CWE-1120"
+  },
+  {
+    "id": "TEST-SLEEP",
+    "pattern": "Thread\\.Sleep\\(|Task\\.Delay\\(\\s*[0-9]{4,}",
+    "globs": ["*Test*.cs", "*Tests*.cs", "*Spec*.cs"],
+    "severity_hint": "Low",
+    "description": "Timing-dependent test - a common source of flakiness",
+    "reference": "CWE-1120"
+  },
+  {
+    "id": "TEST-PROD-CONNSTR",
+    "pattern": "(Server|Data Source)\\s*=\\s*(?!\\(?local|\\.\\\\|127\\.0\\.0\\.1|localhost)[A-Za-z0-9._-]+;.*(Database|Initial Catalog)\\s*=",
+    "globs": ["appsettings*.json", "*.Test.json", "*.cs", "*.runsettings"],
+    "severity_hint": "High",
+    "description": "Test configuration points at a non-local database host - tests may mutate shared or production data",
+    "reference": "CWE-1188"
+  },
+  {
+    "id": "TEST-CI-SKIPTESTS",
+    "pattern": "-p:SkipTests=true|dotnet test[^\\n]*\\|\\|\\s*true|continueOnError:\\s*true",
+    "globs": ["*.yml", "*.yaml", "Jenkinsfile*"],
+    "severity_hint": "High",
+    "description": "Test step in CI cannot fail the build",
+    "reference": "ASVS-1.14.4"
+  },
+  {
+    "id": "TEST-NO-LOCKED-RESTORE",
+    "pattern": "dotnet restore(?![^\\n]*--locked-mode)",
+    "globs": ["*.yml", "*.yaml", "Jenkinsfile*"],
+    "severity_hint": "Low",
+    "description": "Restore is not locked - builds are not reproducible package-for-package",
+    "reference": "ASVS-14.2.1"
+  }
+]

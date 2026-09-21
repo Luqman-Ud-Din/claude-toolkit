@@ -1,0 +1,44 @@
+{
+  "skill": "audit-production-readiness-checklist",
+  "generated_at": "2026-09-11T12:23:33.932701+00:00",
+  "target": {
+    "root": ".",
+    "commit": null
+  },
+  "stack": {
+    "primary_backend": "dotnet",
+    "primary_frontend": "angular"
+  },
+  "scope": {
+    "checked": [
+      "Program.cs",
+      "deployment descriptors (none present)"
+    ],
+    "not_checked": [
+      {
+        "item": "alert routing",
+        "reason": "outside the repo"
+      }
+    ]
+  },
+  "findings": [
+    {
+      "id": "READY-001",
+      "title": "No health check endpoint is registered",
+      "severity": "High",
+      "confidence": "confirmed",
+      "location": {
+        "file": "Inventory.Api/Program.cs",
+        "line": 1
+      },
+      "evidence": "Inventory.Api/Program.cs:1",
+      "impact": "The hosting platform cannot tell when the API is down, so outages last longer.",
+      "remediation": "Add AddHealthChecks().AddDbContextCheck and MapHealthChecks(\"/health\").",
+      "references": [
+        "ASVS-14.1.1"
+      ],
+      "tags": []
+    }
+  ],
+  "summary": {}
+}

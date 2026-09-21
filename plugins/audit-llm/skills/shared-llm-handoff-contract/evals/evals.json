@@ -1,0 +1,17 @@
+{
+  "skill_name": "shared-llm-handoff-contract",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "We ran explore-llm-tools-and-permissions yesterday and now want to run the excessive-agency audit - where does it pick up that map from, and where should its findings land?",
+      "expected_output": "Names audit/llm/explore/explore-llm-tools-and-permissions.json as the map path and audit/findings/audit-llm-excessive-agency.json (via audit-finding-writer) as the findings path, and explains findings reuse the existing contract rather than a new LLM-specific one.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "propose-llm-controls just produced some fixes - what file do those live in and how do they trace back to the findings that justified them?",
+      "expected_output": "Names audit/llm/proposals/propose-llm-controls.json, shows the proposal schema, and highlights finding_refs as the traceability field, noting a proactive suggestion should set finding_refs to an explicit empty list rather than omitting it.",
+      "files": []
+    }
+  ]
+}

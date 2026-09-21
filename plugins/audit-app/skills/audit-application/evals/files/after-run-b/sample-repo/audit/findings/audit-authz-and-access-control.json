@@ -1,0 +1,100 @@
+{
+  "skill": "audit-authz-and-access-control",
+  "generated_at": "2026-09-11T12:23:24.541732+00:00",
+  "target": {
+    "root": ".",
+    "commit": null
+  },
+  "stack": {
+    "primary_backend": "dotnet",
+    "primary_frontend": "angular"
+  },
+  "scope": {
+    "checked": [
+      "all controllers under Inventory.Api",
+      "Program.cs pipeline"
+    ],
+    "not_checked": [
+      {
+        "item": "dynamic probe",
+        "reason": "no test URL or tokens supplied"
+      }
+    ]
+  },
+  "findings": [
+    {
+      "id": "AUTHZ-001",
+      "title": "Order payment is scoped by company but not by branch",
+      "severity": "High",
+      "confidence": "confirmed",
+      "location": {
+        "file": "Inventory.Api/Controllers/OrdersController.cs",
+        "line": 30
+      },
+      "evidence": "Inventory.Api/Controllers/OrdersController.cs:30",
+      "impact": "A user of one branch can mark another branch's orders as paid.",
+      "remediation": "Filter by BranchId from the caller's claims as well as CompanyId.",
+      "references": [
+        "CWE-639",
+        "ASVS-4.2.1",
+        "OWASP-A01:2021",
+        "ASVS-4.1.3"
+      ],
+      "tags": [],
+      "root_cause_key": "orders:missing-branch-filter",
+      "extra": {
+        "mapping": {
+          "rule": "idor",
+          "matched_by": "cwe:CWE-639",
+          "added": [
+            "ASVS-4.1.3"
+          ],
+          "top10": "A01",
+          "asvs": [
+            "4.2.1",
+            "4.1.3"
+          ],
+          "cwe": "CWE-639"
+        }
+      }
+    },
+    {
+      "id": "AUTHZ-002",
+      "title": "JWT bearer registered without token validation parameters",
+      "severity": "Critical",
+      "confidence": "likely",
+      "location": {
+        "file": "Inventory.Api/Program.cs",
+        "line": 6
+      },
+      "evidence": "Inventory.Api/Program.cs:6",
+      "impact": "Tokens from any issuer may be accepted, so anyone could forge a login.",
+      "remediation": "Configure TokenValidationParameters (issuer, audience, signing key, lifetime).",
+      "references": [
+        "CWE-287",
+        "ASVS-3.5.3",
+        "OWASP-A07:2021",
+        "ASVS-4.1.1",
+        "ASVS-2.2.1"
+      ],
+      "tags": [],
+      "extra": {
+        "mapping": {
+          "rule": "missing-authentication",
+          "matched_by": "cwe:CWE-287",
+          "added": [
+            "ASVS-4.1.1",
+            "ASVS-2.2.1"
+          ],
+          "top10": "A07",
+          "asvs": [
+            "4.1.1",
+            "2.2.1"
+          ],
+          "cwe": "CWE-306"
+        }
+      }
+    }
+  ],
+  "summary": {}
+}

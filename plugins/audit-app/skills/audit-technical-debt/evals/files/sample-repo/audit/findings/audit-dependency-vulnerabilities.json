@@ -1,0 +1,26 @@
+{
+  "skill": "audit-dependency-vulnerabilities",
+  "generated_at": "2026-09-10T09:05:00Z",
+  "target": {"root": ".", "commit": null},
+  "stack": {"primary_backend": "dotnet", "primary_frontend": null},
+  "scope": {
+    "checked": ["nuget (OrderService.Api.csproj)"],
+    "not_checked": [{"item": "abandoned-package check", "reason": "run with --no-network"}]
+  },
+  "findings": [
+    {
+      "id": "DEP-001",
+      "title": "Newtonsoft.Json 12.0.1 allows denial of service through deeply nested JSON",
+      "severity": "High",
+      "confidence": "likely",
+      "location": {"file": "OrderService.Api/OrderService.Api.csproj", "line": 11, "symbol": "Newtonsoft.Json@12.0.1"},
+      "evidence": "PackageReference Include=\"Newtonsoft.Json\" Version=\"12.0.1\" - GHSA-5crp-9r3c-p9vr (CVE-2024-21907), fixed in 13.0.1",
+      "impact": "A crafted FX-rate or import payload can exhaust CPU and stack on the API host, making order import unavailable.",
+      "remediation": "dotnet add OrderService.Api/OrderService.Api.csproj package Newtonsoft.Json --version 13.0.3 (non-breaking for JsonConvert usage).",
+      "references": ["GHSA-5crp-9r3c-p9vr", "CVE-2024-21907", "CWE-400", "OWASP-A06:2021"],
+      "tags": ["Newtonsoft.Json"],
+      "root_cause_key": "nuget:Newtonsoft.Json@12.0.1"
+    }
+  ],
+  "summary": {"Critical": 0, "High": 1, "Medium": 0, "Low": 0, "Info": 0}
+}

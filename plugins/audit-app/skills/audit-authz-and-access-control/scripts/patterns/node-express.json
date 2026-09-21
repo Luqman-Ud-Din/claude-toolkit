@@ -1,0 +1,34 @@
+[
+  {
+    "id": "ROUTE-NO-MIDDLEWARE",
+    "pattern": "\\b(?:app|router)\\.(get|post|put|delete|patch)\\(",
+    "globs": ["*.js", "*.ts"],
+    "severity_hint": "Medium",
+    "description": "Route registration - confirm an auth middleware runs before the handler (requireAuth/passport/jwt)",
+    "reference": "CWE-306"
+  },
+  {
+    "id": "FIND-BY-PARAM-ID",
+    "pattern": "findOne|findById|findByPk|\\.find\\(\\{",
+    "globs": ["*.js", "*.ts"],
+    "severity_hint": "High",
+    "description": "Lookup by id - check the query also constrains by req.user id/tenant (IDOR risk)",
+    "reference": "CWE-639"
+  },
+  {
+    "id": "SPREAD-REQ-BODY",
+    "pattern": "\\.\\.\\.req\\.body|Object\\.assign\\([^,]+,\\s*req\\.body\\)|new\\s+\\w+\\(req\\.body\\)",
+    "globs": ["*.js", "*.ts"],
+    "severity_hint": "High",
+    "description": "Whole request body copied onto a model - mass assignment; whitelist fields instead",
+    "reference": "CWE-915"
+  },
+  {
+    "id": "BODY-ROLE-FIELD",
+    "pattern": "req\\.body\\.(role|roles|isAdmin|permissions|tenantId|companyId)",
+    "globs": ["*.js", "*.ts"],
+    "severity_hint": "High",
+    "description": "Privilege/tenant field read from the request body - privilege-escalation candidate",
+    "reference": "CWE-915"
+  }
+]

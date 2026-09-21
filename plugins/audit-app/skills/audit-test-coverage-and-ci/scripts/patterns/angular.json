@@ -1,0 +1,50 @@
+[
+  {
+    "id": "TEST-SKIP-JASMINE",
+    "pattern": "\\b(?:it|describe)\\.skip\\s*\\(|\\b(?:xit|xdescribe)\\s*\\(",
+    "globs": ["*.spec.ts", "*.spec.js"],
+    "severity_hint": "Medium",
+    "description": "Jasmine/Karma spec skipped",
+    "reference": "CWE-1120"
+  },
+  {
+    "id": "TEST-FOCUSED-JASMINE",
+    "pattern": "\\bfdescribe\\s*\\(|\\bfit\\s*\\(|\\b(?:it|describe)\\.only\\s*\\(",
+    "globs": ["*.spec.ts", "*.spec.js"],
+    "severity_hint": "High",
+    "description": "Focused spec - every other spec in the run is silently skipped",
+    "reference": "CWE-1120"
+  },
+  {
+    "id": "TEST-EMPTY-SPEC",
+    "pattern": "it\\(\\s*['\"`]should create['\"`]",
+    "globs": ["*.spec.ts"],
+    "severity_hint": "Low",
+    "description": "Default CLI-generated smoke spec - asserts the component constructs, nothing about behaviour",
+    "reference": "CWE-1120"
+  },
+  {
+    "id": "TEST-NO-HTTP-MOCK",
+    "pattern": "HttpClientModule(?![A-Za-z])",
+    "globs": ["*.spec.ts"],
+    "severity_hint": "Low",
+    "description": "Spec imports the real HttpClientModule instead of HttpClientTestingModule - the test may hit the network",
+    "reference": "CWE-1120"
+  },
+  {
+    "id": "TEST-CI-HEADLESS-MISSING",
+    "pattern": "ng test(?![^\\n]*(--watch=false|--browsers|CI=true))",
+    "globs": ["*.yml", "*.yaml", "Jenkinsfile*"],
+    "severity_hint": "Medium",
+    "description": "ng test in CI without --watch=false - the job can hang or never report a failure",
+    "reference": "ASVS-1.14.4"
+  },
+  {
+    "id": "TEST-CI-ADVISORY",
+    "pattern": "ng (test|lint)[^\\n]*\\|\\|\\s*true|continue-on-error:\\s*true",
+    "globs": ["*.yml", "*.yaml", "Jenkinsfile*"],
+    "severity_hint": "High",
+    "description": "Frontend test/lint step cannot fail the build",
+    "reference": "ASVS-1.14.4"
+  }
+]

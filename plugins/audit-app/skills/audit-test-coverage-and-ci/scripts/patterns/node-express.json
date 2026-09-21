@@ -1,0 +1,58 @@
+[
+  {
+    "id": "TEST-SKIP-JS",
+    "pattern": "\\b(?:it|test|describe|context)\\.skip\\s*\\(|\\b(?:xit|xdescribe|xtest)\\s*\\(",
+    "globs": ["*.js", "*.jsx", "*.ts", "*.tsx", "*.mjs"],
+    "severity_hint": "Medium",
+    "description": "Test skipped so CI never runs it",
+    "reference": "CWE-1120"
+  },
+  {
+    "id": "TEST-FOCUSED",
+    "pattern": "\\b(?:it|test|describe|context)\\.only\\s*\\(|\\bfdescribe\\s*\\(",
+    "globs": ["*.js", "*.jsx", "*.ts", "*.tsx", "*.mjs"],
+    "severity_hint": "High",
+    "description": "Focused test - every other test in the file is silently not run",
+    "reference": "CWE-1120"
+  },
+  {
+    "id": "TEST-INMEMORY-DB",
+    "pattern": "mongodb-memory-server|sqlite3?\\s*\\(\\s*['\"]:memory:|':memory:'",
+    "globs": ["*.js", "*.ts", "*.json"],
+    "severity_hint": "Medium",
+    "description": "In-memory database substitute - indexes, constraints and driver behaviour untested",
+    "reference": "CWE-1120"
+  },
+  {
+    "id": "TEST-SLEEP",
+    "pattern": "setTimeout\\(\\s*[^,]+,\\s*[0-9]{4,}|await\\s+sleep\\(\\s*[0-9]{4,}",
+    "globs": ["*.test.js", "*.spec.js", "*.test.ts", "*.spec.ts"],
+    "severity_hint": "Low",
+    "description": "Timing-dependent test - a common source of flakiness",
+    "reference": "CWE-1120"
+  },
+  {
+    "id": "TEST-CI-ADVISORY",
+    "pattern": "npm (run )?test[^\\n]*\\|\\|\\s*true|continue-on-error:\\s*true|--passWithNoTests",
+    "globs": ["*.yml", "*.yaml", "Jenkinsfile*", "package.json"],
+    "severity_hint": "High",
+    "description": "Test step cannot fail the build (or passes when there are no tests at all)",
+    "reference": "ASVS-1.14.4"
+  },
+  {
+    "id": "TEST-NPM-INSTALL-IN-CI",
+    "pattern": "run:\\s*npm install\\b|- npm install\\b",
+    "globs": ["*.yml", "*.yaml", "Jenkinsfile*"],
+    "severity_hint": "Low",
+    "description": "CI uses npm install rather than npm ci - the lockfile can drift, builds are not reproducible",
+    "reference": "ASVS-14.2.1"
+  },
+  {
+    "id": "TEST-PROD-URL",
+    "pattern": "(DATABASE_URL|MONGO_URL|API_URL)\\s*[:=]\\s*['\"]?[a-z]+://(?!localhost|127\\.0\\.0\\.1)",
+    "globs": [".env.test", "*.test.js", "*.test.ts", "jest.setup.js"],
+    "severity_hint": "High",
+    "description": "Test config points at a remote service or database",
+    "reference": "CWE-1188"
+  }
+]

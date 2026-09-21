@@ -1,0 +1,90 @@
+[
+  {
+    "id": "LOCAL-NOW",
+    "pattern": "DateTime\\.(Now|Today)\\b|DateTimeOffset\\.Now\\b|TimeZoneInfo\\.Local\\b|DateTime\\.Now\\.Date",
+    "globs": ["*.cs"],
+    "severity_hint": "Medium",
+    "description": "Local-time API in server code; confirm the decision it feeds and the zone the user expects",
+    "reference": "CWE-682"
+  },
+  {
+    "id": "NAIVE-CTOR",
+    "pattern": "new DateTime\\(\\s*\\d{4}\\s*,|new DateTime\\(\\s*\\w+\\.Year|DateTime\\.Parse(Exact)?\\(|Convert\\.ToDateTime\\(",
+    "globs": ["*.cs"],
+    "severity_hint": "Medium",
+    "description": "Naive DateTime constructed or parsed (Kind=Unspecified); check it is not compared to UTC instants",
+    "reference": "CWE-704"
+  },
+  {
+    "id": "SPECIFYKIND-SCATTER",
+    "pattern": "DateTime\\.SpecifyKind\\(|\\.ToLocalTime\\(\\)|\\.ToUniversalTime\\(\\)",
+    "globs": ["*.cs"],
+    "severity_hint": "Low",
+    "description": "Zone conversion inside code; should happen only at the persistence/API edge",
+    "reference": "CWE-704"
+  },
+  {
+    "id": "NON-ISO-FORMAT",
+    "pattern": "ToString\\(\\s*\"(dd|MM|d)[/.-](MM|dd|M)[/.-]y{2,4}|ToString\\(\\s*\"yyyy-MM-dd HH:mm(:ss)?\"\\s*\\)|\\[JsonConverter\\([^)]*DateFormat|DateFormatString\\s*=",
+    "globs": ["*.cs"],
+    "severity_hint": "Medium",
+    "description": "Non-ISO or offset-less date format string; check whether it reaches an API, DB, or file that is later parsed",
+    "reference": "CWE-20"
+  },
+  {
+    "id": "CRON-NO-ZONE",
+    "pattern": "RecurringJob\\.AddOrUpdate(?![^;]*TimeZone)|WithCronSchedule\\((?![^;]*InTimeZone)|CronExpression\\.",
+    "globs": ["*.cs"],
+    "severity_hint": "Low",
+    "description": "Recurring job registration; line-based match, so open the call and confirm no RecurringJobOptions.TimeZone / InTimeZone follows (Hangfire defaults to UTC, Quartz to process zone)",
+    "reference": "CWE-682"
+  },
+  {
+    "id": "DAY-MATH",
+    "pattern": "\\.AddDays\\(\\s*1\\s*\\)|\\.AddMonths\\(\\s*1\\s*\\)|\\.Date\\s*(==|<=|>=|<|>)|\\.TotalDays\\b",
+    "globs": ["*.cs"],
+    "severity_hint": "Low",
+    "description": "Calendar arithmetic or day-boundary comparison; verify zone and DST behaviour",
+    "reference": "CWE-682"
+  },
+  {
+    "id": "SQL-LOCAL-NOW",
+    "pattern": "\\bGETDATE\\(\\)|\\bSYSDATETIME\\(\\)|\\bCURRENT_TIMESTAMP\\b|\\bNOW\\(\\)",
+    "globs": ["*.cs", "*.sql"],
+    "severity_hint": "Medium",
+    "description": "Server-local time function in SQL or a column default; prefer GETUTCDATE()/SYSUTCDATETIME() or a zone-aware type",
+    "reference": "CWE-682"
+  },
+  {
+    "id": "COLUMN-NO-TZ",
+    "pattern": "HasColumnType\\(\\s*\"(datetime2?|smalldatetime|timestamp)(\\(\\d+\\))?\"\\s*\\)|\\b(datetime2?|smalldatetime)\\b[^\"]*(NOT NULL|NULL|DEFAULT)",
+    "globs": ["*.cs", "*.sql"],
+    "severity_hint": "Medium",
+    "description": "Zone-less timestamp column; needs a documented UTC convention or datetimeoffset",
+    "reference": "CWE-704"
+  },
+  {
+    "id": "STRING-SORT",
+    "pattern": "OrderBy(Descending)?\\(\\s*\\w+\\s*=>\\s*\\w+\\.\\w*(Date|Time|At)\\w*\\.ToString\\(",
+    "globs": ["*.cs"],
+    "severity_hint": "Low",
+    "description": "Sorting on a formatted date string",
+    "reference": "CWE-682"
+  },
+  {
+    "id": "TEST-REAL-TIME",
+    "pattern": "DateTime\\.(Now|UtcNow|Today)\\b|Thread\\.Sleep\\(",
+    "globs": ["*Tests.cs", "*Test.cs", "*Spec.cs", "*.Tests/*.cs"],
+    "severity_hint": "Low",
+    "description": "Test uses real time; pin the clock with TimeProvider/FakeTimeProvider",
+    "reference": "CWE-682"
+  },
+  {
+    "id": "WINDOWS-TZ-ID",
+    "pattern": "FindSystemTimeZoneById\\(\\s*\"[A-Z][a-z]+ (Standard|Daylight) Time\"",
+    "globs": ["*.cs"],
+    "severity_hint": "Low",
+    "description": "Windows time-zone id; fails on Linux containers without ICU mapping; prefer IANA ids",
+    "reference": "CWE-704"
+  }
+]

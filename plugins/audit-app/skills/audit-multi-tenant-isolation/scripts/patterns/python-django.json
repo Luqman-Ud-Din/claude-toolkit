@@ -1,0 +1,42 @@
+[
+  {
+    "id": "RAW-SQL",
+    "pattern": "\\.raw\\(|cursor\\.execute\\(|RawSQL\\(|connection\\.cursor",
+    "globs": ["*.py"],
+    "severity_hint": "High",
+    "description": "Raw SQL bypasses managers/row-level security - confirm it filters by tenant",
+    "reference": "CWE-284"
+  },
+  {
+    "id": "OBJECTS-ALL",
+    "pattern": "objects\\.all\\(\\)|objects\\.get\\(\\s*(pk|id)\\s*=|\\.objects\\.filter\\(\\s*(pk|id)\\s*=",
+    "globs": ["*.py"],
+    "severity_hint": "High",
+    "description": "Query not scoped to a tenant manager - confirm the default manager filters by tenant or add a tenant predicate",
+    "reference": "CWE-284"
+  },
+  {
+    "id": "TENANT-FROM-INPUT",
+    "pattern": "(request\\.(data|POST|GET|query_params)|serializer\\.validated_data)\\.get\\(['\"]?(tenant|tenant_id|company_id|org_id)",
+    "globs": ["*.py"],
+    "severity_hint": "High",
+    "description": "Tenant id from request input - derive it from request.user/token, never trust the client",
+    "reference": "CWE-639"
+  },
+  {
+    "id": "CACHE-KEY",
+    "pattern": "cache\\.(get|set)\\(|make_template_fragment_key|cache_key\\s*=",
+    "globs": ["*.py"],
+    "severity_hint": "Medium",
+    "description": "Cache key - confirm it includes the tenant id",
+    "reference": "CWE-524"
+  },
+  {
+    "id": "BACKGROUND-JOB",
+    "pattern": "@shared_task|@app\\.task|@periodic_task|celery|class\\s+Command\\(BaseCommand\\)",
+    "globs": ["*.py"],
+    "severity_hint": "Medium",
+    "description": "Celery task / management command - confirm it carries and enforces tenant context",
+    "reference": "CWE-284"
+  }
+]

@@ -1,0 +1,58 @@
+[
+  {
+    "id": "MONEY-FLOAT",
+    "pattern": "\\b(double|float|Double|Float)\\b\\s+\\w*(amount|price|total|cost|balance|tax|discount|rate|fee|credit|subtotal|charge)\\w*\\b|new\\s+BigDecimal\\(\\s*[a-zA-Z_][\\w.]*\\s*\\)",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "High",
+    "description": "Money-like value typed as double/float or BigDecimal built from a double; use BigDecimal.valueOf/String",
+    "reference": "CWE-682"
+  },
+  {
+    "id": "MONEY-ROUND",
+    "pattern": "Math\\.round\\(\\s*\\w*(amount|price|total|discount)|setScale\\(\\s*\\d+\\s*\\)|RoundingMode\\.HALF_EVEN",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "Medium",
+    "description": "Rounding via Math.round or setScale without a mode; confirm the invoice expects it",
+    "reference": "CWE-682"
+  },
+  {
+    "id": "STATE-SWITCH",
+    "pattern": "switch\\s*\\(\\s*\\w+\\.get(Status|State)\\(\\)\\s*\\)|if\\s*\\(\\s*\\w+\\.get(Status|State)\\(\\)\\s*(==|!=|\\.equals)",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "Info",
+    "description": "State-transition decision; map to the state diagram and check for a single transition table",
+    "reference": "CWE-841"
+  },
+  {
+    "id": "STATE-ASSIGN",
+    "pattern": "\\.set(Status|State)\\(\\s*\\w+(Status|State)?\\.\\w+\\s*\\)",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "Info",
+    "description": "Status written directly; verify a transition guard precedes it",
+    "reference": "CWE-841"
+  },
+  {
+    "id": "DISCOUNT-APPLY",
+    "pattern": "\\b(apply|add|use|redeem)(Discount|Coupon|Promo|Voucher)\\w*\\s*\\(|\\.set(Total|GrandTotal|Amount)\\(\\s*\\w+\\.get(Total|GrandTotal|Amount)\\(\\)\\.subtract\\(",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "High",
+    "description": "Discount application or incremental total mutation; check it cannot run twice per order",
+    "reference": "CWE-840"
+  },
+  {
+    "id": "ENTITY-AS-REQUEST",
+    "pattern": "@RequestBody\\s+(Order|Payment|Invoice|Subscription|User|Account|Stock)\\w*\\s+\\w+",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "Medium",
+    "description": "Entity bound directly from the request body; status/total/role may be client-writable",
+    "reference": "CWE-915"
+  },
+  {
+    "id": "ADMIN-OVERRIDE",
+    "pattern": "(force|override|markAs|manual)(Paid|Approve|Complete|Cancel|Adjust)\\w*\\s*\\(|impersonat",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "Medium",
+    "description": "Admin override or impersonation path; verify audit trail and limits",
+    "reference": "CWE-840"
+  }
+]

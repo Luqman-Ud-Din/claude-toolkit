@@ -1,0 +1,106 @@
+[
+  {
+    "id": "GDPR-JAVA-CONSENT-BOOL-ONLY",
+    "pattern": "private\\s+(?:boolean|Boolean)\\s+\\w*(?:consent|optIn|agreed|acceptedTerms|acceptedPrivacy|marketingAllowed|newsletter)\\w*\\s*;",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "Medium",
+    "description": "Consent stored as a boolean field; look for consentGivenAt / consentVersion siblings",
+    "reference": "GDPR-Art.7(1)"
+  },
+  {
+    "id": "GDPR-JAVA-LOG-PII",
+    "pattern": "\\b(?:log|logger|LOG|LOGGER)\\.(?:info|debug|warn|error|trace)\\s*\\([^;]*\\b(?:get)?(?:Email|Phone|Mobile|FirstName|LastName|FullName|Address|Ssn|NationalId|Iban|DateOfBirth|Dob)\\b",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "High",
+    "description": "Personal data in a log call",
+    "reference": "GDPR-Art.5(1)(c)"
+  },
+  {
+    "id": "GDPR-JAVA-LOG-ENTITY-TOSTRING",
+    "pattern": "\\b(?:log|logger|LOG|LOGGER)\\.(?:info|debug|warn|error)\\s*\\([^;]*\\b(?:user|customer|patient|employee|account|profile)\\w*\\s*[),]",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "Medium",
+    "description": "Entity passed to a log call (Lombok @Data toString prints every field)",
+    "reference": "GDPR-Art.5(1)(c)"
+  },
+  {
+    "id": "GDPR-JAVA-SHOW-SQL",
+    "pattern": "spring\\.jpa\\.show-sql\\s*[=:]\\s*true|org\\.hibernate\\.type(?:\\.descriptor\\.sql)?\\s*[=:]\\s*TRACE|p6spy",
+    "globs": ["*.properties", "*.yml", "*.yaml"],
+    "severity_hint": "Medium",
+    "description": "SQL statement / bind-parameter logging enabled - personal data in logs",
+    "reference": "GDPR-Art.5(1)(c)"
+  },
+  {
+    "id": "GDPR-JAVA-SENTRY-PII",
+    "pattern": "sentry\\.send-default-pii\\s*[=:]\\s*true|setSendDefaultPii\\s*\\(\\s*true|Sentry\\.setUser",
+    "globs": ["*.java", "*.kt", "*.properties", "*.yml", "*.yaml"],
+    "severity_hint": "Medium",
+    "description": "Sentry sends user PII by default / user context set",
+    "reference": "GDPR-Art.28"
+  },
+  {
+    "id": "GDPR-JAVA-SUBJECT-DELETE-ENDPOINT",
+    "pattern": "@DeleteMapping|(?:anonymi[sz]e|erase|forget|deleteAccount|deleteUser|deleteCustomer|purgeUser)\\w*\\s*\\(",
+    "globs": ["*Controller.java", "*Service.java", "*Resource.java", "*.kt"],
+    "severity_hint": "Info",
+    "description": "Deletion/anonymisation entry point - evidence for the erasure row",
+    "reference": "GDPR-Art.17"
+  },
+  {
+    "id": "GDPR-JAVA-EXPORT-ENDPOINT",
+    "pattern": "(?:export|download|myData|personalData|portability)\\w*\\s*\\(|@GetMapping\\s*\\(\\s*\"[^\"]*(?:export|download|/me\\b|profile)",
+    "globs": ["*Controller.java", "*Resource.java", "*.kt"],
+    "severity_hint": "Info",
+    "description": "Export / self-service data endpoint - evidence for access and portability rows",
+    "reference": "GDPR-Art.15"
+  },
+  {
+    "id": "GDPR-JAVA-RETENTION-JOB",
+    "pattern": "@Scheduled\\s*\\(|@EnableScheduling|JobBuilder\\.newJob|CronTrigger",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "Info",
+    "description": "Scheduled job - check whether it purges or anonymises personal data past retention",
+    "reference": "GDPR-Art.5(1)(e)"
+  },
+  {
+    "id": "GDPR-JAVA-SOFT-DELETE-ONLY",
+    "pattern": "@SQLDelete\\s*\\(|setDeleted\\s*\\(\\s*true|deleted\\s*=\\s*true",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "Medium",
+    "description": "Soft delete - personal data stays in the table after erasure unless purged",
+    "reference": "GDPR-Art.17"
+  },
+  {
+    "id": "GDPR-JAVA-DB-TLS",
+    "pattern": "jdbc:[^\\s\"']*(?:useSSL=false|sslmode=disable|trustServerCertificate=true|encrypt=false)",
+    "globs": ["*.properties", "*.yml", "*.yaml", "*.java", "*.kt"],
+    "severity_hint": "Medium",
+    "description": "JDBC connection without TLS / certificate validation",
+    "reference": "GDPR-Art.32"
+  },
+  {
+    "id": "GDPR-JAVA-HTTPS-CONFIG",
+    "pattern": "requiresChannel\\s*\\(|requiresSecure\\s*\\(|server\\.ssl\\.enabled\\s*[=:]\\s*true|httpStrictTransportSecurity",
+    "globs": ["*.java", "*.kt", "*.properties", "*.yml", "*.yaml"],
+    "severity_hint": "Info",
+    "description": "HTTPS enforcement / HSTS - evidence for encryption in transit",
+    "reference": "GDPR-Art.32"
+  },
+  {
+    "id": "GDPR-JAVA-AUDIT-TRAIL",
+    "pattern": "@Audited|@EnableJpaAuditing|@CreatedBy|@LastModifiedBy|Envers|AuditingEntityListener|AuditLog",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "Info",
+    "description": "Audit trail mechanism - evidence for access logging of personal data (writes only unless Envers)",
+    "reference": "GDPR-Art.30"
+  },
+  {
+    "id": "GDPR-JAVA-ACTUATOR-EXPOSED",
+    "pattern": "management\\.endpoints\\.web\\.exposure\\.include\\s*[=:]\\s*\\*|management\\.endpoints\\.web\\.exposure\\.include\\s*[=:].*(?:httptrace|httpexchanges|env|heapdump)",
+    "globs": ["*.properties", "*.yml", "*.yaml"],
+    "severity_hint": "Medium",
+    "description": "Actuator endpoints exposing request traces / environment (personal data and secrets)",
+    "reference": "GDPR-Art.32"
+  }
+]

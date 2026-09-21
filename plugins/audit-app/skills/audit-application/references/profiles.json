@@ -1,0 +1,153 @@
+{
+  "version": 1,
+  "notes": "Data for plan.py and run_state.py. Phase membership and the listing order inside each phase follow the spec for audit-application exactly. 'wave' orders execution inside a phase: skills in the same wave are independent and may run in parallel; a later wave waits because it optionally reads an earlier wave's output (see references/child-contracts.md). Sequential runs use the same order. 'actions' are infrastructure steps run by an atomic skill (no status file, no report row, never counted as a skill run); an action with 'needed_by' is planned only when one of those skills is planned.",
+  "phases": [
+    {
+      "id": "setup",
+      "number": 1,
+      "title": "Setup",
+      "steps": [
+        {"id": "detect-stack", "text": "run audit-stack-detection once ($AUDIT_CORE_ROOT/skills/audit-stack-detection/scripts/detect_stack.py) -> audit/stack.json (children read it instead of re-detecting)"},
+        {"id": "multi-tenant", "type": "checkpoint", "text": "ask: is the application multi-tenant? (recorded in audit/stack.json multi_tenant)"},
+        {"id": "prerequisites", "text": "confirm per-stack prerequisites from references/<stack>.md (SDKs installed, build possible, DB/test URL access)"},
+        {"id": "workspace", "text": "create audit/findings, audit/evidence, audit/status (and audit/reports, which every child writes)"},
+        {"id": "scope-profile", "type": "checkpoint", "text": "ask: scope profile (full, security-only, pre-launch, compliance-only, custom)"}
+      ]
+    },
+    {
+      "id": "discovery",
+      "number": 2,
+      "title": "Discovery",
+      "actions": [{"id": "endpoint-inventory", "wave": 1, "skill": "audit-endpoint-inventory",
+                   "needed_by": ["audit-api-contract", "audit-authz-and-access-control", "audit-multi-tenant-isolation", "audit-orm-query-and-data-access", "audit-performance-and-scalability"],
+                   "outputs": ["audit/evidence/audit-endpoint-inventory/endpoints.json"],
+                   "text": "run audit-endpoint-inventory once ($AUDIT_CORE_ROOT/skills/audit-endpoint-inventory/scripts/inventory_endpoints.py -> audit/evidence/audit-endpoint-inventory/endpoints.json) for the skills that read it"}],
+      "skills": ["audit-system-design", "audit-privacy-data-flow-mapper", "audit-api-contract", "audit-db-schema"],
+      "checkpoint_after": "critical-flows"
+    },
+    {
+      "id": "security",
+      "number": 3,
+      "title": "Security",
+      "parallel": true,
+      "skills": ["audit-authz-and-access-control", "audit-multi-tenant-isolation", "audit-injection-vulnerabilities", "audit-secrets-and-config", "audit-security-headers-and-middleware", "audit-frontend-xss-and-dom-safety", "audit-client-auth-and-storage", "audit-dependency-vulnerabilities"],
+      "checkpoint_after": "security-gate"
+    },
+    {
+      "id": "quality",
+      "number": 4,
+      "title": "Quality & correctness",
+      "parallel": true,
+      "skills": ["audit-async-and-dependency-injection", "audit-orm-query-and-data-access", "audit-backend-resource-leak", "audit-frontend-best-practices", "audit-frontend-memory-leak", "audit-accessibility-and-i18n", "audit-concurrency-and-race-condition", "audit-business-logic", "audit-datetime-and-timezone", "audit-performance-and-scalability", "audit-technical-debt"]
+    },
+    {
+      "id": "readiness",
+      "number": 5,
+      "title": "Readiness & compliance",
+      "parallel": true,
+      "skills": ["audit-production-readiness-checklist", "audit-logging-and-observability", "audit-test-coverage-and-ci", "audit-infra-and-deployment", "audit-licensing-and-compliance", "audit-gdpr-data-protection", "audit-soc2-controls-evidence"]
+    },
+    {
+      "id": "reporting",
+      "number": 6,
+      "title": "Reporting",
+      "parallel": false,
+      "actions": [{"id": "dedupe", "wave": 1, "skill": "audit-findings-rollup", "derived": true,
+                   "outputs": ["audit/evidence/audit-findings-rollup/rollup.json"],
+                   "text": "roll up findings with audit-findings-rollup: de-duplicate by root_cause_key across skills, severity counts, go/no-go ($AUDIT_CORE_ROOT/skills/audit-findings-rollup/scripts/findings_rollup.py rollup -> audit/evidence/audit-findings-rollup/rollup.json)"}],
+      "skills": ["audit-owasp-asvs-mapper", "audit-report-generator"]
+    }
+  ],
+  "skills": {
+    "audit-system-design":                   {"prefix": "ARCH",   "phase": "discovery", "wave": 1, "requires": "any"},
+    "audit-privacy-data-flow-mapper":        {"prefix": "PII",    "phase": "discovery", "wave": 1, "requires": "any"},
+    "audit-api-contract":                    {"prefix": "API",    "phase": "discovery", "wave": 1, "requires": "backend"},
+    "audit-db-schema":                       {"prefix": "DB",     "phase": "discovery", "wave": 1, "requires": "any"},
+
+    "audit-authz-and-access-control":        {"prefix": "AUTHZ",  "phase": "security", "wave": 1, "requires": "any"},
+    "audit-multi-tenant-isolation":          {"prefix": "TENANT", "phase": "security", "wave": 1, "requires": "any", "condition": "multi_tenant"},
+    "audit-secrets-and-config":              {"prefix": "SEC",    "phase": "security", "wave": 1, "requires": "any"},
+    "audit-security-headers-and-middleware": {"prefix": "HDR",    "phase": "security", "wave": 1, "requires": "any"},
+    "audit-dependency-vulnerabilities":      {"prefix": "DEP",    "phase": "security", "wave": 1, "requires": "any"},
+    "audit-injection-vulnerabilities":       {"prefix": "INJ",    "phase": "security", "wave": 2, "requires": "any"},
+    "audit-frontend-xss-and-dom-safety":     {"prefix": "XSS",    "phase": "security", "wave": 2, "requires": "frontend-or-templates"},
+    "audit-client-auth-and-storage":         {"prefix": "CAUTH",  "phase": "security", "wave": 3, "requires": "frontend"},
+
+    "audit-async-and-dependency-injection":  {"prefix": "ASYNC",  "phase": "quality", "wave": 1, "requires": "backend"},
+    "audit-orm-query-and-data-access":       {"prefix": "ORM",    "phase": "quality", "wave": 1, "requires": "backend"},
+    "audit-backend-resource-leak":           {"prefix": "LEAK",   "phase": "quality", "wave": 1, "requires": "backend"},
+    "audit-frontend-best-practices":         {"prefix": "FEBP",   "phase": "quality", "wave": 1, "requires": "frontend"},
+    "audit-frontend-memory-leak":            {"prefix": "FELEAK", "phase": "quality", "wave": 1, "requires": "frontend"},
+    "audit-accessibility-and-i18n":          {"prefix": "A11Y",   "phase": "quality", "wave": 1, "requires": "frontend-or-templates"},
+    "audit-business-logic":                  {"prefix": "BIZ",    "phase": "quality", "wave": 1, "requires": "any"},
+    "audit-concurrency-and-race-condition":  {"prefix": "RACE",   "phase": "quality", "wave": 2, "requires": "any"},
+    "audit-datetime-and-timezone":           {"prefix": "TIME",   "phase": "quality", "wave": 2, "requires": "any"},
+    "audit-performance-and-scalability":     {"prefix": "PERF",   "phase": "quality", "wave": 2, "requires": "any"},
+    "audit-technical-debt":                  {"prefix": "DEBT",   "phase": "quality", "wave": 3, "requires": "any"},
+
+    "audit-logging-and-observability":       {"prefix": "LOG",    "phase": "readiness", "wave": 1, "requires": "any"},
+    "audit-test-coverage-and-ci":            {"prefix": "TEST",   "phase": "readiness", "wave": 1, "requires": "any"},
+    "audit-infra-and-deployment":            {"prefix": "INFRA",  "phase": "readiness", "wave": 1, "requires": "any"},
+    "audit-licensing-and-compliance":        {"prefix": "LIC",    "phase": "readiness", "wave": 1, "requires": "any"},
+    "audit-gdpr-data-protection":            {"prefix": "GDPR",   "phase": "readiness", "wave": 1, "requires": "any"},
+    "audit-soc2-controls-evidence":          {"prefix": "SOC2",   "phase": "readiness", "wave": 2, "requires": "any"},
+    "audit-production-readiness-checklist":  {"prefix": "READY",  "phase": "readiness", "wave": 3, "requires": "any"},
+
+    "audit-owasp-asvs-mapper":               {"prefix": "MAP",    "phase": "reporting", "wave": 2, "requires": "any", "derived": true},
+    "audit-report-generator":                {"prefix": "RPT",    "phase": "reporting", "wave": 3, "requires": "any", "derived": true, "findings_optional": true}
+  },
+  "helpers": {
+    "audit-finding-writer": {"prefix": "FW", "note": "Not a pipeline step. Every child uses its format and scripts to emit findings; --skill refuses it."}
+  },
+  "infrastructure": {
+    "audit-stack-detection":        {"step": "detect-stack", "note": "Infrastructure, not an audit area: runs once at setup and writes audit/stack.json. No findings, no status file, no report row; --skill refuses it."},
+    "audit-endpoint-inventory":     {"step": "endpoint-inventory", "note": "Infrastructure, not an audit area: the discovery step writes audit/evidence/audit-endpoint-inventory/ for the skills that read it. No findings, no status file, no report row; --skill refuses it."},
+    "audit-findings-rollup":        {"step": "dedupe", "note": "Infrastructure, not an audit area: the reporting step writes audit/evidence/audit-findings-rollup/ (de-duplication, counts, go/no-go). No findings, no status file, no report row; --skill refuses it."},
+    "audit-code-scan":              {"step": null, "note": "Library used inside child skills (grep pass and shared file walker). Not a plan step; --skill refuses it."},
+    "audit-sensitive-data-catalog": {"step": null, "note": "Library used inside child skills (sensitive names and values). Not a plan step; --skill refuses it."},
+    "audit-git-history":            {"step": null, "note": "Library used inside child skills (churn, blame, history scans). Not a plan step; --skill refuses it."}
+  },
+  "checkpoints": {
+    "multi-tenant": {
+      "phase": "setup",
+      "default_non_interactive": "yes",
+      "why_default": "Running audit-multi-tenant-isolation on a single-tenant app costs one short run that records the tenancy model; skipping it on a multi-tenant app hides the highest-impact class of leak."
+    },
+    "scope-profile": {
+      "phase": "setup",
+      "default_non_interactive": "full"
+    },
+    "critical-flows": {
+      "after_phase": "discovery",
+      "needed_by": ["audit-business-logic", "audit-concurrency-and-race-condition", "audit-datetime-and-timezone", "audit-test-coverage-and-ci"],
+      "default_non_interactive": "top 3-5 candidate flows from audit-business-logic/scripts/flow_inventory.py, ranked by status writes"
+    },
+    "security-gate": {
+      "after_phase": "security",
+      "default_non_interactive": "continue"
+    }
+  },
+  "profiles": {
+    "full": {
+      "description": "Every phase and every audit skill (multi-tenant isolation only when the app is multi-tenant).",
+      "skills": "all"
+    },
+    "security-only": {
+      "description": "The eight security skills, then reporting.",
+      "skills": ["audit-authz-and-access-control", "audit-multi-tenant-isolation", "audit-injection-vulnerabilities", "audit-secrets-and-config", "audit-security-headers-and-middleware", "audit-frontend-xss-and-dom-safety", "audit-client-auth-and-storage", "audit-dependency-vulnerabilities"]
+    },
+    "pre-launch": {
+      "description": "authz, multi-tenant isolation, secrets, injection, XSS, business-logic, datetime, concurrency, performance, readiness, dependencies - then reporting.",
+      "skills": ["audit-authz-and-access-control", "audit-multi-tenant-isolation", "audit-secrets-and-config", "audit-injection-vulnerabilities", "audit-frontend-xss-and-dom-safety", "audit-business-logic", "audit-datetime-and-timezone", "audit-concurrency-and-race-condition", "audit-performance-and-scalability", "audit-production-readiness-checklist", "audit-dependency-vulnerabilities"]
+    },
+    "compliance-only": {
+      "description": "privacy mapper, GDPR, SOC 2, licensing - then reporting.",
+      "skills": ["audit-privacy-data-flow-mapper", "audit-gdpr-data-protection", "audit-soc2-controls-evidence", "audit-licensing-and-compliance"]
+    },
+    "custom": {
+      "description": "A user-supplied list (--skills a,b,c; the audit- prefix is optional). Each skill is placed in its own phase and wave; reporting is appended.",
+      "skills": null
+    }
+  },
+  "reporting_always": true
+}

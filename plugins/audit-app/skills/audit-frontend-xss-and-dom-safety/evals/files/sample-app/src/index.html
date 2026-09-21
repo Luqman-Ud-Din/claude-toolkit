@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Sample Inventory</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- ISSUE (planted, Low): third-party script without integrity/crossorigin -->
+  <script src="https://cdn.example-analytics.com/tracker/v3/tracker.min.js"></script>
+  <!-- OK: same script pattern with SRI, for contrast -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.0/purify.min.js" integrity="sha384-8h4Vw1k8bJ2u2m0f8m9v0i6e2T3o2oWq3vL0d8h2nXq3d7Zw9k1r5tYx0m2n4p6q" crossorigin="anonymous"></script>
+  <!-- ISSUE (planted, Low): inline script blocks a nonce/hash CSP -->
+  <script>
+    window.__APP_CONFIG__ = { theme: 'light' };
+  </script>
+</head>
+<body>
+  <app-root></app-root>
+</body>
+</html>

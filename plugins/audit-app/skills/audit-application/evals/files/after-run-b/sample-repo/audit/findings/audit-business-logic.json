@@ -1,0 +1,64 @@
+{
+  "skill": "audit-business-logic",
+  "generated_at": "2026-09-11T12:23:30.044621+00:00",
+  "target": {
+    "root": ".",
+    "commit": null
+  },
+  "stack": {
+    "primary_backend": "dotnet",
+    "primary_frontend": "angular"
+  },
+  "scope": {
+    "checked": [
+      "order payment flow",
+      "order cancellation flow",
+      "stock reservation flow"
+    ],
+    "not_checked": []
+  },
+  "findings": [
+    {
+      "id": "BIZ-001",
+      "title": "Pay moves an order to Paid from any status, including Cancelled",
+      "severity": "High",
+      "confidence": "confirmed",
+      "location": {
+        "file": "Inventory.Api/Controllers/OrdersController.cs",
+        "line": 32
+      },
+      "evidence": "Inventory.Api/Controllers/OrdersController.cs:32",
+      "impact": "Cancelled orders can be marked paid, so stock and revenue reports disagree with reality.",
+      "remediation": "Guard the transition: only Confirmed -> Paid.",
+      "references": [
+        "CWE-841",
+        "OWASP-A04:2021",
+        "ASVS-11.1.1",
+        "ASVS-11.1.2",
+        "ASVS-11.1.4"
+      ],
+      "tags": [],
+      "root_cause_key": "orders.status:no-transition-guard",
+      "extra": {
+        "mapping": {
+          "rule": "business-logic",
+          "matched_by": "cwe:CWE-841",
+          "added": [
+            "OWASP-A04:2021",
+            "ASVS-11.1.1",
+            "ASVS-11.1.2",
+            "ASVS-11.1.4"
+          ],
+          "top10": "A04",
+          "asvs": [
+            "11.1.1",
+            "11.1.2",
+            "11.1.4"
+          ],
+          "cwe": "CWE-840"
+        }
+      }
+    }
+  ],
+  "summary": {}
+}

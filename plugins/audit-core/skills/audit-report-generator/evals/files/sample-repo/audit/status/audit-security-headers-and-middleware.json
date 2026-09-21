@@ -1,0 +1,1 @@
+{"skill": "audit-security-headers-and-middleware", "status": "completed", "reason": null, "started_at": "2026-09-10T09:50:00Z", "finished_at": "2026-09-10T10:00:00Z", "scripts": ["../audit-code-scan/scripts/grep_scan.py --patterns scripts/patterns/dotnet.json", "scripts/header_grader.py https://staging.example.com"]}

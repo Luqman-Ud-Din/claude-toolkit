@@ -1,0 +1,20 @@
+{
+  "skill": "audit-injection-vulnerabilities",
+  "generated_at": "2026-09-11T12:23:27.802215+00:00",
+  "target": {
+    "root": ".",
+    "commit": null
+  },
+  "stack": {
+    "primary_backend": "dotnet",
+    "primary_frontend": "angular"
+  },
+  "scope": {
+    "checked": [
+      "EF Core queries in Inventory.Api"
+    ],
+    "not_checked": []
+  },
+  "findings": [],
+  "summary": {}
+}

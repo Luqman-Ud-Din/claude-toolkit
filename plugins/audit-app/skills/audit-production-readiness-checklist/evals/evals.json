@@ -1,0 +1,66 @@
+{
+  "skill_name": "audit-production-readiness-checklist",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "We want to ship the Ledger API on Friday. Is this ready for production? Do a go-live readiness review of evals/files/sample-repo and give me a Go/No-Go.",
+      "expected_output": "A NO-GO recommendation (with caveats naming the sibling audits that did not run) with the hard-coded production connection string and the missing health checks as blockers, a pass/fail/unknown checklist covering all thirteen items from the spec, and a roll-up of audit-secrets-and-config's Critical/High findings by their own ids.",
+      "files": [
+        "evals/files/sample-repo/Ledger.Api/Ledger.Api.csproj",
+        "evals/files/sample-repo/Ledger.Api/Program.cs",
+        "evals/files/sample-repo/Ledger.Api/appsettings.Production.json",
+        "evals/files/sample-repo/Ledger.Api/appsettings.Development.json",
+        "evals/files/sample-repo/docker-compose.yml",
+        "evals/files/sample-repo/docs/deploy.md",
+        "evals/files/sample-repo/audit/findings/audit-secrets-and-config.json",
+        "evals/files/sample-repo/audit/status/audit-db-schema.json"
+      ],
+      "expectations": [
+        "The recommendation line says NO-GO (not Go, not Go with conditions)",
+        "The caveats next to the recommendation name the sibling audits that did not run",
+        "A blocker names the hard-coded production connection string in Ledger.Api/appsettings.Production.json with its line",
+        "A blocker names the absence of health checks (no AddHealthChecks/MapHealthChecks, no compose healthcheck)",
+        "The checklist table has a pass/fail/unknown status and evidence for every item, including graceful shutdown, timeouts and retries, caching, load tests, feature flags, runbook, alerting, rollback and launch checklist",
+        "The localhost connection string in appsettings.Development.json is NOT reported as a hard-coded production secret",
+        "A finding is emitted with the READY- prefix for each failed checklist item and findings.json validates with ../audit-finding-writer/scripts/findings.py validate",
+        "The report includes a per-skill severity summary that lists audit-secrets-and-config with 1 Critical and 1 High and references SEC-001 by its own id rather than renumbering it",
+        "audit-db-schema is listed as skipped / not run in the 'not checked' or per-skill table"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Run the aggregation step only: pull together every audit/findings/*.json under evals/files/sample-repo into a severity summary and a blocker list, and tell me what is blocking release sign-off.",
+      "expected_output": "Output of scripts/aggregate_findings.py: totals by severity, a per-skill table with status, the Critical/High list, a blocker table containing SEC-001 (Critical) and SEC-004 (High, open with no accepted-risk record), and a NO-GO recommendation whose caveats list the skills that did not run.",
+      "files": [
+        "evals/files/sample-repo/audit/findings/audit-secrets-and-config.json",
+        "evals/files/sample-repo/audit/status/audit-secrets-and-config.json",
+        "evals/files/sample-repo/audit/status/audit-db-schema.json"
+      ],
+      "expectations": [
+        "Totals report Critical 1 and High 1",
+        "SEC-001 appears in the blocker list",
+        "SEC-004 appears in the blocker list because it is an open High with no accepted-risk record",
+        "The recommendation is NO-GO and its caveats list the skills that did not run",
+        "Sibling finding ids are preserved, not renumbered into READY-"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Pre-production sign-off review of evals/files/sample-repo please - I need the checklist with owners and the exact conditions we'd have to meet to get a Go.",
+      "expected_output": "The readiness checklist from references/readiness-checklist.md filled in with pass/fail/unknown, evidence and a default owner per row, plus a numbered conditions list (rotate and externalise the production credentials, add dependency-verifying health checks and container probes, gate the developer exception page and sensitive data logging, write and rehearse a rollback, produce a runbook and alerts) and a statement of what was not checked and why.",
+      "files": [
+        "evals/files/sample-repo/Ledger.Api/Program.cs",
+        "evals/files/sample-repo/Ledger.Api/appsettings.Production.json",
+        "evals/files/sample-repo/docker-compose.yml",
+        "evals/files/sample-repo/docs/deploy.md"
+      ],
+      "expectations": [
+        "Every unknown item states what evidence would make it pass",
+        "The developer exception page at Program.cs is flagged as unguarded debug functionality",
+        "Rollback, runbook and alerting are reported as fail or unknown with the evidence searched for",
+        "A 'Not checked' section names evidence that lives outside the repo, such as the on-call rota and dashboards",
+        "Each checklist row carries an owner"
+      ]
+    }
+  ]
+}

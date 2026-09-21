@@ -1,0 +1,6 @@
+{
+  "name": "audit-llm",
+  "version": "0.1.0",
+  "description": "Explore, audit and propose phases for LLM/agentic applications, with the shared LLM building blocks (stack detection, payload library, probe runner, trust classification, finding areas).",
+  "dependencies": ["audit-core"]
+}

@@ -1,0 +1,2 @@
+POST /api/CompanyAdmin/DeleteCompany (no token) -> 200 OK
+POST /api/Orders/41 as user B with user A's id -> 200 OK (body contains user A's order)

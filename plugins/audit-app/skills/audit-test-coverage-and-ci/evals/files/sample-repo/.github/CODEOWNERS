@@ -1,0 +1,4 @@
+# Payments code needs a review from the payments team
+/src/Shop.Api/Services/Payment*    @shop/payments
+/src/Shop.Api/Controllers/Payments* @shop/payments
+*                                   @shop/maintainers
