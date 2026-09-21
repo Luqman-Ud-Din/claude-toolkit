@@ -1,0 +1,46 @@
+{
+  "skill_name": "audit-secrets-and-config",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Audit evals/files/sample-repo for hard-coded secrets and unsafe production configuration. Include a config-key inventory and flag anything that should be in an environment variable or secret manager. Write findings in the standard format.",
+      "expected_output": "SEC findings covering: a committed API key (Stripe sk_live in appsettings.Production.json and/or the SendGrid/AWS keys in deploy.env), a connection string with an inline password, a wildcard/reflected CORS origin combined with AllowCredentials in Program.cs, and debug enabled in the production config (DetailedErrors:true and LogLevel Debug in appsettings.Production.json). Plus a config-key inventory table with each key's source. Negatives (.env.example placeholders, the empty base appsettings.json, the scoped CORS policy, the IsDevelopment-guarded developer exception page) are not flagged.",
+      "files": [
+        "evals/files/sample-repo/Api/appsettings.Production.json",
+        "evals/files/sample-repo/Api/appsettings.json",
+        "evals/files/sample-repo/Api/Program.cs",
+        "evals/files/sample-repo/.env.example",
+        "evals/files/sample-repo/deploy.env",
+        "evals/files/sample-repo/Api/Api.csproj"
+      ],
+      "expectations": [
+        "Detects the stack as dotnet",
+        "Flags the connection-string password in appsettings.Production.json",
+        "Flags a committed API key (Stripe sk_live, and/or the SendGrid/AWS keys in deploy.env)",
+        "Flags the wildcard/reflected CORS origin combined with AllowCredentials in Program.cs",
+        "Flags debug enabled in the production config (DetailedErrors true / Debug log level)",
+        "Produces a config-key inventory table showing each key's source (file/env/secret manager)",
+        "Does NOT flag the .env.example placeholders or the scoped CORS policy",
+        "Does NOT flag the developer exception page guarded by IsDevelopment()",
+        "All finding ids start with SEC-",
+        "findings.json validates with ../audit-finding-writer/scripts/findings.py validate"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Scan the git history of this repository for secrets that were committed and later removed, and give me the list of commits I need to purge. Which secret-scanning tools could I wire into CI?",
+      "expected_output": "Runs git_secret_scan.py over history (or a dedicated scanner if installed), reports each hit with commit + file + line and a de-duplicated commits-to-purge list, and recommends specific tools from references/tool-candidates.md (gitleaks, trufflehog, detect-secrets, etc.) with example invocations and the rotate-then-purge remediation.",
+      "files": [
+        "evals/files/sample-repo/Api/appsettings.Production.json",
+        "evals/files/sample-repo/deploy.env"
+      ],
+      "expectations": [
+        "Uses scripts/git_secret_scan.py to scan history (with --include-tree when the path is not a git repo)",
+        "Reports hits with commit, file, and line and a commits-to-purge list",
+        "Recommends at least two named tools from references/tool-candidates.md with invocations",
+        "States the remediation is rotate the secret AND purge it from history",
+        "Does not claim history was scanned if the target is not a git repository"
+      ]
+    }
+  ]
+}

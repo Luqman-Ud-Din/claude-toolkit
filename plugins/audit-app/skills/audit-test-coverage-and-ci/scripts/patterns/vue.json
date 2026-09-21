@@ -1,0 +1,42 @@
+[
+  {
+    "id": "TEST-SKIP-VITEST",
+    "pattern": "\\b(?:it|test|describe)\\.(?:skip|todo)\\s*\\(|\\b(?:xit|xtest|xdescribe)\\s*\\(",
+    "globs": ["*.spec.ts", "*.spec.js", "*.test.ts", "*.test.js"],
+    "severity_hint": "Medium",
+    "description": "Vitest/Jest test skipped or left as todo",
+    "reference": "CWE-1120"
+  },
+  {
+    "id": "TEST-FOCUSED-VITEST",
+    "pattern": "\\b(?:it|test|describe)\\.only\\s*\\(",
+    "globs": ["*.spec.ts", "*.spec.js", "*.test.ts", "*.test.js"],
+    "severity_hint": "High",
+    "description": "Focused test - the rest of the file does not run",
+    "reference": "CWE-1120"
+  },
+  {
+    "id": "TEST-SHALLOW-ONLY",
+    "pattern": "shallowMount\\(",
+    "globs": ["*.spec.ts", "*.spec.js", "*.test.ts"],
+    "severity_hint": "Low",
+    "description": "shallowMount stubs every child - integration between components is not exercised",
+    "reference": "CWE-1120"
+  },
+  {
+    "id": "TEST-CI-ADVISORY",
+    "pattern": "(vitest|npm (run )?test)[^\\n]*\\|\\|\\s*true|--passWithNoTests|continue-on-error:\\s*true",
+    "globs": ["*.yml", "*.yaml", "Jenkinsfile*", "package.json"],
+    "severity_hint": "High",
+    "description": "Test step cannot fail the build",
+    "reference": "ASVS-1.14.4"
+  },
+  {
+    "id": "TEST-VITEST-WATCH-IN-CI",
+    "pattern": "run:\\s*npx vitest\\s*$|run:\\s*vitest\\s*$",
+    "globs": ["*.yml", "*.yaml"],
+    "severity_hint": "Medium",
+    "description": "vitest without run mode in CI - relies on CI env detection; prefer `vitest run`",
+    "reference": "ASVS-1.14.4"
+  }
+]

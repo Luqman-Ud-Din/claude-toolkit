@@ -1,0 +1,87 @@
+{
+  "skill_name": "audit-endpoint-inventory",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Before the security and API reviews start, inventory every endpoint, client route and background job in evals/files/multi-stack-repo. It has a .NET API, an Express service, a Django app and an Angular front end. I just want the facts per endpoint, not findings.",
+      "expected_output": "inventory_endpoints.py writes endpoints.json, endpoints.md and endpoints.probe.json under audit/evidence/audit-endpoint-inventory/. The stacks resolve to dotnet, node-express, python-django and angular. Each record has a stable id. The planted facts are recorded as facts: login and health are explicit-anonymous, GET /api/accounts/{id} has an ownership check and /statement has none, GET /api/accounts is an unpaginated collection and /page is paginated, /profile exposes UserProfileDto.PasswordHash, POST /api/orders has three sequential outbound calls, /admin/users is a client route with an inherited guard, and nightly-statements is a Hangfire job with no identity context. Nothing is called a finding and no severity is assigned.",
+      "files": [
+        "evals/files/multi-stack-repo"
+      ],
+      "expectations": [
+        "endpoints.json has kind http records for POST /api/accounts/login and GET /api/health with auth.source explicit-anonymous",
+        "The GET /api/accounts/{id} record has ownership.check yes and the GET /api/accounts/{id}/statement record has ownership.check no",
+        "The GET /api/accounts record has response.pagination.status no and the GET /api/accounts/page record has yes",
+        "The GET /api/accounts/{id}/profile record lists UserProfileDto.PasswordHash in response.sensitive_fields",
+        "The POST /api/orders record from backend-node has three outbound.calls and outbound.sequential true",
+        "A client-route record exists for /admin/users whose auth.client_guards includes an inherited canActivate guard",
+        "A job record with framework hangfire, job.name nightly-statements and job.identity_context no exists",
+        "Every record has an id starting with ep-",
+        "The response does not assign severities or call any record a finding"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I need input files for the authz probe and the k6 generator for evals/files/multi-stack-repo. Give me whatever the endpoint inventory produces for them and tell me which endpoints carry tenant or user identifiers.",
+      "expected_output": "The skill runs inventory_endpoints.py and points to endpoints.probe.json, explains that its rows carry method, path, route, auth_required, roles, ownership_check (Y/N/-/?), id_params, operation, kind (read/write) and weight so authz_probe.py, tenant_probe.py and loadtest_plan.py read it directly, and lists tenant or user identifier parameters: tenantId in the route of GET /api/tenants/{tenantId}/usage, company_id in the query of GET /api/invoices/, branchId in the query of GET /api/accounts, and orderId/userId facts on the Express order lookup.",
+      "files": [
+        "evals/files/multi-stack-repo"
+      ],
+      "expectations": [
+        "endpoints.probe.json exists and every row has method, path, route, auth_required, ownership_check, id_params, operation, kind and weight",
+        "The probe row for GET /api/accounts/{id}/statement has ownership_check N and id_params mapping id to account",
+        "The response identifies tenantId as a route parameter of GET /api/tenants/{tenantId}/usage",
+        "The response identifies company_id as a query parameter of the Django invoice list",
+        "The response says the probe needs a base URL and test tokens and does not claim any probe was run"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Run the endpoint inventory on evals/files/multi-stack-repo. For our API review I need, per endpoint: is it paginated, is the request validated, does the response expose credential-type fields, and does its error shape match the rest of the API? Which fields in endpoints.json give me each of those, and where do the sensitive-field names come from?",
+      "expected_output": "The inventory is run and the contract is cited: pagination is response.pagination.status, validation is validation.status, exposed credential fields are response.sensitive_fields (classified by audit-sensitive-data-catalog, credential and secret categories), the raw route is path_raw, and error-shape agreement is errors.consistent_with_majority. Evidence strings quote code markers verbatim, for example .Skip(.",
+      "files": [
+        "evals/files/multi-stack-repo"
+      ],
+      "expectations": [
+        "The response maps pagination to response.pagination.status",
+        "The response maps validation to validation.status",
+        "The response maps exposed credential fields to response.sensitive_fields",
+        "The response says sensitive fields come from audit-sensitive-data-catalog",
+        "The response cites references/endpoint-inventory-contract.md"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "evals/files/metaframework-repo has a Next.js app, a Nuxt app and a Remix app. List every server handler, server action and middleware with its facts (path, method, auth, pagination) and tell me what goes into the probe file. Facts only, no findings.",
+      "expected_output": "inventory_endpoints.py resolves the stacks to react (web-next, web-remix) and vue (web-nuxt) and records: GET /api/orders/{id} as nextjs-route with the (shop) route group dropped, auth yes via getServerSession and ownership yes; GET and POST /api/invoices as nextjs-pages-api, one record per req.method branch, no auth, the GET unpaginated and the POST validated with zod; a server-action record POST web-next/src/app/orders/actions.ts#cancelOrder with auth yes; GET /api/orders/{id} as nuxt-server-route from [id].get.ts with auth no and source none; a middleware record for web-nuxt/server/middleware/log.ts; the Remix loader GET /orders/{id} with returns_collection yes and pagination no, and the action POST /orders/{id} with auth yes. endpoints.probe.json has the six http rows and neither the server action nor the middleware. No severities are assigned.",
+      "files": [
+        "evals/files/metaframework-repo"
+      ],
+      "expectations": [
+        "endpoints.json has a kind http record with framework nextjs-route, method GET, path /api/orders/{id} and auth.required yes with auth.source handler call",
+        "web-next/src/pages/api/invoices/index.ts produces two nextjs-pages-api records, GET and POST /api/invoices, and no ANY record",
+        "A kind server-action record exists with method POST, path web-next/src/app/orders/actions.ts#cancelOrder and auth.required yes",
+        "The nuxt-server-route record GET /api/orders/{id} from web-nuxt/server/api/orders/[id].get.ts has auth.required no and auth.source none",
+        "The remix-route loader record GET /orders/{id} has response.returns_collection yes and response.pagination.status no, and the action record is POST /orders/{id} with auth.required yes",
+        "A kind middleware record exists for web-nuxt/server/middleware/log.ts",
+        "endpoints.probe.json has six rows and no row for the server action or the middleware",
+        "The response does not assign severities or call any record a finding"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "I'm running the ORM audit's unbounded-endpoint step on evals/files/metaframework-repo. Which handlers load a whole collection without paging, and are the Next.js server actions part of that list?",
+      "expected_output": "The skill runs inventory_endpoints.py and applies the audit-orm-query-and-data-access filter (kind http, materializing_calls present, paging_seen false). It lists the Remix loader GET /orders/{id} in web-remix/app/routes/orders.$id.tsx (prisma.orderLine.findMany) and GET /api/invoices in web-next/src/pages/api/invoices/index.ts (prisma.invoice.findMany). It explains that server actions are kind server-action records with no URL, so the kind == http filter leaves them out and they are not in endpoints.probe.json; cancelOrder has no materialising call in any case.",
+      "files": [
+        "evals/files/metaframework-repo"
+      ],
+      "expectations": [
+        "The response lists GET /orders/{id} (the Remix loader, prisma.orderLine.findMany) as a collection handler without paging",
+        "The response lists GET /api/invoices (the Next.js pages/api GET branch) as a collection handler without paging",
+        "The response does not list the Next.js or Nuxt GET /api/orders/{id} handlers as unbounded",
+        "The response says server actions are kind server-action records that the kind == http filter excludes and that are absent from endpoints.probe.json",
+        "The response cites the audit-orm-query-and-data-access filter or the endpoints.json fields materializing_calls and paging_seen"
+      ]
+    }
+  ]
+}

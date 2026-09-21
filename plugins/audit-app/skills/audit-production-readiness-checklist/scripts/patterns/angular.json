@@ -1,0 +1,10 @@
+[
+  {"id": "SOURCEMAP-PROD", "pattern": "\"sourceMap\"\\s*:\\s*true", "globs": ["angular.json"], "severity_hint": "Low", "description": "Source maps enabled; confirm it is not the production configuration", "reference": "CWE-540"},
+  {"id": "OPTIMIZATION-OFF", "pattern": "\"optimization\"\\s*:\\s*false", "globs": ["angular.json"], "severity_hint": "Low", "description": "Optimization disabled; confirm not the production configuration", "reference": ""},
+  {"id": "PROD-API-URL-LOCALHOST", "pattern": "(apiUrl|baseUrl|apiBase|serverUrl)\\w*\\s*:\\s*['\"]https?://(localhost|127\\.0\\.0\\.1)", "globs": ["environment.prod.ts", "environment.production.ts"], "severity_hint": "High", "description": "Production environment points at localhost", "reference": ""},
+  {"id": "SERVER-SECRET-IN-ENV", "pattern": "(clientSecret|apiSecret|privateKey|secretKey)\\s*:\\s*['\"][^'\"]{6,}['\"]", "globs": ["environment*.ts"], "severity_hint": "Critical", "description": "Server-side secret shipped in the client bundle", "reference": "CWE-798"},
+  {"id": "CONSOLE-LOG", "pattern": "console\\.(log|debug)\\(", "globs": ["*.ts"], "severity_hint": "Info", "description": "Console logging; confirm stripped or gated in production", "reference": ""},
+  {"id": "ERROR-HANDLER", "pattern": "provide:\\s*ErrorHandler", "globs": ["*.ts"], "severity_hint": "Info", "description": "Global ErrorHandler registered (absence is a finding)", "reference": ""},
+  {"id": "HTTP-TIMEOUT", "pattern": "timeout\\(\\s*\\d+", "globs": ["*.ts"], "severity_hint": "Info", "description": "HTTP timeout operator present (absence is a finding)", "reference": ""},
+  {"id": "BUDGETS", "pattern": "\"budgets\"", "globs": ["angular.json"], "severity_hint": "Info", "description": "Bundle budgets configured", "reference": ""}
+]

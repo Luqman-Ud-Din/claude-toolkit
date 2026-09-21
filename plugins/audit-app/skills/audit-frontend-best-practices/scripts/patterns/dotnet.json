@@ -1,0 +1,6 @@
+[
+  {"id": "STATICFILES-BARE", "pattern": "UseStaticFiles\\(\\s*\\)", "globs": ["*.cs"], "severity_hint": "Info", "description": "Static files served without OnPrepareResponse cache headers; confirm compression/caching at the proxy", "reference": "learn.microsoft.com/aspnet/core/fundamentals/static-files"},
+  {"id": "SPA-DEV-SERVER-REFERENCE", "pattern": "UseAngularCliServer|UseProxyToSpaDevelopmentServer|UseReactDevelopmentServer", "globs": ["*.cs"], "severity_hint": "Medium", "description": "SPA dev server wired into the pipeline; confirm it is guarded by IsDevelopment()", "reference": "ASVS-14.3.2"},
+  {"id": "MAP-FILES-PUBLISHED", "pattern": "Include=\"[^\"]*\\.map\"", "globs": ["*.csproj", "*.props", "*.targets"], "severity_hint": "Low", "description": "Source map files included in publish items", "reference": "CWE-540"},
+  {"id": "NPM-BUILD-NO-PROD", "pattern": "Command=\"npm run build\"\\s", "globs": ["*.csproj", "*.targets"], "severity_hint": "Low", "description": "Frontend build target without a production configuration argument", "reference": "angular.dev/tools/cli/build"}
+]

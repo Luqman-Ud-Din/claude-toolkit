@@ -1,0 +1,5 @@
+{
+  "name": "sample-web",
+  "version": "1.0.0",
+  "dependencies": { "@angular/core": "^19.2.0", "rxjs": "^7.8.0" }
+}

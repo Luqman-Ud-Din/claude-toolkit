@@ -1,0 +1,489 @@
+[
+  {
+    "name": "Mailchimp",
+    "category": "marketing",
+    "domains": [
+      "api.mailchimp.com",
+      "mailchimp.com",
+      "mandrillapp.com"
+    ],
+    "sdk": [
+      "MailchimpClient",
+      "mailchimp_marketing",
+      "@mailchimp/mailchimp_marketing",
+      "Mailchimp.Net"
+    ]
+  },
+  {
+    "name": "HubSpot",
+    "category": "marketing",
+    "domains": [
+      "api.hubapi.com",
+      "hubspot.com"
+    ],
+    "sdk": [
+      "HubSpot",
+      "hubspot"
+    ]
+  },
+  {
+    "name": "SendGrid",
+    "category": "email",
+    "domains": [
+      "api.sendgrid.com",
+      "sendgrid.net"
+    ],
+    "sdk": [
+      "SendGridClient",
+      "@sendgrid/mail",
+      "sendgrid"
+    ]
+  },
+  {
+    "name": "Mailgun",
+    "category": "email",
+    "domains": [
+      "api.mailgun.net",
+      "api.eu.mailgun.net"
+    ],
+    "sdk": [
+      "mailgun",
+      "Mailgun"
+    ]
+  },
+  {
+    "name": "Amazon SES",
+    "category": "email",
+    "domains": [
+      "email.us-east-1.amazonaws.com",
+      "ses.amazonaws.com"
+    ],
+    "sdk": [
+      "AmazonSimpleEmailService",
+      "SESClient",
+      "boto3.client('ses')"
+    ]
+  },
+  {
+    "name": "Twilio",
+    "category": "sms",
+    "domains": [
+      "api.twilio.com"
+    ],
+    "sdk": [
+      "TwilioClient",
+      "TwilioRestClient",
+      "MessageResource",
+      "twilio"
+    ]
+  },
+  {
+    "name": "Vonage/Nexmo",
+    "category": "sms",
+    "domains": [
+      "rest.nexmo.com",
+      "api.nexmo.com",
+      "api.vonage.com"
+    ],
+    "sdk": [
+      "Vonage",
+      "nexmo"
+    ]
+  },
+  {
+    "name": "Stripe",
+    "category": "payments",
+    "domains": [
+      "api.stripe.com"
+    ],
+    "sdk": [
+      "StripeClient",
+      "Stripe.",
+      "stripe"
+    ]
+  },
+  {
+    "name": "PayPal",
+    "category": "payments",
+    "domains": [
+      "api.paypal.com",
+      "api-m.paypal.com",
+      "api.sandbox.paypal.com"
+    ],
+    "sdk": [
+      "PayPal"
+    ]
+  },
+  {
+    "name": "Segment",
+    "category": "analytics",
+    "domains": [
+      "api.segment.io",
+      "cdn.segment.com"
+    ],
+    "sdk": [
+      "analytics-node",
+      "@segment/analytics",
+      "Segment.Analytics"
+    ]
+  },
+  {
+    "name": "Mixpanel",
+    "category": "analytics",
+    "domains": [
+      "api.mixpanel.com"
+    ],
+    "sdk": [
+      "mixpanel"
+    ]
+  },
+  {
+    "name": "Amplitude",
+    "category": "analytics",
+    "domains": [
+      "api.amplitude.com",
+      "api2.amplitude.com"
+    ],
+    "sdk": [
+      "amplitude"
+    ]
+  },
+  {
+    "name": "Google Analytics",
+    "category": "analytics",
+    "domains": [
+      "www.google-analytics.com",
+      "analytics.google.com",
+      "googletagmanager.com"
+    ],
+    "sdk": [
+      "gtag",
+      "ga(",
+      "GoogleAnalytics",
+      "dataLayer"
+    ]
+  },
+  {
+    "name": "Firebase",
+    "category": "analytics/push",
+    "domains": [
+      "firebaseio.com",
+      "firebase.googleapis.com",
+      "fcm.googleapis.com"
+    ],
+    "sdk": [
+      "firebase",
+      "FirebaseAnalytics",
+      "FirebaseMessaging",
+      "@angular/fire",
+      "FirebaseAdmin"
+    ]
+  },
+  {
+    "name": "PostHog",
+    "category": "analytics",
+    "domains": [
+      "app.posthog.com",
+      "eu.posthog.com"
+    ],
+    "sdk": [
+      "posthog"
+    ]
+  },
+  {
+    "name": "Hotjar",
+    "category": "analytics",
+    "domains": [
+      "static.hotjar.com",
+      "hotjar.com"
+    ],
+    "sdk": [
+      "hotjar",
+      "hj("
+    ]
+  },
+  {
+    "name": "Microsoft Clarity",
+    "category": "analytics",
+    "domains": [
+      "clarity.ms"
+    ],
+    "sdk": [
+      "clarity("
+    ]
+  },
+  {
+    "name": "Sentry",
+    "category": "error-tracking",
+    "domains": [
+      "sentry.io",
+      "ingest.sentry.io"
+    ],
+    "sdk": [
+      "Sentry",
+      "@sentry/",
+      "sentry_sdk",
+      "raven"
+    ]
+  },
+  {
+    "name": "Bugsnag",
+    "category": "error-tracking",
+    "domains": [
+      "notify.bugsnag.com"
+    ],
+    "sdk": [
+      "Bugsnag"
+    ]
+  },
+  {
+    "name": "Rollbar",
+    "category": "error-tracking",
+    "domains": [
+      "api.rollbar.com"
+    ],
+    "sdk": [
+      "Rollbar"
+    ]
+  },
+  {
+    "name": "Application Insights",
+    "category": "error-tracking/analytics",
+    "domains": [
+      "dc.services.visualstudio.com",
+      "applicationinsights.azure.com",
+      "in.applicationinsights.azure.com"
+    ],
+    "sdk": [
+      "TelemetryClient",
+      "ApplicationInsights",
+      "appInsights"
+    ]
+  },
+  {
+    "name": "Datadog",
+    "category": "logging/monitoring",
+    "domains": [
+      "datadoghq.com",
+      "http-intake.logs.datadoghq.com"
+    ],
+    "sdk": [
+      "datadog",
+      "DogStatsd",
+      "ddtrace"
+    ]
+  },
+  {
+    "name": "New Relic",
+    "category": "logging/monitoring",
+    "domains": [
+      "newrelic.com",
+      "log-api.newrelic.com"
+    ],
+    "sdk": [
+      "newrelic",
+      "NewRelic"
+    ]
+  },
+  {
+    "name": "Intercom",
+    "category": "support",
+    "domains": [
+      "api.intercom.io",
+      "widget.intercom.io"
+    ],
+    "sdk": [
+      "Intercom",
+      "intercom"
+    ]
+  },
+  {
+    "name": "Zendesk",
+    "category": "support",
+    "domains": [
+      "zendesk.com"
+    ],
+    "sdk": [
+      "Zendesk",
+      "zendesk"
+    ]
+  },
+  {
+    "name": "Freshdesk",
+    "category": "support",
+    "domains": [
+      "freshdesk.com"
+    ],
+    "sdk": [
+      "Freshdesk"
+    ]
+  },
+  {
+    "name": "Slack",
+    "category": "messaging",
+    "domains": [
+      "hooks.slack.com",
+      "slack.com/api"
+    ],
+    "sdk": [
+      "SlackClient",
+      "@slack/web-api",
+      "slack_sdk"
+    ]
+  },
+  {
+    "name": "Google Drive",
+    "category": "storage",
+    "domains": [
+      "www.googleapis.com/drive",
+      "googleapis.com/upload/drive"
+    ],
+    "sdk": [
+      "DriveService",
+      "Google.Apis.Drive",
+      "googleapiclient"
+    ]
+  },
+  {
+    "name": "Google Maps",
+    "category": "geolocation",
+    "domains": [
+      "maps.googleapis.com"
+    ],
+    "sdk": [
+      "GoogleMaps",
+      "@googlemaps"
+    ]
+  },
+  {
+    "name": "Amazon S3",
+    "category": "storage",
+    "domains": [
+      "s3.amazonaws.com",
+      "amazonaws.com"
+    ],
+    "sdk": [
+      "AmazonS3Client",
+      "S3Client",
+      "boto3.client('s3')",
+      "@aws-sdk/client-s3"
+    ]
+  },
+  {
+    "name": "Azure Blob Storage",
+    "category": "storage",
+    "domains": [
+      "blob.core.windows.net"
+    ],
+    "sdk": [
+      "BlobServiceClient",
+      "BlobContainerClient"
+    ]
+  },
+  {
+    "name": "Cloudinary",
+    "category": "storage",
+    "domains": [
+      "api.cloudinary.com",
+      "res.cloudinary.com"
+    ],
+    "sdk": [
+      "cloudinary",
+      "Cloudinary"
+    ]
+  },
+  {
+    "name": "Shopify",
+    "category": "commerce",
+    "domains": [
+      "myshopify.com",
+      "shopify.com"
+    ],
+    "sdk": [
+      "ShopifySharp",
+      "Shopify",
+      "shopify"
+    ]
+  },
+  {
+    "name": "OpenAI",
+    "category": "ai",
+    "domains": [
+      "api.openai.com"
+    ],
+    "sdk": [
+      "OpenAI",
+      "openai"
+    ]
+  },
+  {
+    "name": "Anthropic",
+    "category": "ai",
+    "domains": [
+      "api.anthropic.com"
+    ],
+    "sdk": [
+      "Anthropic",
+      "anthropic"
+    ]
+  },
+  {
+    "name": "Auth0",
+    "category": "identity",
+    "domains": [
+      "auth0.com"
+    ],
+    "sdk": [
+      "Auth0",
+      "auth0"
+    ]
+  },
+  {
+    "name": "Okta",
+    "category": "identity",
+    "domains": [
+      "okta.com",
+      "oktapreview.com"
+    ],
+    "sdk": [
+      "Okta",
+      "okta"
+    ]
+  },
+  {
+    "name": "Microsoft Entra / Graph",
+    "category": "identity",
+    "domains": [
+      "graph.microsoft.com",
+      "login.microsoftonline.com"
+    ],
+    "sdk": [
+      "GraphServiceClient",
+      "@microsoft/microsoft-graph-client"
+    ]
+  },
+  {
+    "name": "FBR (Pakistan tax)",
+    "category": "government/tax",
+    "domains": [
+      "fbr.gov.pk",
+      "gw.fbr.gov.pk"
+    ],
+    "sdk": [
+      "FbrInvoice",
+      "FBR"
+    ]
+  },
+  {
+    "name": "ZATCA (Saudi tax)",
+    "category": "government/tax",
+    "domains": [
+      "zatca.gov.sa",
+      "gw-fatoora.zatca.gov.sa"
+    ],
+    "sdk": [
+      "Zatca",
+      "ZATCA"
+    ]
+  }
+]

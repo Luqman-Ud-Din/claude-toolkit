@@ -1,0 +1,122 @@
+[
+  {
+    "id": "GDPR-PY-CONSENT-BOOL-ONLY",
+    "pattern": "^\\s*\\w*(?:consent|opt_in|agreed|accepted_terms|accepted_privacy|marketing_allowed|newsletter)\\w*\\s*=\\s*models\\.BooleanField\\(",
+    "globs": ["*.py"],
+    "severity_hint": "Medium",
+    "description": "Consent stored as a BooleanField; look for consent_given_at / consent_version siblings and a withdrawal view",
+    "reference": "GDPR-Art.7(1)"
+  },
+  {
+    "id": "GDPR-PY-LOG-PII",
+    "pattern": "\\b(?:logger|log|logging)\\.(?:info|debug|warning|error|exception)\\s*\\([^)]*\\b(?:email|phone|mobile|first_name|last_name|full_name|address|dob|ssn|national_id|iban)\\b",
+    "globs": ["*.py"],
+    "severity_hint": "High",
+    "description": "Personal data in a logging call",
+    "reference": "GDPR-Art.5(1)(c)"
+  },
+  {
+    "id": "GDPR-PY-LOG-REQUEST-DATA",
+    "pattern": "\\b(?:logger|log|logging|print)\\b[^\\n]*request\\.(?:POST|GET|data|body|META)\\b",
+    "globs": ["*.py"],
+    "severity_hint": "High",
+    "description": "Whole request payload logged/printed",
+    "reference": "GDPR-Art.5(1)(c)"
+  },
+  {
+    "id": "GDPR-PY-SENTRY-PII",
+    "pattern": "send_default_pii\\s*=\\s*True|sentry_sdk\\.set_user\\s*\\(",
+    "globs": ["*.py"],
+    "severity_hint": "Medium",
+    "description": "Sentry sends user PII (id/email/IP, request bodies) / user context set",
+    "reference": "GDPR-Art.28"
+  },
+  {
+    "id": "GDPR-PY-ANALYTICS-IDENTIFY",
+    "pattern": "\\b(?:analytics|segment|mixpanel|posthog)\\.(?:identify|track|people_set|capture)\\s*\\(",
+    "globs": ["*.py"],
+    "severity_hint": "Medium",
+    "description": "Analytics identify/track call - check traits for email/name (transfer to vendor)",
+    "reference": "GDPR-Art.28"
+  },
+  {
+    "id": "GDPR-PY-SUBJECT-DELETE-VIEW",
+    "pattern": "def\\s+(?:destroy|perform_destroy|delete)\\s*\\(|(?:anonymi[sz]e|erase|forget|delete_account|delete_user|purge_user)\\w*\\s*\\(|DeleteView\\b",
+    "globs": ["views.py", "viewsets.py", "api.py", "*.py"],
+    "severity_hint": "Info",
+    "description": "Deletion/anonymisation entry point - evidence for the erasure row; confirm it targets the user/customer model",
+    "reference": "GDPR-Art.17"
+  },
+  {
+    "id": "GDPR-PY-EXPORT-VIEW",
+    "pattern": "(?:export|download|my_data|personal_data|portability|dsar)\\w*\\s*\\(|path\\s*\\(\\s*r?['\"][^'\"]*(?:export|download|me/|my-data|gdpr)",
+    "globs": ["views.py", "urls.py", "*.py"],
+    "severity_hint": "Info",
+    "description": "Export / self-service data view - evidence for access and portability rows",
+    "reference": "GDPR-Art.15"
+  },
+  {
+    "id": "GDPR-PY-RETENTION-JOB",
+    "pattern": "@(?:shared_task|periodic_task|app\\.task)|beat_schedule|crontab\\s*\\(|class\\s+Command\\s*\\(\\s*BaseCommand|apscheduler",
+    "globs": ["*.py"],
+    "severity_hint": "Info",
+    "description": "Scheduled task / management command - check whether it purges or anonymises personal data past retention",
+    "reference": "GDPR-Art.5(1)(e)"
+  },
+  {
+    "id": "GDPR-PY-SOFT-DELETE-ONLY",
+    "pattern": "is_deleted\\s*=\\s*True|deleted_at\\s*=\\s*timezone\\.now|SoftDeleteModel|safedelete",
+    "globs": ["*.py"],
+    "severity_hint": "Medium",
+    "description": "Soft delete - personal data stays in the table after erasure unless purged",
+    "reference": "GDPR-Art.17"
+  },
+  {
+    "id": "GDPR-PY-HTTPS-SETTINGS",
+    "pattern": "SECURE_SSL_REDIRECT\\s*=\\s*(?:True|False)|SECURE_HSTS_SECONDS\\s*=|SESSION_COOKIE_SECURE\\s*=|CSRF_COOKIE_SECURE\\s*=",
+    "globs": ["settings*.py", "*.py"],
+    "severity_hint": "Info",
+    "description": "Transport security settings - evidence for encryption in transit (False values are findings)",
+    "reference": "GDPR-Art.32"
+  },
+  {
+    "id": "GDPR-PY-DB-TLS-OFF",
+    "pattern": "sslmode['\"]?\\s*[:=]\\s*['\"]?(?:disable|allow|prefer)|OPTIONS.*ssl.*False",
+    "globs": ["settings*.py", "*.py", "*.env", ".env*"],
+    "severity_hint": "Medium",
+    "description": "Database connection without required TLS",
+    "reference": "GDPR-Art.32"
+  },
+  {
+    "id": "GDPR-PY-DEBUG-TRUE",
+    "pattern": "^\\s*DEBUG\\s*=\\s*True",
+    "globs": ["settings*.py"],
+    "severity_hint": "Medium",
+    "description": "DEBUG=True renders request data and local variables in error pages (personal data exposure); also check @sensitive_post_parameters",
+    "reference": "GDPR-Art.32"
+  },
+  {
+    "id": "GDPR-PY-AUDIT-TRAIL",
+    "pattern": "\\b(?:auditlog|simple_history|HistoricalRecords|pghistory|django_auditlog|LogEntry|AuditLog)\\b",
+    "globs": ["*.py"],
+    "severity_hint": "Info",
+    "description": "Audit trail mechanism - evidence for access logging of personal data",
+    "reference": "GDPR-Art.30"
+  },
+  {
+    "id": "GDPR-PY-SERIALIZER-ALL-FIELDS",
+    "pattern": "fields\\s*=\\s*['\"]__all__['\"]",
+    "globs": ["serializers.py", "*.py"],
+    "severity_hint": "Low",
+    "description": "DRF serializer exposes every model column - minimisation on API responses",
+    "reference": "GDPR-Art.5(1)(c)"
+  },
+  {
+    "id": "GDPR-PY-PII-IN-URL",
+    "pattern": "path\\s*\\(\\s*r?['\"][^'\"]*<(?:str:|slug:)?(?:email|phone|mobile|ssn)>|request\\.GET\\.get\\s*\\(\\s*['\"](?:email|phone|mobile|ssn)['\"]",
+    "globs": ["*.py"],
+    "severity_hint": "Medium",
+    "description": "Personal data in URL pattern or GET parameter",
+    "reference": "GDPR-Art.5(1)(c)"
+  }
+]

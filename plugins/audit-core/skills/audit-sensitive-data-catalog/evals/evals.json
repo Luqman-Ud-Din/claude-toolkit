@@ -1,0 +1,51 @@
+{
+  "skill_name": "audit-sensitive-data-catalog",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Classify the field names in evals/files/names.txt. For each one tell me whether it's sensitive and what kind. I especially want to know why passwordPolicy and tokenExpiry aren't flagged but userPassword is, and whether ipAddress counts as personal data.",
+      "expected_output": "The skill runs catalog.py names --file evals/files/names.txt (or classify_name) and reports each name with category and subcategory. userPassword is credential/password. passwordPolicy and tokenExpiry are not sensitive, and the response quotes the exclusion rule and reason (metadata about the value). ipAddress is identifier/ip-address (personal data). password_hash is a credential derivative with form hashed. NEXT_PUBLIC_STRIPE_KEY carries a public hint.",
+      "files": [
+        "evals/files/names.txt"
+      ],
+      "expectations": [
+        "The skill runs scripts/catalog.py names (or calls classify_name) rather than guessing from memory",
+        "userPassword is reported as sensitive with category credential",
+        "passwordPolicy and tokenExpiry are reported as not sensitive with an exclusion reason about metadata",
+        "ipAddress is reported as sensitive with category identifier",
+        "password_hash is reported with form hashed",
+        "hasPassword is reported as not sensitive because of the boolean prefix"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Scan evals/files/mixed-sample.txt for sensitive values. Which card numbers are real, which keys are live secrets, and which ones are just placeholders or meant to be public? Don't paste the full secrets back to me.",
+      "expected_output": "catalog.py scan evals/files/mixed-sample.txt with values masked. 4556 7375 8689 9855 is a payment card with checksum_ok true and sensitive true. 4556 7375 8689 9856 fails Luhn (checksum_ok false, not sensitive). 4242 4242 4242 4242 is a published test card (placeholder test-value). sk_live_XXXX... is a placeholder. pk_live_... is V-STRIPE-PUBLISHABLE with exposure public. The AWS access key, Stripe sk_live key, SendGrid key, connection-string password, redis URL password, JWT, PEM header and clientSecret literal are sensitive secrets. DB_PASSWORD=changeme and JWT_KEY=set-in-secret-manager are placeholders. support@ is a generic mailbox and john.doe@example.com an example domain.",
+      "files": [
+        "evals/files/mixed-sample.txt"
+      ],
+      "expectations": [
+        "The valid card 4556 7375 8689 9855 is reported as passing Luhn and sensitive",
+        "The card ending 9856 is reported as failing Luhn and not sensitive",
+        "The ${TOOLKIT_FIXTURE_STRIPE_PLACEHOLDER} key is reported as a placeholder",
+        "The pk_live key is reported as public by design, not as a secret",
+        "4242 4242 4242 4242 is reported as a published test card",
+        "DB_PASSWORD=changeme is not reported as a real secret",
+        "No full secret value appears in the response (values are masked)"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "I'm writing a log-statement scanner for our audit and need to decide which logged field names count as leaked credentials, tokens, financial data or personal data, without maintaining my own word list. How do I use the catalog for that, how do I map its categories onto those four buckets, and why shouldn't passwordHash count as a leaked password?",
+      "expected_output": "The skill points at classify_name and the contract's name-result fields. It recommends keeping form == plain so passwordHash (form hashed) is not reported as a plaintext password, and gives a deterministic mapping: secret and password/pin/security-answer to credentials; token/session/cookie/otp to tokens; financial to financial; identifier/contact/health/special-category to personal. It notes ipAddress and macAddress classify as identifiers and that boolean-prefixed flags such as hasPassword are excluded.",
+      "files": [],
+      "expectations": [
+        "Response names classify_name as the function to call",
+        "Response filters out hashed or derived forms so passwordHash stays unflagged",
+        "Response gives a mapping from catalog category/subcategory to credentials, tokens, financial and personal",
+        "Response mentions that ipAddress is classified as sensitive (identifier)",
+        "Response cites references/sensitive-data-catalog-contract.md"
+      ]
+    }
+  ]
+}

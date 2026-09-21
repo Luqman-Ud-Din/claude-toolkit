@@ -1,0 +1,42 @@
+[
+  {
+    "id": "SECRET-LITERAL",
+    "pattern": "(?i)(apiKey|api_key|secret|token|password|clientSecret)\\s*[:=]\\s*['\"][A-Za-z0-9_\\-/+]{12,}['\"]",
+    "globs": ["*.js", "*.ts", "*.json", "*.env"],
+    "severity_hint": "High",
+    "description": "Secret assigned a literal value",
+    "reference": "CWE-798"
+  },
+  {
+    "id": "CONNSTR-PASSWORD",
+    "pattern": "(?i)(mongodb(\\+srv)?|postgres|postgresql|mysql|redis):\\/\\/[^:@\\s]+:[^@\\s]+@",
+    "globs": ["*.js", "*.ts", "*.json", "*.env"],
+    "severity_hint": "High",
+    "description": "Database URL with an inline username:password",
+    "reference": "CWE-798"
+  },
+  {
+    "id": "CORS-WILDCARD-CREDS",
+    "pattern": "origin\\s*:\\s*['\"]?\\*['\"]?|cors\\(\\s*\\)",
+    "globs": ["*.js", "*.ts"],
+    "severity_hint": "High",
+    "description": "CORS wildcard/default - check credentials:true is not also set",
+    "reference": "CWE-942"
+  },
+  {
+    "id": "CORS-CREDENTIALS",
+    "pattern": "credentials\\s*:\\s*true",
+    "globs": ["*.js", "*.ts"],
+    "severity_hint": "High",
+    "description": "CORS credentials:true - dangerous with a wildcard/reflected origin",
+    "reference": "CWE-942"
+  },
+  {
+    "id": "NODE-ENV",
+    "pattern": "NODE_ENV\\s*[:=]\\s*['\"]?development",
+    "globs": ["*.js", "*.ts", "*.json", "*.env", "Dockerfile"],
+    "severity_hint": "Medium",
+    "description": "NODE_ENV=development in a deploy/config file disables prod hardening",
+    "reference": "CWE-489"
+  }
+]

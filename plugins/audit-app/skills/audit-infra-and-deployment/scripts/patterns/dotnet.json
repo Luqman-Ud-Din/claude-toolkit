@@ -1,0 +1,74 @@
+[
+  {
+    "id": "DOTNET-SDK-IMAGE",
+    "pattern": "^\\s*FROM\\s+(--platform=\\S+\\s+)?mcr\\.microsoft\\.com/dotnet/sdk",
+    "globs": ["Dockerfile*", "*.dockerfile"],
+    "severity_hint": "Medium",
+    "description": ".NET SDK image - acceptable only in a build stage; confirm it is not the final/runtime stage",
+    "reference": "CIS-Docker-4.3"
+  },
+  {
+    "id": "ASPNETCORE-DEV-ENVIRONMENT",
+    "pattern": "ASPNETCORE_ENVIRONMENT['\"]?\\s*[=:]\\s*['\"]?Development",
+    "globs": ["Dockerfile*", "*.dockerfile", "*.yml", "*.yaml", "*.env"],
+    "severity_hint": "Medium",
+    "description": "Development environment set in an image or manifest (developer exception page, detailed errors)",
+    "reference": "CWE-489; OWASP-A05:2021"
+  },
+  {
+    "id": "ASPNETCORE-PORT-80",
+    "pattern": "ASPNETCORE_(URLS|HTTP_PORTS)['\"]?\\s*[=:]\\s*['\"]?(https?://[+*0-9.]*:)?80\\b",
+    "globs": ["Dockerfile*", "*.dockerfile", "*.yml", "*.yaml"],
+    "severity_hint": "Low",
+    "description": "Kestrel bound to port 80 - usually forces a root user; .NET 8+ defaults to 8080",
+    "reference": "CIS-Docker-5.x (privileged ports); CWE-250"
+  },
+  {
+    "id": "DOTNET-CONNSTR-LITERAL",
+    "pattern": "(ConnectionStrings__\\w+['\"]?\\s*[=:]|^\\s*value:)\\s*['\"]?[^$'\"{]*(Password|Pwd)=[^;'\"$]+",
+    "globs": ["Dockerfile*", "*.dockerfile", "*.yml", "*.yaml", "*.env"],
+    "severity_hint": "High",
+    "description": "Connection string with a literal password in a container/deployment file",
+    "reference": "CWE-798; CIS-Docker-4.10"
+  },
+  {
+    "id": "KESTREL-CERT-PASSWORD",
+    "pattern": "Kestrel__Certificates__\\w+__Password['\"]?\\s*[=:]\\s*['\"]?[^$\\s'\"{]",
+    "globs": ["Dockerfile*", "*.dockerfile", "*.yml", "*.yaml", "*.env"],
+    "severity_hint": "High",
+    "description": "Kestrel certificate password as a literal",
+    "reference": "CWE-798"
+  },
+  {
+    "id": "DOTNET-DEV-CERTS",
+    "pattern": "dotnet\\s+dev-certs",
+    "globs": ["Dockerfile*", "*.dockerfile", "*.sh", "*.yml", "*.yaml"],
+    "severity_hint": "Medium",
+    "description": "Development HTTPS certificate used in a container/deploy script",
+    "reference": "CWE-295"
+  },
+  {
+    "id": "EF-MIGRATE-AT-STARTUP",
+    "pattern": "\\.Database\\.Migrate(Async)?\\(",
+    "globs": ["*.cs"],
+    "severity_hint": "Medium",
+    "description": "EF Core migrations applied at app startup - races across replicas and complicates rollback",
+    "reference": "Rollback readiness"
+  },
+  {
+    "id": "HTTPS-REDIRECT-BEHIND-PROXY",
+    "pattern": "UseHttpsRedirection\\(",
+    "globs": ["*.cs"],
+    "severity_hint": "Info",
+    "description": "Confirm UseForwardedHeaders runs first when TLS terminates at an ingress/load balancer",
+    "reference": "CWE-319"
+  },
+  {
+    "id": "DATA-PROTECTION-KEYS",
+    "pattern": "AddDataProtection\\(",
+    "globs": ["*.cs"],
+    "severity_hint": "Info",
+    "description": "Confirm keys are persisted (PersistKeysTo*) so redeploys and scale-out keep cookies valid",
+    "reference": "ASP.NET Core Data Protection"
+  }
+]

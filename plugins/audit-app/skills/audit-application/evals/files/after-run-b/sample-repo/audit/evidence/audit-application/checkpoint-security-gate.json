@@ -1,0 +1,36 @@
+{
+  "id": "security-gate",
+  "answer": "continue",
+  "mode": "auto-continued",
+  "at": "2026-09-11T12:23:29.399022+00:00",
+  "data": {
+    "phase": "security",
+    "count": 3,
+    "findings": [
+      {
+        "id": "AUTHZ-002",
+        "severity": "Critical",
+        "skill": "audit-authz-and-access-control",
+        "title": "JWT bearer registered without token validation parameters",
+        "location": "Inventory.Api/Program.cs:6",
+        "confidence": "likely"
+      },
+      {
+        "id": "AUTHZ-001",
+        "severity": "High",
+        "skill": "audit-authz-and-access-control",
+        "title": "Order payment is scoped by company but not by branch",
+        "location": "Inventory.Api/Controllers/OrdersController.cs:30",
+        "confidence": "confirmed"
+      },
+      {
+        "id": "TENANT-001",
+        "severity": "High",
+        "skill": "audit-multi-tenant-isolation",
+        "title": "Tenant filter applied by hand per query; payment path misses BranchId",
+        "location": "Inventory.Api/Controllers/OrdersController.cs:30",
+        "confidence": "confirmed"
+      }
+    ]
+  }
+}

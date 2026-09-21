@@ -1,0 +1,17 @@
+{
+  "skill_name": "audit-llm-output-quality",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Our AI assistant tells customers our current stock levels - can we trust it's not just making that number up?",
+      "expected_output": "Checks whether stock-level answers are traceable to an actual inventory lookup vs. the model guessing from parametric memory, probes with a partial_capability-style question, and writes an LLM-OQ-NNN finding if fabrication is possible.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "We built an AI feature that gives customers a confident 'health score' report on their account - should it say what it didn't check?",
+      "expected_output": "Flags the lack of disclosed limitations/uncertainty as a finding, especially calling out that this matters more for a feature presenting itself as a verification/audit-like verdict.",
+      "files": []
+    }
+  ]
+}

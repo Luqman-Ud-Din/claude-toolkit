@@ -1,0 +1,36 @@
+{
+  "skill": "audit-multi-tenant-isolation",
+  "generated_at": "2026-09-11T09:00:00Z",
+  "target": {"root": ".", "commit": null},
+  "stack": {"primary_backend": "dotnet"},
+  "scope": {"checked": ["Product.Managers"], "not_checked": []},
+  "findings": [
+    {
+      "id": "TENANT-004",
+      "title": "Product list query is not filtered by CompanyId",
+      "severity": "High",
+      "confidence": "confirmed",
+      "location": {"file": "Product.Managers/ProductManager.cs", "line": 58, "symbol": "GetAll"},
+      "evidence": "return _context.Products.Where(p => !p.IsDeleted).ToList();",
+      "impact": "A user in one company can list every other company's products.",
+      "remediation": "Apply a global query filter on CompanyId in the DbContext or add the predicate in RepositoryBaseManager.",
+      "references": ["CWE-284", "ASVS-4.1.3"],
+      "tags": ["cross-tenant"],
+      "root_cause_key": "RepositoryBaseManager:no-tenant-filter"
+    },
+    {
+      "id": "TENANT-007",
+      "title": "Batch list query is not filtered by CompanyId",
+      "severity": "Medium",
+      "confidence": "likely",
+      "location": {"file": "Product.Managers/BatchManager.cs", "line": 31, "symbol": "GetAll"},
+      "evidence": "return _context.Batches.ToList();",
+      "impact": "Batches of other companies are visible.",
+      "remediation": "Same as TENANT-004.",
+      "references": ["CWE-284"],
+      "tags": [],
+      "root_cause_key": "RepositoryBaseManager:no-tenant-filter"
+    }
+  ],
+  "summary": {"Critical": 0, "High": 1, "Medium": 1, "Low": 0, "Info": 0}
+}

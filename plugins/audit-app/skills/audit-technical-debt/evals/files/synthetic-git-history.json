@@ -1,0 +1,58 @@
+{
+  "_comment": "Synthetic git history for evals/files/sample-repo, which ships without a .git folder. Pass it to churn.py, todo_age.py and docs_check.py with --history evals/files/synthetic-git-history.json. Format: see ../audit-git-history/references/githist-contract.md. The ten newest commits (c01-c10, June-September 2026) are the churn window; OrderImportService.ImportOrders changes in eight of them (all but c04 and c08). a0 and a1 are 2023 commits that date the README, LegacyCsvExporter and the Program.cs TODO.",
+  "head_date": "2026-09-01T16:00:00Z",
+  "commits": [
+    {"hash": "c10", "date": "2026-09-01T15:40:00Z", "author": "sana", "message": "Import: reject negative unit prices",
+     "files": [{"path": "OrderService.Api/Services/OrderImportService.cs", "added": 14, "deleted": 6, "functions": ["ImportOrders"]}]},
+    {"hash": "c09", "date": "2026-08-18T11:05:00Z", "author": "bilal", "message": "Import: warn when region has no tax rule",
+     "files": [{"path": "OrderService.Api/Services/OrderImportService.cs", "added": 22, "deleted": 9, "functions": ["ImportOrders"]},
+               {"path": "OrderService.Api/Program.cs", "added": 1, "deleted": 1}]},
+    {"hash": "c08", "date": "2026-08-06T09:30:00Z", "author": "sana", "message": "Quotes: copy invoice total calculation",
+     "files": [{"path": "OrderService.Api/Services/QuoteService.cs", "added": 42, "deleted": 0},
+               {"path": "OrderService.Api/Services/PricingService.cs", "added": 3, "deleted": 1},
+               {"path": "OrderService.Api/Controllers/OrdersController.cs", "added": 8, "deleted": 0}]},
+    {"hash": "c07", "date": "2026-07-29T14:20:00Z", "author": "hamza", "message": "Import: backorder rules for marketplace",
+     "files": [{"path": "OrderService.Api/Services/OrderImportService.cs", "added": 31, "deleted": 12, "functions": ["ImportOrders"]}]},
+    {"hash": "c06", "date": "2026-07-21T10:10:00Z", "author": "bilal", "message": "Import: FX timeout fallback; bump Swashbuckle",
+     "files": [{"path": "OrderService.Api/Services/OrderImportService.cs", "added": 18, "deleted": 4, "functions": ["ImportOrders"]},
+               {"path": "OrderService.Api/OrderService.Api.csproj", "added": 1, "deleted": 1}]},
+    {"hash": "c05", "date": "2026-07-14T16:45:00Z", "author": "sana", "message": "Import: wholesale volume discount tiers",
+     "files": [{"path": "OrderService.Api/Services/OrderImportService.cs", "added": 27, "deleted": 8, "functions": ["ImportOrders"]}]},
+    {"hash": "c04", "date": "2026-07-08T08:55:00Z", "author": "hamza", "message": "Controller: tenant from claims",
+     "files": [{"path": "OrderService.Api/Controllers/OrdersController.cs", "added": 6, "deleted": 3},
+               {"path": "OrderService.Api/Program.cs", "added": 2, "deleted": 0}]},
+    {"hash": "c03", "date": "2026-06-30T12:00:00Z", "author": "bilal", "message": "Import: status mapping for returns and refunds",
+     "files": [{"path": "OrderService.Api/Services/OrderImportService.cs", "added": 16, "deleted": 2, "functions": ["ImportOrders"]},
+               {"path": "OrderService.Api/Controllers/OrdersController.cs", "added": 2, "deleted": 2}]},
+    {"hash": "c02", "date": "2026-06-16T15:30:00Z", "author": "sana", "message": "Import: dry-run mode",
+     "files": [{"path": "OrderService.Api/Services/OrderImportService.cs", "added": 12, "deleted": 3, "functions": ["ImportOrders"]}]},
+    {"hash": "c01", "date": "2026-06-02T09:15:00Z", "author": "hamza", "message": "Import: channel codes for mobile app",
+     "files": [{"path": "OrderService.Api/Services/OrderImportService.cs", "added": 9, "deleted": 2, "functions": ["ImportOrders"]}]},
+    {"hash": "a1", "date": "2023-06-14T11:20:00Z", "author": "imran", "message": "Keep v1 route aliases for mobile 2.x",
+     "files": [{"path": "OrderService.Api/Program.cs", "added": 2, "deleted": 0}]},
+    {"hash": "a0", "date": "2023-02-10T10:00:00Z", "author": "imran", "message": "Initial import of OrderService",
+     "files": [{"path": "README.md", "added": 15, "deleted": 0},
+               {"path": "OrderService.sln", "added": 20, "deleted": 0},
+               {"path": "OrderService.Api/OrderService.Api.csproj", "added": 15, "deleted": 0},
+               {"path": "OrderService.Api/Program.cs", "added": 20, "deleted": 0},
+               {"path": "OrderService.Api/Config.cs", "added": 23, "deleted": 0},
+               {"path": "OrderService.Api/Models/Order.cs", "added": 110, "deleted": 0},
+               {"path": "OrderService.Api/Legacy/LegacyCsvExporter.cs", "added": 35, "deleted": 0},
+               {"path": "OrderService.Api/Services/OrderImportService.cs", "added": 180, "deleted": 0},
+               {"path": "OrderService.Api/Services/PricingService.cs", "added": 45, "deleted": 0},
+               {"path": "OrderService.Api/Controllers/OrdersController.cs", "added": 40, "deleted": 0}]}
+  ],
+  "blame": {
+    "OrderService.Api/Program.cs": [
+      {"lines": "1-23", "date": "2026-07-08T08:55:00Z", "author": "hamza", "commit": "c04"},
+      {"lines": "15", "date": "2023-06-14T11:20:00Z", "author": "imran", "commit": "a1"}
+    ],
+    "OrderService.Api/Services/OrderImportService.cs": [
+      {"lines": "1-500", "date": "2026-06-30T12:00:00Z", "author": "bilal", "commit": "c03"},
+      {"lines": "37", "date": "2026-08-18T11:05:00Z", "author": "bilal", "commit": "c09"}
+    ],
+    "OrderService.Api/Services/QuoteService.cs": [
+      {"lines": "1-42", "date": "2026-08-06T09:30:00Z", "author": "sana", "commit": "c08"}
+    ]
+  }
+}

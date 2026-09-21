@@ -1,0 +1,90 @@
+[
+  {
+    "id": "SOC2-BRANCH-PROTECTION-OFF",
+    "pattern": "protection\\s*:\\s*(?:null|~|false)|required_pull_request_reviews\\s*:\\s*(?:null|~)|required_status_checks\\s*:\\s*(?:null|~)|enforce_admins\\s*:\\s*false|Branch not protected",
+    "globs": ["*.yml", "*.yaml", "*.json"],
+    "severity_hint": "High",
+    "description": "Branch protection disabled or reviews/status checks not required (settings-as-code or gh api snapshot)",
+    "reference": "SOC2-CC8.1"
+  },
+  {
+    "id": "SOC2-CI-SCAN-STEP",
+    "pattern": "dotnet list .*--vulnerable|github/codeql-action|trivy|grype|snyk|dependency-check|semgrep|gitleaks|trufflehog|sonar|security-code-scan|devskim|dependency-review-action",
+    "globs": ["*.yml", "*.yaml", "Jenkinsfile"],
+    "severity_hint": "Info",
+    "description": "Security scan step in CI. ZERO hits in pipeline files means no CI security scan - write the CC7.1 finding",
+    "reference": "SOC2-CC7.1"
+  },
+  {
+    "id": "SOC2-DEPLOY-ON-PUSH",
+    "pattern": "if:\\s*github\\.ref\\s*==\\s*['\"]refs/heads/(?:main|master|production)['\"]|deploy(?:\\.sh|\\.ps1)?\\s+prod(?:uction)?\\b|dotnet publish.*-c Release.*&&.*(?:az webapp|kubectl|scp)",
+    "globs": ["*.yml", "*.yaml", "Jenkinsfile"],
+    "severity_hint": "Info",
+    "description": "Production deploy triggered by a push to a branch - check branch protection and environment approval gate it",
+    "reference": "SOC2-CC8.1"
+  },
+  {
+    "id": "SOC2-BACKUP-JOB",
+    "pattern": "pg_dump|mysqldump|sqlcmd.*BACKUP|BACKUP DATABASE|Backup-SqlDatabase|aws_backup_plan|azurerm_backup|backup_retention_period|short_term_retention_policy|long_term_retention_policy",
+    "globs": ["*.sh", "*.ps1", "*.tf", "*.bicep", "*.yml", "*.yaml", "*.md"],
+    "severity_hint": "Info",
+    "description": "Backup configuration - pair it with a documented, dated restore test",
+    "reference": "SOC2-A1.2"
+  },
+  {
+    "id": "SOC2-RESTORE-TEST-RECORD",
+    "pattern": "restore[ _-]?(?:test|drill|exercise|verified)|test[ _-]?restore|restored on|last restore|\\bRTO\\b|\\bRPO\\b",
+    "globs": ["*.md", "*.txt", "*.yml", "*.yaml"],
+    "severity_hint": "Info",
+    "description": "Restore test record. ZERO hits while backups exist means no documented restore test - write the A1.2 finding",
+    "reference": "SOC2-A1.2"
+  },
+  {
+    "id": "SOC2-RBAC-MARKER",
+    "pattern": "\\[Authorize\\(\\s*(?:Roles|Policy)\\s*=|RequireRole\\(|AddPolicy\\(|\\[AllowAnonymous\\]",
+    "globs": ["*.cs"],
+    "severity_hint": "Info",
+    "description": "Role/policy enforcement (and anonymous exceptions) - evidence for CC6.1/CC6.3 least privilege",
+    "reference": "SOC2-CC6.1"
+  },
+  {
+    "id": "SOC2-MFA-SSO-MARKER",
+    "pattern": "TwoFactorEnabled|RequireTwoFactor|AddOpenIdConnect|AddMicrosoftIdentityWebApi|AddMicrosoftIdentityWebApp|\"amr\"|Authenticator",
+    "globs": ["*.cs", "*.json"],
+    "severity_hint": "Info",
+    "description": "SSO / MFA integration marker. ZERO hits means MFA cannot be evidenced from code - needs an IdP export",
+    "reference": "SOC2-CC6.1"
+  },
+  {
+    "id": "SOC2-AUDIT-TRAIL-MARKER",
+    "pattern": "SaveChangesInterceptor|AuditLog|AuditTrail|IsTemporal\\(|ChangeTracker\\.Entries\\(",
+    "globs": ["*.cs"],
+    "severity_hint": "Info",
+    "description": "Audit trail for data changes / admin actions. ZERO hits means no audit trail evidence (CC6.1/CC7.2)",
+    "reference": "SOC2-CC7.2"
+  },
+  {
+    "id": "SOC2-HEALTH-ENDPOINT",
+    "pattern": "MapHealthChecks\\(|AddHealthChecks\\(|\"/health",
+    "globs": ["*.cs"],
+    "severity_hint": "Info",
+    "description": "Health endpoint for uptime monitoring - still needs an external monitor and alert (A1.1)",
+    "reference": "SOC2-A1.1"
+  },
+  {
+    "id": "SOC2-CONSOLE-ONLY-LOGGING",
+    "pattern": "WriteTo\\.Console\\(\\)|\"Name\"\\s*:\\s*\"Console\"",
+    "globs": ["*.cs", "appsettings*.json"],
+    "severity_hint": "Medium",
+    "description": "Console sink - confirm logs are shipped to a central, retained, tamper-evident store (CC7.2)",
+    "reference": "SOC2-CC7.2"
+  },
+  {
+    "id": "SOC2-SECRET-LITERAL",
+    "pattern": "(?:Password|Pwd|Secret|ApiKey|Token|JwtKey)\\s*[\"']?\\s*[=:]\\s*[\"']?[A-Za-z0-9+/_\\-]{12,}",
+    "globs": ["*.json", "*.cs", "*.config"],
+    "severity_hint": "High",
+    "description": "Credential-looking literal in source/config - confirm with audit-secrets-and-config (C1.1)",
+    "reference": "SOC2-C1.1"
+  }
+]

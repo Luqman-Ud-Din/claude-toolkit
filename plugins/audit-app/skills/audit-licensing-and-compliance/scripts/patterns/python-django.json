@@ -1,0 +1,7 @@
+[
+  {"id": "LIC-VENDORED-GPL-HEADER", "pattern": "GNU (Affero )?General Public License|SPDX-License-Identifier:\\s*(A?GPL|SSPL|BUSL)", "globs": ["*.py"], "severity_hint": "High", "description": "Copyleft licence header inside copied source", "reference": "CWE-1104"},
+  {"id": "LIC-PYPROJECT-COPYLEFT", "pattern": "license\\s*=\\s*[\"{][^\\n]*(GPL|AGPL|SSPL)", "globs": ["pyproject.toml", "setup.py", "setup.cfg"], "severity_hint": "High", "description": "Project metadata declares a copyleft licence", "reference": "CWE-1104"},
+  {"id": "LIC-VCS-REQUIREMENT", "pattern": "^\\s*(git\\+|https?://|-e\\s)", "globs": ["requirements*.txt"], "severity_hint": "Medium", "description": "Requirement from VCS/URL/editable path - licence not resolvable from PyPI metadata", "reference": "CWE-1104"},
+  {"id": "LIC-KNOWN-COPYLEFT-PYPI", "pattern": "^\\s*(mysqlclient|pymssql|pyqt5|pyqt6|pyside2|ghostscript|python-ldap|paramiko|ansible)\\b", "globs": ["requirements*.txt", "pyproject.toml", "Pipfile"], "severity_hint": "Medium", "description": "Packages with GPL/LGPL terms that need a decision", "reference": "CWE-1104"},
+  {"id": "LIC-CONTAINER-BASE-IMAGE", "pattern": "^\\s*FROM\\s+", "globs": ["Dockerfile", "*.dockerfile"], "severity_hint": "Low", "description": "Base image - licence lives in OCI labels", "reference": ""}
+]

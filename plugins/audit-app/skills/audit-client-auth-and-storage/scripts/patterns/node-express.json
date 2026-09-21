@@ -1,0 +1,145 @@
+[
+  {
+    "id": "ISSUE-TOKEN-LIFETIME-LONG",
+    "pattern": "expiresIn\\s*:\\s*['\"]?\\s*([0-9]+\\s*d|[3-9][0-9]{2,}h|[0-9]{7,})",
+    "globs": [
+      "*.ts",
+      "*.js"
+    ],
+    "severity_hint": "Medium",
+    "description": "Access token lifetime in days - increases client storage risk",
+    "reference": "CWE-613"
+  },
+  {
+    "id": "ISSUE-NO-EXPIRATION",
+    "pattern": "jwt\\.sign\\s*\\((?![^;]*expiresIn)[^;]*\\)\\s*;",
+    "globs": [
+      "*.ts",
+      "*.js"
+    ],
+    "severity_hint": "Info",
+    "description": "jwt.sign call - confirm expiresIn is set (statement-level check; verify manually)",
+    "reference": "CWE-613"
+  },
+  {
+    "id": "ISSUE-IGNORE-EXPIRATION",
+    "pattern": "ignoreExpiration\\s*:\\s*true",
+    "globs": [
+      "*.ts",
+      "*.js"
+    ],
+    "severity_hint": "High",
+    "description": "passport-jwt / jsonwebtoken ignoring expiry",
+    "reference": "CWE-613"
+  },
+  {
+    "id": "ISSUE-TOKEN-IN-BODY",
+    "pattern": "res\\.(json|send)\\s*\\(\\s*\\{[^}]*(accessToken|access_token|refreshToken|refresh_token|token)\\s*[:,}]|return\\s*\\{[^}]*(accessToken|refreshToken)\\s*[:,}]",
+    "globs": [
+      "*.ts",
+      "*.js"
+    ],
+    "severity_hint": "Info",
+    "description": "Tokens returned in the JSON body - the client must store them",
+    "reference": "CWE-922"
+  },
+  {
+    "id": "ISSUE-COOKIE-SET",
+    "pattern": "res\\.cookie\\s*\\(|reply\\.setCookie\\s*\\(|ctx\\.cookies\\.set\\s*\\(",
+    "globs": [
+      "*.ts",
+      "*.js"
+    ],
+    "severity_hint": "Info",
+    "description": "Cookie issued - check httpOnly/secure/sameSite (headers skill) and which token it carries",
+    "reference": "CWE-1004"
+  },
+  {
+    "id": "ISSUE-COOKIE-NOT-HTTPONLY",
+    "pattern": "httpOnly\\s*:\\s*false",
+    "globs": [
+      "*.ts",
+      "*.js"
+    ],
+    "severity_hint": "High",
+    "description": "Cookie explicitly readable by script",
+    "reference": "CWE-1004"
+  },
+  {
+    "id": "REFRESH-ENDPOINT",
+    "pattern": "@Post\\s*\\(\\s*['\"][^'\"]*refresh|\\.(post|get)\\s*\\(\\s*['\"][^'\"]*refresh",
+    "globs": [
+      "*.ts",
+      "*.js"
+    ],
+    "severity_hint": "Info",
+    "description": "Refresh endpoint present - check rotation, hashing, revocation, token source",
+    "reference": "CWE-613"
+  },
+  {
+    "id": "REFRESH-TOKEN-AS-JWT-STATELESS",
+    "pattern": "refreshToken\\s*=\\s*(await\\s+)?(jwt|this\\.jwt|jwtService)\\.sign(Async)?\\s*\\(",
+    "globs": [
+      "*.ts",
+      "*.js"
+    ],
+    "severity_hint": "Low",
+    "description": "Refresh token is a signed JWT - verify it is stored/rotated server-side so it can be revoked",
+    "reference": "CWE-613"
+  },
+  {
+    "id": "REFRESH-TOKEN-WEAK-RANDOM",
+    "pattern": "refreshToken\\s*=\\s*(Math\\.random|uuid\\s*\\(|uuidv4\\s*\\(|Date\\.now)",
+    "globs": [
+      "*.ts",
+      "*.js"
+    ],
+    "severity_hint": "Medium",
+    "description": "Refresh token from Math.random/uuid/time - use crypto.randomBytes",
+    "reference": "CWE-338"
+  },
+  {
+    "id": "LOGOUT-ENDPOINT",
+    "pattern": "@Post\\s*\\(\\s*['\"][^'\"]*(logout|signout|revoke)|\\.(post|get)\\s*\\(\\s*['\"][^'\"]*(logout|signout|revoke)",
+    "globs": [
+      "*.ts",
+      "*.js"
+    ],
+    "severity_hint": "Info",
+    "description": "Logout endpoint present - confirm refresh token deletion, clearCookie with matching path, session.destroy",
+    "reference": "CWE-613"
+  },
+  {
+    "id": "READ-TOKEN-FROM-QUERY",
+    "pattern": "fromUrlQueryParameter\\s*\\(|req\\.query\\.(token|access_token|jwt)\\b",
+    "globs": [
+      "*.ts",
+      "*.js"
+    ],
+    "severity_hint": "Low",
+    "description": "Token accepted from the query string",
+    "reference": "CWE-598"
+  },
+  {
+    "id": "CONFIG-EXPOSED-TO-CLIENT",
+    "pattern": "\\.(get)\\s*\\(\\s*['\"][^'\"]*(config|env\\.js|settings)['\"]|process\\.env\\s*\\}?\\s*\\)?\\s*;?\\s*//.*client|res\\.json\\s*\\(\\s*process\\.env",
+    "globs": [
+      "*.ts",
+      "*.js"
+    ],
+    "severity_hint": "Info",
+    "description": "Configuration endpoint handed to the client - check for public identifiers only",
+    "reference": "CWE-798"
+  },
+  {
+    "id": "CORS-CREDENTIALS-ANY-ORIGIN",
+    "pattern": "cors\\s*\\(\\s*\\{[^}]*origin\\s*:\\s*(true|['\"]\\*['\"])[^}]*credentials\\s*:\\s*true|credentials\\s*:\\s*true[^}]*origin\\s*:\\s*(true|['\"]\\*['\"])",
+    "globs": [
+      "*.ts",
+      "*.js"
+    ],
+    "severity_hint": "High",
+    "description": "Credentials allowed with reflected/any origin (also reported by the headers skill)",
+    "reference": "CWE-942"
+  }
+]

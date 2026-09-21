@@ -1,0 +1,82 @@
+[
+  {
+    "id": "NPM-LODASH-LT-4.17.21",
+    "pattern": "\"lodash\"\\s*:\\s*\"[~^]?4\\.17\\.(?:[0-9]|1\\d|20)\"",
+    "globs": ["package.json"],
+    "severity_hint": "High",
+    "description": "lodash below 4.17.21: prototype pollution and ReDoS (CVE-2020-8203, CVE-2021-23337)",
+    "reference": "CVE-2020-8203"
+  },
+  {
+    "id": "NPM-MINIMIST-LT-1.2.6",
+    "pattern": "\"minimist\"\\s*:\\s*\"[~^]?(?:0\\.|1\\.[01]\\.|1\\.2\\.[0-5]\\b)",
+    "globs": ["package.json"],
+    "severity_hint": "Critical",
+    "description": "minimist below 1.2.6: prototype pollution (CVE-2021-44906)",
+    "reference": "CVE-2021-44906"
+  },
+  {
+    "id": "NPM-AXIOS-LT-0.21.2",
+    "pattern": "\"axios\"\\s*:\\s*\"[~^]?0\\.(?:[0-9]|1\\d|20|21\\.[01])\\b",
+    "globs": ["package.json"],
+    "severity_hint": "High",
+    "description": "axios below 0.21.2: ReDoS / SSRF advisories (CVE-2021-3749, CVE-2020-28168)",
+    "reference": "CVE-2021-3749"
+  },
+  {
+    "id": "NPM-JSONWEBTOKEN-LT-9",
+    "pattern": "\"jsonwebtoken\"\\s*:\\s*\"[~^]?[0-8]\\.",
+    "globs": ["package.json"],
+    "severity_hint": "High",
+    "description": "jsonwebtoken below 9.0.0: key confusion / insecure default algorithms (CVE-2022-23529, CVE-2022-23540)",
+    "reference": "CVE-2022-23529"
+  },
+  {
+    "id": "NPM-EXPRESS-LT-4.19.2",
+    "pattern": "\"express\"\\s*:\\s*\"[~^]?(?:[0-3]\\.|4\\.(?:[0-9]|1[0-8])\\.|4\\.19\\.[01]\\b)",
+    "globs": ["package.json"],
+    "severity_hint": "Medium",
+    "description": "express below 4.19.2: open redirect in res.location/res.redirect (CVE-2024-29041)",
+    "reference": "CVE-2024-29041"
+  },
+  {
+    "id": "NPM-NODE-FETCH-LT-2.6.7",
+    "pattern": "\"node-fetch\"\\s*:\\s*\"[~^]?(?:1\\.|2\\.[0-5]\\.|2\\.6\\.[0-6]\\b)",
+    "globs": ["package.json"],
+    "severity_hint": "High",
+    "description": "node-fetch below 2.6.7: forwards secure headers on cross-origin redirect (CVE-2022-0235)",
+    "reference": "CVE-2022-0235"
+  },
+  {
+    "id": "NPM-WILDCARD-OR-LATEST",
+    "pattern": "\"[^\"]+\"\\s*:\\s*\"(?:\\*|latest|>=?\\s*\\d[^\"]*)\"",
+    "globs": ["package.json"],
+    "severity_hint": "Low",
+    "description": "Dependency pinned to *, latest or an open-ended range: any future release, including a hijacked one, is installed",
+    "reference": "CWE-1104"
+  },
+  {
+    "id": "NPM-GIT-OR-URL-DEPENDENCY",
+    "pattern": "\"[^\"]+\"\\s*:\\s*\"(?:git\\+|github:|https?://|file:)",
+    "globs": ["package.json"],
+    "severity_hint": "Medium",
+    "description": "Dependency fetched from a git/URL/file source: not covered by npm audit and not immutable unless pinned to a commit",
+    "reference": "CWE-829"
+  },
+  {
+    "id": "NPM-AUDIT-DISABLED",
+    "pattern": "^\\s*audit\\s*=\\s*false|--no-audit",
+    "globs": [".npmrc", "*.yml", "*.yaml", "Dockerfile", "*.sh", "package.json"],
+    "severity_hint": "Medium",
+    "description": "npm audit disabled in .npmrc or CI/Docker install step",
+    "reference": "OWASP-A06:2021"
+  },
+  {
+    "id": "NPM-IGNORE-SCRIPTS-MISSING-IN-CI",
+    "pattern": "npm\\s+(?:ci|install)(?!.*--ignore-scripts)",
+    "globs": ["*.yml", "*.yaml", "Dockerfile", "Jenkinsfile"],
+    "severity_hint": "Info",
+    "description": "npm install in CI without --ignore-scripts: install-time scripts of every dependency run on the build agent",
+    "reference": "CWE-829"
+  }
+]

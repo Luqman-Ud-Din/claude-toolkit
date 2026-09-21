@@ -1,0 +1,22 @@
+{
+  "skill": "audit-frontend-xss-and-dom-safety",
+  "generated_at": "2026-09-10T09:30:00Z",
+  "target": {"root": ".", "commit": "abc123"},
+  "stack": {"primary_backend": "dotnet", "primary_frontend": "angular"},
+  "scope": {"checked": ["all *.component.html under web/src"], "not_checked": []},
+  "findings": [
+    {
+      "id": "XSS-001",
+      "title": "Product description rendered through bypassSecurityTrustHtml without sanitisation",
+      "severity": "High",
+      "confidence": "confirmed",
+      "location": {"file": "web/src/app/product/product-detail.component.ts", "line": 58, "symbol": "safeDescription"},
+      "evidence": "this.safeDescription = this.sanitizer.bypassSecurityTrustHtml(product.description);",
+      "impact": "A supplier who can edit a product description can run script in every buyer's browser session and take over their account.",
+      "remediation": "Bind with [innerHTML] and let Angular sanitise, or run DOMPurify before bypassSecurityTrustHtml and document why.",
+      "references": [],
+      "tags": []
+    }
+  ],
+  "summary": {"Critical": 0, "High": 1, "Medium": 0, "Low": 0, "Info": 0}
+}

@@ -1,0 +1,46 @@
+{
+  "skill_name": "audit-finding-writer",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Here's a grep hit from our secrets scan on the inventory backend. Write it up as a proper audit finding and add it to audit/findings/audit-secrets-and-config.json. The line is in evals/files/raw-grep-line.txt.",
+      "expected_output": "One finding in the standard block (Title, Severity, Location, Evidence, Impact, Remediation, Reference) rated Critical, with a .NET-idiomatic remediation (configuration/secret store + rotation + history purge), CWE-798 referenced, appended to findings.json with the SEC prefix.",
+      "files": ["evals/files/raw-grep-line.txt", "evals/files/sample-repo/Account.MicroAPI/appsettings.Production.json", "evals/files/sample-repo/Account.MicroAPI/Account.MicroAPI.csproj"],
+      "expectations": [
+        "Output contains a finding whose severity is Critical",
+        "Finding id starts with SEC-",
+        "Location references appsettings.Production.json with a line number",
+        "References include CWE-798",
+        "Remediation mentions rotating the key and moving it to environment/secret store",
+        "Impact text does not contain the strings 'CWE' or 'IDOR' (plain language)",
+        "findings.json validates with scripts/findings.py validate"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "quick one: the orders list endpoint in evals/files/sample-repo/src/orders/orders.controller.ts returns everything with no paging. can you write that up as a finding for the API audit? note is in evals/files/note.txt",
+      "expected_output": "One finding rated Medium (availability impact, authenticated precondition), API- prefix, location pointing at the listOrders handler, node/TypeScript remediation with take/skip and a pageSize cap, CWE-770 or ASVS 12.1.1 referenced, plus a one-line severity justification in Impact.",
+      "files": ["evals/files/note.txt", "evals/files/sample-repo/src/orders/orders.controller.ts"],
+      "expectations": [
+        "Output contains a finding whose severity is Medium",
+        "Finding id starts with API-",
+        "Location file is src/orders/orders.controller.ts with the listOrders line",
+        "Remediation mentions pagination parameters and a maximum page size",
+        "Impact contains a justification for the severity rating",
+        "References include CWE-770 or ASVS-12.1.1"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "I have two findings in evals/files/dupes.json that are really the same bug (missing tenant filter in the base repository). Merge them into one finding and keep both locations.",
+      "expected_output": "A single merged finding with both file locations preserved in Evidence/extra.locations, the higher severity kept, references unioned, produced via python ../audit-findings-rollup/scripts/findings_rollup.py dedupe evals/files/dupes.json (preview, then --write on a copy) or equivalent.",
+      "files": ["evals/files/dupes.json"],
+      "expectations": [
+        "Resulting findings array has exactly one entry",
+        "Merged finding lists both original locations",
+        "Merged finding severity is High",
+        "Both original ids are recorded in extra.merged_ids"
+      ]
+    }
+  ]
+}

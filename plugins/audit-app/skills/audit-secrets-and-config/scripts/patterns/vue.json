@@ -1,0 +1,18 @@
+[
+  {
+    "id": "SECRET-LITERAL",
+    "pattern": "(?i)(apiKey|api_key|secret|clientSecret|password|token|privateKey)\\s*[:=]\\s*['\"][A-Za-z0-9_\\-/+]{12,}['\"]",
+    "globs": ["*.ts", "*.js", "*.vue"],
+    "severity_hint": "High",
+    "description": "Secret literal in client code - anything bundled reaches the browser; only public keys belong here",
+    "reference": "CWE-798"
+  },
+  {
+    "id": "SERVER-SECRET-IN-ENV",
+    "pattern": "(?i)VITE_[A-Z_]*(SECRET|PRIVATE|PASSWORD|API_KEY)|VUE_APP_[A-Z_]*(SECRET|PRIVATE|PASSWORD)",
+    "globs": ["*.env", "*.ts", "*.js", "*.vue"],
+    "severity_hint": "High",
+    "description": "Server-side secret exposed through a client-inlined env var (VITE_/VUE_APP_ are public)",
+    "reference": "CWE-798"
+  }
+]

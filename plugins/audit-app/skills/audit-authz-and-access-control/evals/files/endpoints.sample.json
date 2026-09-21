@@ -1,0 +1,11 @@
+{
+  "base_path": "",
+  "endpoints": [
+    {"method": "GET",    "path": "/api/reports/sales-summary", "auth_required": false, "roles": [], "ownership_check": "-"},
+    {"method": "GET",    "path": "/api/orders/{id}",           "auth_required": true,  "roles": [], "ownership_check": "N", "id_params": {"id": "order"}},
+    {"method": "GET",    "path": "/api/orders/{id}/receipt",   "auth_required": true,  "roles": [], "ownership_check": "Y", "id_params": {"id": "order"}},
+    {"method": "DELETE", "path": "/api/orders/{id}",           "auth_required": true,  "roles": [], "ownership_check": "N", "id_params": {"id": "order"}},
+    {"method": "GET",    "path": "/api/orders/all",            "auth_required": true,  "roles": ["Admin"], "ownership_check": "-"},
+    {"method": "PUT",    "path": "/api/profile",               "auth_required": true,  "roles": [], "ownership_check": "-", "body": {"displayName": "probe", "email": "a@example.test", "role": "Admin", "isAdmin": true}}
+  ]
+}

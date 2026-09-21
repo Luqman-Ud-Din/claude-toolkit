@@ -1,0 +1,58 @@
+[
+  {
+    "id": "NPM-INSTALL-IN-IMAGE",
+    "pattern": "^\\s*RUN\\s+.*\\bnpm\\s+(install|i)\\b",
+    "globs": ["Dockerfile*", "*.dockerfile"],
+    "severity_hint": "Low",
+    "description": "npm install in an image build - use npm ci (and --omit=dev in the runtime stage)",
+    "reference": "hadolint DL3016"
+  },
+  {
+    "id": "NPM-AS-PID1",
+    "pattern": "^\\s*(CMD|ENTRYPOINT)\\s+.*\\b(npm|yarn|pnpm)\\b",
+    "globs": ["Dockerfile*", "*.dockerfile"],
+    "severity_hint": "Low",
+    "description": "Package manager as the container entrypoint - SIGTERM not forwarded, no graceful shutdown",
+    "reference": "Node.js Docker best practices"
+  },
+  {
+    "id": "NODE-ENV-DEVELOPMENT",
+    "pattern": "NODE_ENV['\"]?\\s*[=:]\\s*['\"]?development",
+    "globs": ["Dockerfile*", "*.dockerfile", "*.yml", "*.yaml", "*.env"],
+    "severity_hint": "Medium",
+    "description": "NODE_ENV=development in an image or manifest",
+    "reference": "CWE-489"
+  },
+  {
+    "id": "NODE-DEV-TOOLING",
+    "pattern": "\\b(nodemon|ts-node(-dev)?|next\\s+dev)\\b",
+    "globs": ["Dockerfile*", "*.dockerfile", "*.yml", "*.yaml"],
+    "severity_hint": "Medium",
+    "description": "Development runner in a container/deployment definition",
+    "reference": "CWE-489"
+  },
+  {
+    "id": "NODE-INSPECT",
+    "pattern": "--inspect(-brk)?(=|\\s|\"|$)",
+    "globs": ["Dockerfile*", "*.dockerfile", "*.yml", "*.yaml"],
+    "severity_hint": "High",
+    "description": "Node inspector enabled - remote code execution if the port is reachable",
+    "reference": "CWE-489"
+  },
+  {
+    "id": "NPM-TOKEN-IN-BUILD",
+    "pattern": "_authToken=|ARG\\s+NPM_TOKEN|NPM_TOKEN['\"]?\\s*[=:]\\s*['\"]?[^$\\s'\"{]",
+    "globs": ["Dockerfile*", "*.dockerfile", "*.yml", "*.yaml", "*.sh"],
+    "severity_hint": "High",
+    "description": "Registry token passed via ARG/ENV/echo - persists in image history; use RUN --mount=type=secret",
+    "reference": "CIS-Docker-4.10; CWE-798"
+  },
+  {
+    "id": "NODE-FULL-IMAGE",
+    "pattern": "^\\s*FROM\\s+(--platform=\\S+\\s+)?node:[\\d.]+\\s*(AS\\s+\\w+)?\\s*$",
+    "globs": ["Dockerfile*", "*.dockerfile"],
+    "severity_hint": "Low",
+    "description": "Full Debian node image - fine for build, heavy for runtime (use -alpine/-slim/distroless)",
+    "reference": "CIS-Docker-4.3"
+  }
+]

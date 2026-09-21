@@ -1,0 +1,17 @@
+{
+  "skill_name": "audit-llm-data-privacy-and-isolation",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "When a customer deletes their account, does our RAG system actually forget about them, including whatever got embedded into the vector store?",
+      "expected_output": "Checks the full erasure checklist (vector store embeddings, logs, cache, memory, eval datasets), specifically flags if embeddings survive after the source row is deleted, and cross-references audit-gdpr-data-protection rather than duplicating its whole scope.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "We're multi-tenant - could tenant A's cached AI response ever get served to tenant B?",
+      "expected_output": "Checks how prompt/response caching is keyed, flags it if the cache key doesn't include tenant/user scoping, and notes overlap with audit-multi-tenant-isolation for the general application-level check.",
+      "files": []
+    }
+  ]
+}

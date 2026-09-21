@@ -1,0 +1,6 @@
+[
+  {"id": "LIC-VENDORED-GPL-HEADER", "pattern": "GNU (Affero )?General Public License|SPDX-License-Identifier:\\s*(A?GPL|SSPL|BUSL|CC-BY-NC)", "globs": ["*.js", "*.mjs", "*.cjs", "*.ts"], "severity_hint": "High", "description": "Copyleft or restricted licence header inside vendored/copied source (not a package dependency)", "reference": "CWE-1104"},
+  {"id": "LIC-MANIFEST-COPYLEFT", "pattern": "\"license\"\\s*:\\s*\"[^\"]*(AGPL|GPL|SSPL|BUSL|CC-BY-NC|UNLICENSED|SEE LICENSE)", "globs": ["package.json", "package-lock.json"], "severity_hint": "High", "description": "Manifest or lockfile declares a copyleft/restricted licence", "reference": "CWE-1104"},
+  {"id": "LIC-GIT-OR-TARBALL-DEP", "pattern": "\"[^\"]+\"\\s*:\\s*\"(git\\+|github:|https?://|file:)", "globs": ["package.json"], "severity_hint": "Medium", "description": "Dependency pulled from git/URL/file - licence not resolvable from the registry", "reference": "CWE-1104"},
+  {"id": "LIC-CONTAINER-BASE-IMAGE", "pattern": "^\\s*FROM\\s+", "globs": ["Dockerfile", "*.dockerfile"], "severity_hint": "Low", "description": "Base image - licence lives in OCI labels (docker inspect)", "reference": ""}
+]

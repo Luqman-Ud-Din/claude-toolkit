@@ -1,0 +1,37 @@
+{
+  "skill": "audit-security-headers-and-middleware",
+  "generated_at": "2026-09-10T10:00:00Z",
+  "target": {"root": ".", "commit": "3f2a1c9"},
+  "stack": {"primary_backend": "dotnet", "primary_frontend": "angular"},
+  "scope": {
+    "checked": ["Api/Program.cs middleware pipeline", "WebHost gateway configuration"],
+    "not_checked": [{"item": "reverse proxy headers", "reason": "nginx config is not in the repository"}]
+  },
+  "findings": [
+    {
+      "id": "HDR-001",
+      "title": "HSTS is not enabled in the production pipeline",
+      "severity": "Medium",
+      "confidence": "confirmed",
+      "location": {"file": "Api/Program.cs", "line": 33, "symbol": "app.UseHttpsRedirection"},
+      "evidence": "app.UseHttpsRedirection();\n// no app.UseHsts() in any environment branch",
+      "impact": "A user who types the site name without https can be intercepted on the first request; the browser is never told to insist on TLS.",
+      "remediation": "Add app.UseHsts() outside the Development branch with max-age of at least one year and includeSubDomains.",
+      "references": ["CWE-319", "ASVS-14.4.5", "OWASP-A05:2021"],
+      "tags": ["hsts", "headers"]
+    },
+    {
+      "id": "HDR-002",
+      "title": "X-Content-Type-Options header is missing",
+      "severity": "Low",
+      "confidence": "confirmed",
+      "location": {"file": "Api/Program.cs", "line": 30},
+      "evidence": "curl -sI https://staging.example.com/api/health | grep -i x-content-type\n(no output)",
+      "impact": "Browsers may sniff a response as a different content type, which turns some upload or error responses into a script-execution vector. Low: needs another defect to be exploitable.",
+      "remediation": "Add nosniff via header middleware: ctx.Response.Headers[\"X-Content-Type-Options\"] = \"nosniff\";",
+      "references": ["CWE-693", "ASVS-14.4.4", "OWASP-A05:2021"],
+      "tags": ["headers", "nosniff"]
+    }
+  ],
+  "summary": {"Critical": 0, "High": 0, "Medium": 1, "Low": 1, "Info": 0}
+}

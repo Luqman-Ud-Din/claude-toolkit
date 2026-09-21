@@ -1,0 +1,17 @@
+{
+  "skill_name": "audit-llm-prompt-and-context-engineering",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Our support agent behaves inconsistently on similar requests - can you review the prompt for clarity issues?",
+      "expected_output": "Uses explore-llm-prompts.json if available, checks for internal contradictions and vague instructions, runs the prompt-quality checklist, and writes an LLM-PE-NNN finding with the specific contradictory lines cited.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "We ask the model to 'respond in JSON' in free text and then JSON.parse the result - is that risky?",
+      "expected_output": "Flags this as a structured-output handling gap, recommends a provider structured-output/function-calling mode, and checks whether a fallback exists for malformed output today.",
+      "files": []
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+[
+  {
+    "id": "NG-SERVE-IN-DEPLOY",
+    "pattern": "\\bng['\"]?,?\\s*['\"]?serve\\b",
+    "globs": ["Dockerfile*", "*.dockerfile", "*.yml", "*.yaml", "*.sh"],
+    "severity_hint": "High",
+    "description": "Angular dev server used in a container/deployment definition",
+    "reference": "CWE-489"
+  },
+  {
+    "id": "FE-NPM-START-CMD",
+    "pattern": "^\\s*(CMD|ENTRYPOINT)\\s+.*\\bnpm\\b.*\\b(start|serve)\\b",
+    "globs": ["Dockerfile*", "*.dockerfile"],
+    "severity_hint": "Medium",
+    "description": "npm start/serve as container command - usually the dev server for an SPA",
+    "reference": "CWE-489"
+  },
+  {
+    "id": "FE-NODE-STATIC-SERVER",
+    "pattern": "\\bhttp-server\\b|\\bserve\\s+-s\\b",
+    "globs": ["Dockerfile*", "*.dockerfile"],
+    "severity_hint": "Low",
+    "description": "Node static server for SPA output - prefer nginx/caddy or a CDN",
+    "reference": "CIS-Docker-4.3"
+  },
+  {
+    "id": "NG-BUILD-DEV-CONFIG",
+    "pattern": "ng\\s+build\\b.*--configuration[= ](development|dev)\\b",
+    "globs": ["Dockerfile*", "*.dockerfile", "*.yml", "*.yaml", "*.sh"],
+    "severity_hint": "Medium",
+    "description": "Development build configuration used for a deployable image",
+    "reference": "CWE-489"
+  },
+  {
+    "id": "FE-NGINX-ROOT-IMAGE",
+    "pattern": "^\\s*FROM\\s+(--platform=\\S+\\s+)?nginx(:|\\s|$)",
+    "globs": ["Dockerfile*", "*.dockerfile"],
+    "severity_hint": "Low",
+    "description": "Stock nginx image (root master, port 80) - consider nginxinc/nginx-unprivileged",
+    "reference": "CIS-Docker-4.1"
+  }
+]

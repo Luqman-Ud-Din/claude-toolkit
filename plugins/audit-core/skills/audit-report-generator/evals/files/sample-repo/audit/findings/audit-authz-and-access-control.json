@@ -1,0 +1,51 @@
+{
+  "skill": "audit-authz-and-access-control",
+  "generated_at": "2026-09-10T09:00:00Z",
+  "target": {"root": ".", "commit": "3f2a1c9"},
+  "stack": {"primary_backend": "dotnet", "primary_frontend": "angular"},
+  "scope": {
+    "checked": ["all controllers under Api/Controllers", "Ocelot routes in ocelotconfig.json", "Hangfire job registrations"],
+    "not_checked": [{"item": "SignalR hubs", "reason": "hub authorization requires a running instance"}]
+  },
+  "findings": [
+    {
+      "id": "AUTHZ-001",
+      "title": "Company admin endpoints reachable without authentication",
+      "severity": "Critical",
+      "confidence": "confirmed",
+      "location": {"file": "Api/Controllers/CompanyAdminController.cs", "line": 18, "symbol": "CompanyAdminController"},
+      "evidence": "[AllowAnonymous]\n[Route(\"api/[controller]\")]\npublic class CompanyAdminController : ControllerBase\n{\n    [HttpPost(\"DeleteCompany\")]\n    public async Task<IActionResult> DeleteCompany(int companyId) => ...\n    [HttpPost(\"ResetOwnerPassword\")]\n    public async Task<IActionResult> ResetOwnerPassword(int companyId, string newPassword) => ...\n}",
+      "impact": "Anyone on the internet can delete any customer's company or reset its owner's password without logging in. Rated Critical: no precondition, total loss of tenant data and account takeover.",
+      "remediation": "Remove [AllowAnonymous]; add [Authorize(Roles = CustomRoles.SuperAdmin)] on the class and verify the caller's claims in each action. Add an integration test that calls both endpoints without a token and expects 401.",
+      "references": ["CWE-306", "ASVS-4.1.1", "OWASP-A07:2021"],
+      "tags": ["unauthenticated", "admin"]
+    },
+    {
+      "id": "AUTHZ-002",
+      "title": "Order lookup has no ownership check",
+      "severity": "High",
+      "confidence": "confirmed",
+      "location": {"file": "Api/Controllers/OrdersController.cs", "line": 41, "symbol": "GetOrder"},
+      "evidence": "var order = await _db.Orders.FindAsync(id); // id from route, no CompanyId/BranchId filter",
+      "impact": "Any authenticated customer can read every other customer's orders by changing the id in the URL.",
+      "remediation": "Filter by CompanyId and BranchId from the token claims in the base repository so every FindAsync inherits the filter; return 404 on mismatch.",
+      "references": ["CWE-639", "ASVS-4.2.1", "OWASP-A01:2021"],
+      "tags": ["idor"],
+      "root_cause_key": "base-repository:missing-tenant-filter"
+    },
+    {
+      "id": "AUTHZ-003",
+      "title": "Invoice lookup has no ownership check",
+      "severity": "High",
+      "confidence": "confirmed",
+      "location": {"file": "Api/Controllers/InvoicesController.cs", "line": 55, "symbol": "GetInvoice"},
+      "evidence": "var invoice = await _db.Invoices.FindAsync(id);",
+      "impact": "Same root cause as AUTHZ-002: any authenticated user can read other customers' invoices.",
+      "remediation": "Fixed by the base repository change in AUTHZ-002.",
+      "references": ["CWE-639", "ASVS-4.2.1", "OWASP-A01:2021"],
+      "tags": ["idor"],
+      "root_cause_key": "base-repository:missing-tenant-filter"
+    }
+  ],
+  "summary": {"Critical": 1, "High": 2, "Medium": 0, "Low": 0, "Info": 0}
+}

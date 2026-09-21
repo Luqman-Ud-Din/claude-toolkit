@@ -1,0 +1,98 @@
+[
+  {
+    "id": "PII-PY-LOG-VALUE",
+    "pattern": "\\b(?:logger|log|logging)\\.(?:info|debug|warning|error|exception|critical)\\s*\\([^)]*\\b(?:email|phone|mobile|first_name|last_name|full_name|address|dob|date_of_birth|ssn|national_id|iban|card_number|password)\\b",
+    "globs": ["*.py"],
+    "severity_hint": "High",
+    "description": "Logging call whose message or arguments include a PII field (f-strings and %-formatting both ship the value)",
+    "reference": "CWE-532"
+  },
+  {
+    "id": "PII-PY-PRINT-PII",
+    "pattern": "\\bprint\\s*\\([^)]*\\b(?:email|phone|mobile|first_name|last_name|address|ssn|password)\\b",
+    "globs": ["*.py"],
+    "severity_hint": "Medium",
+    "description": "print() of a PII value - ends up in container/stdout logs",
+    "reference": "CWE-532"
+  },
+  {
+    "id": "PII-PY-LOG-REQUEST-DATA",
+    "pattern": "\\b(?:logger|log|logging)\\.\\w+\\s*\\([^)]*request\\.(?:POST|GET|data|body|META)\\b",
+    "globs": ["*.py"],
+    "severity_hint": "High",
+    "description": "Whole request payload logged - includes every submitted field",
+    "reference": "CWE-532"
+  },
+  {
+    "id": "PII-PY-CACHE-KEY",
+    "pattern": "cache\\.(?:set|get|add|delete|get_or_set)\\s*\\(\\s*f?['\"][^'\"]*\\{?[^'\"]*(?:email|phone|mobile|username)\\b|cache_key\\s*=\\s*f?['\"][^'\"]*(?:email|phone|mobile)",
+    "globs": ["*.py"],
+    "severity_hint": "Medium",
+    "description": "PII interpolated into a Django cache key",
+    "reference": "CWE-359"
+  },
+  {
+    "id": "PII-PY-OUTBOUND-HTTP",
+    "pattern": "\\b(?:requests|httpx|session|client)\\.(?:post|put|patch|get)\\s*\\(\\s*f?['\"]https?://|urlopen\\s*\\(\\s*f?['\"]https?://",
+    "globs": ["*.py"],
+    "severity_hint": "Info",
+    "description": "Outbound HTTP call to a literal URL - third-party endpoint; inspect json=/data= payload",
+    "reference": "GDPR-Art.28"
+  },
+  {
+    "id": "PII-PY-THIRD-PARTY-SDK",
+    "pattern": "^\\s*(?:import|from)\\s+(?:sendgrid|twilio|mailchimp_marketing|mailchimp3|stripe|sentry_sdk|mixpanel|analytics|segment|posthog|hubspot|intercom|boto3|firebase_admin|anymail)\\b",
+    "globs": ["*.py"],
+    "severity_hint": "Info",
+    "description": "Third-party SDK import - a processor for the inventory",
+    "reference": "GDPR-Art.28"
+  },
+  {
+    "id": "PII-PY-SENTRY-SEND-PII",
+    "pattern": "send_default_pii\\s*=\\s*True",
+    "globs": ["*.py"],
+    "severity_hint": "Medium",
+    "description": "sentry_sdk.init(send_default_pii=True) attaches user id/email/IP and request bodies to every event",
+    "reference": "CWE-359"
+  },
+  {
+    "id": "PII-PY-EMAIL-SEND",
+    "pattern": "\\b(?:send_mail|send_mass_mail|EmailMessage|EmailMultiAlternatives|mail_admins|mail_managers)\\s*\\(",
+    "globs": ["*.py"],
+    "severity_hint": "Info",
+    "description": "Django email send - transmission of contact data via EMAIL_BACKEND (check which provider)",
+    "reference": "GDPR-Art.30"
+  },
+  {
+    "id": "PII-PY-PII-IN-URL-OR-QUERY",
+    "pattern": "(?:path|re_path|url)\\s*\\(\\s*r?['\"][^'\"]*<(?:str:|slug:)?(?:email|phone|mobile|ssn|iban)>|request\\.GET\\.get\\s*\\(\\s*['\"](?:email|phone|mobile|ssn|iban)['\"]",
+    "globs": ["*.py"],
+    "severity_hint": "Medium",
+    "description": "PII in a URL pattern or GET parameter",
+    "reference": "CWE-598"
+  },
+  {
+    "id": "PII-PY-MODEL-PII-FIELD",
+    "pattern": "^\\s*(?:email|phone|mobile|first_name|last_name|full_name|address|dob|date_of_birth|ssn|national_id|iban|card_number)\\w*\\s*=\\s*models\\.\\w+Field\\(",
+    "globs": ["models.py", "models/*.py", "*.py"],
+    "severity_hint": "Info",
+    "description": "PII field on a Django model - a storage location",
+    "reference": "GDPR-Art.30"
+  },
+  {
+    "id": "PII-PY-SERIALIZER-FIELDS-ALL",
+    "pattern": "fields\\s*=\\s*['\"]__all__['\"]",
+    "globs": ["serializers.py", "*.py"],
+    "severity_hint": "Low",
+    "description": "DRF serializer exposes every model field - any PII column is returned to every caller",
+    "reference": "CWE-359"
+  },
+  {
+    "id": "PII-PY-TEMPLATE-PLACEHOLDER",
+    "pattern": "\\{\\{\\s*(?:user\\.|customer\\.|profile\\.)?(?:email|phone|mobile|first_name|last_name|full_name|get_full_name|address)\\s*\\}\\}",
+    "globs": ["*.html", "*.txt", "*.jinja", "*.jinja2", "*.j2"],
+    "severity_hint": "Info",
+    "description": "PII placeholder in a Django/Jinja notification template",
+    "reference": "GDPR-Art.30"
+  }
+]

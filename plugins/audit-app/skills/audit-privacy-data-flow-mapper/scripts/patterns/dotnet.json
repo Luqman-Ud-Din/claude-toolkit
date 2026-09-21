@@ -1,0 +1,90 @@
+[
+  {
+    "id": "PII-DOTNET-LOG-VALUE",
+    "pattern": "_?logger\\.Log(?:Information|Debug|Warning|Error|Critical|Trace)\\s*\\([^;]*\\{?(?:Email|Phone|Mobile|FirstName|LastName|FullName|Address|Dob|DateOfBirth|Ssn|Cnic|Iban|CardNumber|Password)\\b",
+    "globs": ["*.cs"],
+    "severity_hint": "High",
+    "description": "ILogger call whose template or arguments include a PII property; structured placeholders still ship the value to the sink",
+    "reference": "CWE-532"
+  },
+  {
+    "id": "PII-DOTNET-LOG-SERIALIZED-OBJECT",
+    "pattern": "Log(?:Information|Debug|Warning|Error)\\s*\\([^;]*(?:JsonConvert\\.SerializeObject|JsonSerializer\\.Serialize)\\s*\\(",
+    "globs": ["*.cs"],
+    "severity_hint": "High",
+    "description": "Whole object serialised into a log line - every property, including PII, is written",
+    "reference": "CWE-532"
+  },
+  {
+    "id": "PII-DOTNET-SERILOG-DESTRUCTURE",
+    "pattern": "Log\\w*\\([^;]*\\{@\\w+\\}",
+    "globs": ["*.cs"],
+    "severity_hint": "Medium",
+    "description": "Serilog destructuring operator {@obj} logs every property of the object; check for PII members or a destructuring policy that masks them",
+    "reference": "CWE-532"
+  },
+  {
+    "id": "PII-DOTNET-CACHE-KEY",
+    "pattern": "(?:_cache|_distributedCache|_memoryCache|cache)\\.(?:Set|SetString|SetStringAsync|SetAsync|GetOrCreate|GetOrCreateAsync|GetString|GetStringAsync|Get|GetAsync)\\s*\\(\\s*\\$?\"[^\"]*\\{[^}]*(?:Email|Phone|Mobile|Name|Cnic|Ssn|Iban)\\b",
+    "globs": ["*.cs"],
+    "severity_hint": "Medium",
+    "description": "PII interpolated into a cache key (visible in Redis KEYS, monitoring dashboards and cache logs)",
+    "reference": "CWE-359"
+  },
+  {
+    "id": "PII-DOTNET-OUTBOUND-HTTP",
+    "pattern": "(?:PostAsJsonAsync|PutAsJsonAsync|PostAsync|PutAsync|PatchAsync|SendAsync|ExecuteAsync)\\s*\\(\\s*\\$?\"?https?://",
+    "globs": ["*.cs"],
+    "severity_hint": "Info",
+    "description": "Outbound HTTP call with a literal URL - a third-party endpoint; inspect the payload builder above it",
+    "reference": "GDPR-Art.28"
+  },
+  {
+    "id": "PII-DOTNET-THIRD-PARTY-SDK",
+    "pattern": "\\b(?:SendGridClient|TwilioClient|MessageResource\\.Create|MailchimpClient|StripeClient|TelemetryClient|SentrySdk|Intercom|HubSpot|ShopifySharp|DriveService|AmazonS3Client|BlobContainerClient)\\b",
+    "globs": ["*.cs"],
+    "severity_hint": "Info",
+    "description": "Third-party SDK in use - a processor for the inventory; find the fields passed to it",
+    "reference": "GDPR-Art.28"
+  },
+  {
+    "id": "PII-DOTNET-APPINSIGHTS-CUSTOM-PROPS",
+    "pattern": "Track(?:Event|Trace|Exception)\\s*\\([^;]*(?:Email|Phone|Name|UserName)\\b",
+    "globs": ["*.cs"],
+    "severity_hint": "Medium",
+    "description": "Application Insights custom property carrying PII",
+    "reference": "CWE-359"
+  },
+  {
+    "id": "PII-DOTNET-PII-IN-ROUTE-OR-QUERY",
+    "pattern": "\\[Http(?:Get|Delete)\\s*\\(\\s*\"[^\"]*\\{(?:email|phone|mobile|cnic|ssn|iban)\\}|\\[FromQuery\\][^,)]*\\b(?:email|phone|mobile|cnic|ssn|iban)\\b",
+    "globs": ["*.cs"],
+    "severity_hint": "Medium",
+    "description": "PII accepted in the URL path or query string - lands in access logs, proxies and browser history",
+    "reference": "CWE-598"
+  },
+  {
+    "id": "PII-DOTNET-ENTITY-PII-PROPERTY",
+    "pattern": "public\\s+(?:virtual\\s+)?(?:string|String)\\??\\s+(?:Email|EmailAddress|Phone|PhoneNumber|Mobile|MobileNo|FirstName|LastName|FullName|Address|Address1|Cnic|Ssn|NationalId|PassportNo|Iban|CardNumber|Dob)\\s*\\{\\s*get;",
+    "globs": ["*.cs"],
+    "severity_hint": "Info",
+    "description": "PII property on a class - a storage location if the class is an EF entity, a collection point if it is a request DTO",
+    "reference": "GDPR-Art.30"
+  },
+  {
+    "id": "PII-DOTNET-EMAIL-SEND",
+    "pattern": "\\b(?:SmtpClient|MailMessage|SendMailAsync|SendEmailAsync|SendSmsAsync|MailKit|SmsSender)\\b",
+    "globs": ["*.cs"],
+    "severity_hint": "Info",
+    "description": "Email/SMS send path - a transmission of contact data; note the provider and the template used",
+    "reference": "GDPR-Art.30"
+  },
+  {
+    "id": "PII-DOTNET-TEMPLATE-PLACEHOLDER",
+    "pattern": "@Model\\.(?:Email|Phone|Mobile|FirstName|LastName|FullName|Address|Cnic)|\\{\\{\\s*(?:email|phone|mobile|first_?name|last_?name|full_?name|address)\\s*\\}\\}",
+    "globs": ["*.cshtml", "*.html", "*.txt", "*.razor"],
+    "severity_hint": "Info",
+    "description": "PII placeholder in an email/SMS/notification template",
+    "reference": "GDPR-Art.30"
+  }
+]

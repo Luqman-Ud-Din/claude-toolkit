@@ -1,0 +1,24 @@
+{
+  "name": "sample-inventory-ui",
+  "version": "1.4.0",
+  "scripts": {
+    "start": "ng serve",
+    "build": "ng build",
+    "build:prod": "ng build --configuration production",
+    "lint": "ng lint",
+    "test": "ng test"
+  },
+  "dependencies": {
+    "@angular/common": "^19.2.0",
+    "@angular/core": "^19.2.0",
+    "@angular/router": "^19.2.0",
+    "lodash": "^4.17.21",
+    "moment": "^2.30.1",
+    "rxjs": "~7.8.0"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "^19.2.0",
+    "@angular/cli": "^19.2.0",
+    "typescript": "~5.7.2"
+  }
+}

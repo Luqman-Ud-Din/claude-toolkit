@@ -1,0 +1,64 @@
+{
+  "skill_name": "audit-licensing-and-compliance",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "We're about to ship the app in evals/files/sample-repo as a closed-source product. Can you check all our third-party licences and tell me if anything is a problem? Use evals/files/sample-repo/fake-nuget-cache as the NuGet cache.",
+      "expected_output": "license_inventory.py is run with --model proprietary and --nuget-cache pointing at the fixture cache. The inventory lists 11 packages. pdf-render-agpl (AGPL-3.0) is flagged as incompatible (High); tiny-widget (no license field), Acme.Reporting.Engine (not in cache), @angular/core (no node_modules entry) and the base image are unknown (Medium); chart-bindings (LGPL-3.0) is review (Medium); express, lodash, Newtonsoft.Json and Serilog are attribution-only and not flagged individually; a Medium finding notes that no notices file exists; THIRD-PARTY-NOTICES.md is generated under audit/evidence. The grep pass additionally flags the vendored GPL header in web/src/vendor/legacy-date-parser.js and not the MIT SPDX tag in web/src/main.ts.",
+      "files": [
+        "evals/files/sample-repo/web/package.json",
+        "evals/files/sample-repo/web/node_modules/pdf-render-agpl/package.json",
+        "evals/files/sample-repo/web/node_modules/tiny-widget/package.json",
+        "evals/files/sample-repo/web/node_modules/express/package.json",
+        "evals/files/sample-repo/web/node_modules/lodash/package.json",
+        "evals/files/sample-repo/web/node_modules/chart-bindings/package.json",
+        "evals/files/sample-repo/web/src/vendor/legacy-date-parser.js",
+        "evals/files/sample-repo/web/src/main.ts",
+        "evals/files/sample-repo/Api/Api.csproj",
+        "evals/files/sample-repo/fake-nuget-cache/newtonsoft.json/13.0.3/newtonsoft.json.nuspec",
+        "evals/files/sample-repo/fake-nuget-cache/serilog/4.0.0/serilog.nuspec",
+        "evals/files/sample-repo/Dockerfile"
+      ],
+      "expectations": [
+        "pdf-render-agpl is reported as AGPL-3.0 and incompatible with a proprietary product, in a High finding",
+        "tiny-widget is reported as having no licence field / unknown licence in a Medium finding",
+        "chart-bindings (LGPL-3.0) is reported as needing review, not as incompatible",
+        "express, lodash, Newtonsoft.Json and Serilog are listed in the inventory as MIT/Apache-2.0 and are not individual findings",
+        "A finding reports that attribution (a NOTICE / THIRD-PARTY file) is missing",
+        "THIRD-PARTY-NOTICES.md is generated under audit/evidence/audit-licensing-and-compliance and lists express with its copyright line",
+        "The vendored GPL header in web/src/vendor/legacy-date-parser.js is flagged and web/src/main.ts (MIT SPDX tag) is not",
+        "The report states that transitive dependencies and container image contents were not checked"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "generate the third party notices file for evals/files/sample-repo - do we even need one?",
+      "expected_output": "Explains that MIT/BSD/Apache licences require reproducing the copyright and licence text, so yes; runs the inventory, produces audit/evidence/audit-licensing-and-compliance/THIRD-PARTY-NOTICES.md listing every runtime package (not devDependencies like typescript) with licence and copyright/source line, and points out that unknown-licence packages appear with a 'resolve before release' marker.",
+      "files": [
+        "evals/files/sample-repo/web/package.json",
+        "evals/files/sample-repo/web/node_modules/express/package.json",
+        "evals/files/sample-repo/web/node_modules/express/LICENSE",
+        "evals/files/sample-repo/Api/Api.csproj"
+      ],
+      "expectations": [
+        "Answer explains why a notices file is required (attribution clauses of permissive licences)",
+        "THIRD-PARTY-NOTICES.md is written under audit/evidence and never into the repository root",
+        "The notices file includes express with a copyright line taken from its LICENSE file",
+        "The notices file excludes devDependencies (typescript)",
+        "Unknown-licence packages are marked as needing resolution rather than silently omitted"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Our backend is SaaS only, nothing is shipped to customers. Does the AGPL package in evals/files/sample-repo/web still matter? And what about the LGPL one?",
+      "expected_output": "Two-part answer from references/license-compatibility-matrix.md: AGPL is incompatible even for SaaS because network use counts as distribution (section 13); and the web folder is a frontend bundle, which is always distributed, so it must be assessed as proprietary anyway. LGPL used unmodified via npm is a 'review' item - normally acceptable when the library stays replaceable, but bundled into a minified client it needs a documented decision. Optionally re-runs with --model saas to show the AGPL verdict is unchanged.",
+      "files": ["evals/files/sample-repo/web/package.json", "evals/files/sample-repo/web/node_modules/pdf-render-agpl/package.json", "evals/files/sample-repo/web/node_modules/chart-bindings/package.json"],
+      "expectations": [
+        "Answer states AGPL remains incompatible under the SaaS model and explains the network-use clause",
+        "Answer points out that the frontend bundle is distributed and must be treated as proprietary",
+        "Answer describes LGPL as a review item, not an automatic blocker, with the condition (unmodified, replaceable)",
+        "Answer does not claim to be legal advice and suggests recording the decision"
+      ]
+    }
+  ]
+}

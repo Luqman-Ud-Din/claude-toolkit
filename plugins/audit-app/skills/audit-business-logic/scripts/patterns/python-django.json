@@ -1,0 +1,50 @@
+[
+  {
+    "id": "MONEY-FLOAT",
+    "pattern": "FloatField\\(|float\\(\\s*[^)]*(amount|price|total|discount|balance)|Decimal\\(\\s*\\d+\\.\\d+\\s*\\)|\\bround\\(\\s*\\w*(amount|price|total|discount)\\w*\\s*,\\s*2\\s*\\)",
+    "globs": ["*.py"],
+    "severity_hint": "High",
+    "description": "Money as FloatField/float, Decimal built from a float literal, or round() on money; use DecimalField + quantize with an explicit mode",
+    "reference": "CWE-682"
+  },
+  {
+    "id": "STATE-SWITCH",
+    "pattern": "if\\s+\\w+\\.(status|state)\\s*(==|!=|in\\b)|match\\s+\\w+\\.(status|state)\\s*:",
+    "globs": ["*.py"],
+    "severity_hint": "Info",
+    "description": "State-transition decision; map to the state diagram and check for a single transition table",
+    "reference": "CWE-841"
+  },
+  {
+    "id": "STATE-ASSIGN",
+    "pattern": "\\.(status|state)\\s*=\\s*(\\w+\\.)?(Status|State|STATUS)\\.\\w+|\\.(status|state)\\s*=\\s*['\"](paid|shipped|cancelled|canceled|completed|refunded|approved)['\"]",
+    "globs": ["*.py"],
+    "severity_hint": "Info",
+    "description": "Status written directly; verify a transition guard precedes it",
+    "reference": "CWE-841"
+  },
+  {
+    "id": "DISCOUNT-APPLY",
+    "pattern": "\\bdef\\s+(apply|add|use|redeem)_?(discount|coupon|promo|voucher)|\\.(total|grand_total|amount|subtotal)\\s*-=\\s*|\\.(total|grand_total|amount)\\s*=\\s*\\w+\\.(total|grand_total|amount)\\s*-\\s*",
+    "globs": ["*.py"],
+    "severity_hint": "High",
+    "description": "Discount application or incremental total mutation; check it cannot run twice per order",
+    "reference": "CWE-840"
+  },
+  {
+    "id": "SERIALIZER-ALL",
+    "pattern": "fields\\s*=\\s*['\"]__all__['\"]|objects\\.create\\(\\s*\\*\\*request\\.data",
+    "globs": ["*.py"],
+    "severity_hint": "Medium",
+    "description": "Serializer exposes every model field or request data persisted wholesale; status/total/role may be client-writable",
+    "reference": "CWE-915"
+  },
+  {
+    "id": "ADMIN-OVERRIDE",
+    "pattern": "def\\s+(force|override|mark_as|manual)_?(paid|approve|complete|cancel|adjust)|impersonat",
+    "globs": ["*.py"],
+    "severity_hint": "Medium",
+    "description": "Admin override or impersonation path; verify audit trail and limits",
+    "reference": "CWE-840"
+  }
+]

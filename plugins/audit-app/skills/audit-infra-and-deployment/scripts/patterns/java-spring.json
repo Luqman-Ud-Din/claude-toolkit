@@ -1,0 +1,58 @@
+[
+  {
+    "id": "JAVA-BUILD-OR-JDK-IMAGE",
+    "pattern": "^\\s*FROM\\s+(--platform=\\S+\\s+)?\\S*(maven|gradle|jdk)\\S*",
+    "globs": ["Dockerfile*", "*.dockerfile"],
+    "severity_hint": "Medium",
+    "description": "Maven/Gradle/JDK image - acceptable only in a build stage; runtime should be a JRE or distroless image",
+    "reference": "CIS-Docker-4.3"
+  },
+  {
+    "id": "JVM-HARD-XMX",
+    "pattern": "-Xmx\\d+[kKmMgG]\\b",
+    "globs": ["Dockerfile*", "*.dockerfile", "*.yml", "*.yaml", "*.sh"],
+    "severity_hint": "Low",
+    "description": "Hard-coded heap size - compare with the container memory limit; prefer -XX:MaxRAMPercentage",
+    "reference": "CWE-770"
+  },
+  {
+    "id": "JDWP-DEBUG-PORT",
+    "pattern": "agentlib:jdwp|-Xrunjdwp",
+    "globs": ["Dockerfile*", "*.dockerfile", "*.yml", "*.yaml", "*.sh", "*.properties"],
+    "severity_hint": "High",
+    "description": "Remote JVM debugger enabled in a container or deployment",
+    "reference": "CWE-489"
+  },
+  {
+    "id": "ACTUATOR-EXPOSE-ALL",
+    "pattern": "management\\.endpoints\\.web\\.exposure\\.include\\s*[=:]\\s*['\"]?\\*|^\\s*include:\\s*['\"]\\*['\"]",
+    "globs": ["*.properties", "*.yml", "*.yaml"],
+    "severity_hint": "High",
+    "description": "All actuator endpoints exposed (env, heapdump, threaddump)",
+    "reference": "CWE-215; OWASP-A05:2021"
+  },
+  {
+    "id": "SPRING-DATASOURCE-PASSWORD-LITERAL",
+    "pattern": "SPRING_DATASOURCE_PASSWORD['\"]?\\s*[=:]\\s*['\"]?[^$\\s'\"{]{3,}|spring\\.datasource\\.password\\s*=\\s*[^$\\s{]{3,}",
+    "globs": ["Dockerfile*", "*.dockerfile", "*.yml", "*.yaml", "*.env", "*.properties"],
+    "severity_hint": "High",
+    "description": "Datasource password as a literal",
+    "reference": "CWE-798"
+  },
+  {
+    "id": "SPRING-DEV-PROFILE",
+    "pattern": "SPRING_PROFILES_ACTIVE['\"]?\\s*[=:]\\s*['\"]?(dev|local|test)\\b",
+    "globs": ["Dockerfile*", "*.dockerfile", "*.yml", "*.yaml"],
+    "severity_hint": "Medium",
+    "description": "Non-production Spring profile in an image or manifest",
+    "reference": "CWE-489"
+  },
+  {
+    "id": "FAT-JAR-SINGLE-LAYER",
+    "pattern": "^\\s*COPY\\s+\\S*(target|build/libs)/\\S*\\.jar",
+    "globs": ["Dockerfile*", "*.dockerfile"],
+    "severity_hint": "Info",
+    "description": "Fat jar copied as one layer - consider layered jar extraction",
+    "reference": "Spring Boot Efficient Container Images"
+  }
+]

@@ -1,0 +1,82 @@
+[
+  {
+    "id": "LOCAL-NOW",
+    "pattern": "datetime\\.now\\(\\)|datetime\\.today\\(\\)|date\\.today\\(\\)|datetime\\.utcnow\\(\\)|\\.fromtimestamp\\(|time\\.localtime\\(|timezone\\.now\\(\\)\\.date\\(\\)|timezone\\.localdate\\(\\)",
+    "globs": ["*.py"],
+    "severity_hint": "Medium",
+    "description": "Naive/local now, naive utcnow, or UTC-date-as-today; confirm the decision it feeds and the expected zone",
+    "reference": "CWE-682"
+  },
+  {
+    "id": "NAIVE-CTOR",
+    "pattern": "datetime\\(\\s*\\d{4}\\s*,(?![^)]*tzinfo)|datetime\\.strptime\\((?![^)]*%z)|dateutil\\.parser\\.parse\\(|parser\\.parse\\(|fromisoformat\\(\\s*\\w+\\.(GET|POST|data|query_params)",
+    "globs": ["*.py"],
+    "severity_hint": "Medium",
+    "description": "Naive datetime constructed or parsed without tzinfo/%z; check comparisons with aware fields",
+    "reference": "CWE-704"
+  },
+  {
+    "id": "MAKE-AWARE-SCATTER",
+    "pattern": "make_aware\\(|make_naive\\(|\\.replace\\(\\s*tzinfo\\s*=|\\.astimezone\\(\\)",
+    "globs": ["*.py"],
+    "severity_hint": "Low",
+    "description": "Zone conversion inside business code (or astimezone() with no zone = local); should live at the edge",
+    "reference": "CWE-704"
+  },
+  {
+    "id": "NON-ISO-FORMAT",
+    "pattern": "strftime\\(\\s*['\"]%(d|m)[/.-]%(m|d)[/.-]%[Yy]|strftime\\(\\s*['\"]%Y-%m-%d %H:%M(:%S)?['\"]\\s*\\)|DATETIME_FORMAT\\s*=\\s*['\"][^'\"]*%|\\|date:\\s*['\"](d/m|m/d)",
+    "globs": ["*.py", "*.html"],
+    "severity_hint": "Medium",
+    "description": "Non-ISO or offset-less date format; check whether it reaches an API, DB, or file that is later parsed",
+    "reference": "CWE-20"
+  },
+  {
+    "id": "USE-TZ-OFF",
+    "pattern": "USE_TZ\\s*=\\s*False|enable_utc\\s*=\\s*False|CELERY_ENABLE_UTC\\s*=\\s*False",
+    "globs": ["*.py"],
+    "severity_hint": "High",
+    "description": "Timezone support disabled; every datetime is naive in TIME_ZONE",
+    "reference": "CWE-704"
+  },
+  {
+    "id": "CRON-NO-ZONE",
+    "pattern": "crontab\\((?![^)]*tz)|CronTrigger\\((?![^)]*timezone)|beat_schedule|CRONJOBS\\s*=",
+    "globs": ["*.py"],
+    "severity_hint": "Low",
+    "description": "Celery/APScheduler/django-crontab schedule; verify the zone setting (CELERY_TIMEZONE / timezone=) is explicit",
+    "reference": "CWE-682"
+  },
+  {
+    "id": "DAY-MATH",
+    "pattern": "timedelta\\(\\s*days\\s*=\\s*1\\s*\\)|relativedelta\\(\\s*months\\s*=\\s*\\+?1\\s*\\)|__date\\s*=|TruncDay\\((?![^)]*tzinfo)|TruncMonth\\((?![^)]*tzinfo)",
+    "globs": ["*.py"],
+    "severity_hint": "Low",
+    "description": "Calendar arithmetic or day grouping; verify zone (Trunc* without tzinfo uses the current zone) and DST",
+    "reference": "CWE-682"
+  },
+  {
+    "id": "COLUMN-NO-TZ",
+    "pattern": "Column\\(\\s*DateTime\\s*(\\)|,(?![^)]*timezone\\s*=\\s*True))|\\bTIMESTAMP\\b(?!\\s*WITH TIME ZONE)|\\bDATETIME\\b|default\\s*=\\s*datetime\\.now\\b",
+    "globs": ["*.py", "*.sql"],
+    "severity_hint": "Medium",
+    "description": "Zone-less column or naive default in SQLAlchemy/SQL/Django model",
+    "reference": "CWE-704"
+  },
+  {
+    "id": "PYTZ-TZINFO",
+    "pattern": "tzinfo\\s*=\\s*pytz\\.|pytz\\.timezone\\(",
+    "globs": ["*.py"],
+    "severity_hint": "Low",
+    "description": "pytz usage; tzinfo=pytz.timezone(...) gives LMT offsets, use localize() or zoneinfo",
+    "reference": "CWE-682"
+  },
+  {
+    "id": "TEST-REAL-TIME",
+    "pattern": "datetime\\.now\\(\\)|timezone\\.now\\(\\)|date\\.today\\(\\)|time\\.sleep\\(",
+    "globs": ["test_*.py", "*_test.py", "tests.py", "conftest.py"],
+    "severity_hint": "Low",
+    "description": "Test uses real time; use freezegun/time_machine",
+    "reference": "CWE-682"
+  }
+]

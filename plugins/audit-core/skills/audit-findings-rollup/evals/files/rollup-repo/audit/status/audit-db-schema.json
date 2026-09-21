@@ -1,0 +1,1 @@
+{"skill": "audit-db-schema", "status": "skipped", "reason": "no migrations or DDL in the repository", "started_at": "2026-09-10T10:07:00Z", "finished_at": "2026-09-10T10:07:02Z"}

@@ -1,0 +1,50 @@
+[
+  {
+    "id": "LOG-FE-CONSOLE-SENSITIVE",
+    "pattern": "\\bconsole\\.(?:log|info|debug|warn|error)\\(.*\\b\\w*(?:token|password|jwt|authorization|refreshToken|accessToken|secret)\\b(?!\\s*(?:reset|policy|expir))",
+    "globs": ["*.vue", "*.js", "*.ts"],
+    "severity_hint": "High",
+    "description": "Token/password written to the browser console",
+    "reference": "CWE-532"
+  },
+  {
+    "id": "LOG-FE-CORRELATION-MARKER",
+    "pattern": "x-correlation-id|x-request-id|traceparent|propagateTraceHeaderCorsUrls|instrumentation-fetch|onRequest\\s*\\(|interceptors\\.request\\.use",
+    "globs": ["*.vue", "*.js", "*.ts"],
+    "severity_hint": "Info",
+    "description": "Frontend starts the correlation chain. ZERO hits means requests leave the app with no correlation/trace header",
+    "reference": "CWE-778"
+  },
+  {
+    "id": "LOG-FE-ERROR-HANDLER",
+    "pattern": "app\\.config\\.errorHandler|errorCaptured|onErrorCaptured|Sentry\\.init|vue:error",
+    "globs": ["*.vue", "*.js", "*.ts"],
+    "severity_hint": "Info",
+    "description": "Global error handler / tracker marker. ZERO hits means client errors are never reported",
+    "reference": "CWE-778"
+  },
+  {
+    "id": "LOG-FE-PINIA-LOGGER",
+    "pattern": "pinia-logger|createLogger\\(|PiniaLogger",
+    "globs": ["*.vue", "*.js", "*.ts"],
+    "severity_hint": "Medium",
+    "description": "Store logger prints state (tokens, profile) - confirm dev-only",
+    "reference": "CWE-532"
+  },
+  {
+    "id": "LOG-FE-SENTRY-PII",
+    "pattern": "sendDefaultPii\\s*:\\s*true",
+    "globs": ["*.vue", "*.js", "*.ts"],
+    "severity_hint": "Medium",
+    "description": "Error tracker configured to send PII by default",
+    "reference": "CWE-532"
+  },
+  {
+    "id": "LOG-FE-CONSOLE",
+    "pattern": "\\bconsole\\.(?:log|debug|info)\\(",
+    "globs": ["*.vue", "*.js", "*.ts"],
+    "severity_hint": "Low",
+    "description": "console.* left in production code",
+    "reference": "CWE-489"
+  }
+]

@@ -1,0 +1,44 @@
+{
+  "skill": "audit-performance-and-scalability",
+  "generated_at": "2026-09-11T12:23:32.891415+00:00",
+  "target": {
+    "root": ".",
+    "commit": null
+  },
+  "stack": {
+    "primary_backend": "dotnet",
+    "primary_frontend": "angular"
+  },
+  "scope": {
+    "checked": [
+      "endpoint inventory",
+      "EF query shapes"
+    ],
+    "not_checked": [
+      {
+        "item": "load test",
+        "reason": "no running environment URL"
+      }
+    ]
+  },
+  "findings": [
+    {
+      "id": "PERF-001",
+      "title": "Order lookups have no response caching headers",
+      "severity": "Low",
+      "confidence": "confirmed",
+      "location": {
+        "file": "Inventory.Api/Controllers/OrdersController.cs",
+        "line": 18
+      },
+      "evidence": "Inventory.Api/Controllers/OrdersController.cs:18",
+      "impact": "Repeated lookups hit the database each time.",
+      "remediation": "Add short private caching where safe.",
+      "references": [
+        "CWE-1176"
+      ],
+      "tags": []
+    }
+  ],
+  "summary": {}
+}

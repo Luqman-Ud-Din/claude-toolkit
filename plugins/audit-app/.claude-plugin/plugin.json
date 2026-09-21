@@ -1,0 +1,6 @@
+{
+  "name": "audit-app",
+  "version": "0.1.0",
+  "description": "Pre-production audit of a conventional application: audit-application orchestrator plus 30 topic audits (security, correctness, performance, frontend, readiness, compliance).",
+  "dependencies": ["audit-core"]
+}

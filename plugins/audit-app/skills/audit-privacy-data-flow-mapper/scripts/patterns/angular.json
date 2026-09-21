@@ -1,0 +1,74 @@
+[
+  {
+    "id": "PII-NG-CONSOLE-LOG-PII",
+    "pattern": "console\\.(?:log|info|debug|warn|error)\\s*\\([^;]*\\b(?:email|phone|mobile|firstName|lastName|fullName|address|dob|cnic|password|user|profile|token)\\b",
+    "globs": ["*.ts"],
+    "severity_hint": "Medium",
+    "description": "console.* with a PII or user object - visible in the browser console and captured by error trackers / session replay",
+    "reference": "CWE-532"
+  },
+  {
+    "id": "PII-NG-LOCALSTORAGE-PII",
+    "pattern": "(?:localStorage|sessionStorage)\\.setItem\\s*\\(\\s*['\"][^'\"]*(?:email|phone|user|profile|customer)[^'\"]*['\"]|(?:localStorage|sessionStorage)\\.setItem\\s*\\([^;]*JSON\\.stringify\\s*\\(\\s*(?:user|profile|customer)",
+    "globs": ["*.ts"],
+    "severity_hint": "Medium",
+    "description": "PII / user profile persisted in web storage - a client-side storage location for the inventory (encryption question belongs to audit-client-auth-and-storage)",
+    "reference": "CWE-922"
+  },
+  {
+    "id": "PII-NG-ANALYTICS-CALL",
+    "pattern": "\\b(?:gtag|ga|fbq|mixpanel|amplitude|posthog|analytics|hj|clarity|appInsights|firebase\\.analytics|logEvent|trackEvent|setUserId|setUserProperties|identify)\\s*[.(]",
+    "globs": ["*.ts", "*.html"],
+    "severity_hint": "Info",
+    "description": "Analytics / telemetry call - check the properties object for PII",
+    "reference": "GDPR-Art.28"
+  },
+  {
+    "id": "PII-NG-ANALYTICS-WITH-PII",
+    "pattern": "\\b(?:gtag|mixpanel|amplitude|posthog|analytics|appInsights|logEvent|trackEvent|identify|setUserProperties)\\b[^;]*\\b(?:email|phone|mobile|firstName|lastName|fullName|name)\\s*:",
+    "globs": ["*.ts"],
+    "severity_hint": "High",
+    "description": "Analytics event whose properties include PII - shared with the analytics vendor",
+    "reference": "CWE-359"
+  },
+  {
+    "id": "PII-NG-SENTRY-SET-USER",
+    "pattern": "Sentry\\.setUser\\s*\\(\\s*\\{[^}]*(?:email|username)",
+    "globs": ["*.ts"],
+    "severity_hint": "Medium",
+    "description": "Sentry user context includes email/username",
+    "reference": "CWE-359"
+  },
+  {
+    "id": "PII-NG-PII-IN-QUERY-PARAMS",
+    "pattern": "(?:HttpParams\\(\\)|params)\\.(?:set|append)\\s*\\(\\s*['\"](?:email|phone|mobile|cnic|ssn)['\"]|queryParams\\s*:\\s*\\{[^}]*\\b(?:email|phone|mobile)\\b|[?&](?:email|phone|mobile)=\\$\\{",
+    "globs": ["*.ts"],
+    "severity_hint": "Medium",
+    "description": "PII sent as a query parameter - ends up in server access logs, proxies and browser history",
+    "reference": "CWE-598"
+  },
+  {
+    "id": "PII-NG-THIRD-PARTY-SCRIPT",
+    "pattern": "<script[^>]*src\\s*=\\s*['\"]https?://(?:www\\.googletagmanager\\.com|www\\.google-analytics\\.com|static\\.hotjar\\.com|cdn\\.segment\\.com|js\\.intercomcdn\\.com|widget\\.intercom\\.io|www\\.clarity\\.ms|connect\\.facebook\\.net|cdn\\.mxpnl\\.com|js\\.stripe\\.com)",
+    "globs": ["index.html", "*.html"],
+    "severity_hint": "Info",
+    "description": "Third-party tag loaded in the page - the vendor receives page URLs, IPs and whatever the tag collects",
+    "reference": "GDPR-Art.28"
+  },
+  {
+    "id": "PII-NG-FORM-CONTROL-PII",
+    "pattern": "(?:formControlName|FormControl|fb\\.control|new FormControl)\\s*[=(]?\\s*['\"]?(?:email|phone|mobile|firstName|lastName|fullName|address|dob|cnic|iban|cardNumber)\\b",
+    "globs": ["*.ts", "*.html"],
+    "severity_hint": "Info",
+    "description": "Reactive form control collecting PII - a collection point",
+    "reference": "GDPR-Art.30"
+  },
+  {
+    "id": "PII-NG-MODEL-PII-FIELD",
+    "pattern": "^\\s*(?:readonly\\s+)?(?:email|phone|mobile|firstName|lastName|fullName|address|dob|cnic|iban|cardNumber)\\s*[?!]?\\s*:\\s*string",
+    "globs": ["*.ts"],
+    "severity_hint": "Info",
+    "description": "PII field on a shared model / interface - mirrors a backend DTO",
+    "reference": "GDPR-Art.30"
+  }
+]

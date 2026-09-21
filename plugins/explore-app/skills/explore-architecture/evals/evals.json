@@ -1,0 +1,47 @@
+{
+  "skill_name": "explore-architecture",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I'm inheriting the codebase in evals/files/sample-repo next month. Give me an architecture review: how it's structured, the module dependency map, runtime components, a few representative flows with sequence diagrams, deployment topology from the docker files, and the cross-cutting stuff (auth, config, i18n, tenancy). Flag circular deps and layer violations. Write it under docs/analysis/ in the current directory.",
+      "expected_output": "An architecture document with: header noting README claims vs built (README says services never import each other, code has order.service <-> inventory.service cycle; README says rules live only in services, tax lives in orders.controller); module map for routes, controllers, services, models, validators, integrations, jobs, middleware; runtime components api, jobs, Postgres, Stripe, SMTP; dependency analysis with XARC issues for the services cycle and the controller reaching into payment gateway / holding tax rules; 3-5 flows (confirm, pay, ship, reminder job) each with a sequenceDiagram whose participants are component-diagram nodes; deployment diagram from docker-compose (api, jobs, db; TZ Europe/Amsterdam); cross-cutting table with auth = shared API key, i18n none, tenancy none.",
+      "files": [
+        "evals/files/sample-repo"
+      ],
+      "expectations": [
+        "Layer/module map lists modules that exist on disk (src/routes, src/controllers, src/services, src/models, src/validators, src/integrations, src/jobs, src/middleware) and no module that does not exist",
+        "Dependency analysis reports the circular dependency between src/services/order.service.ts and src/services/inventory.service.ts as an XARC issue",
+        "Dependency analysis reports a boundary violation for orders.controller.ts importing integrations/payment.gateway.ts and/or computing tax in the controller, as an XARC issue",
+        "Every XARC issue has all six fields: ID, Severity, Area, Location, Impact, Remediation",
+        "At least three representative flows each have a sequenceDiagram",
+        "Every participant in every sequenceDiagram appears as a node in the component diagram",
+        "Runtime components include the api process, the jobs (cron) process, Postgres, Stripe and SMTP",
+        "Deployment section reflects docker-compose (api and jobs containers, db service) and notes TZ=Europe/Amsterdam or single region",
+        "Cross-cutting table has rows for authentication, configuration, logging, error handling, i18n/l10n, time zones, multi-tenancy with i18n and tenancy marked absent/not found",
+        "Header states where the README's documented architecture disagrees with the built one",
+        "All Mermaid blocks are syntactically valid",
+        "The document is written to docs/analysis/explore-architecture/<date>.md and the reply states the path",
+        "The cycle citation gives exact lines: src/services/inventory.service.ts:2 and src/services/order.service.ts:3",
+        "The document reports that API_KEY is not set in docker-compose.yml so the auth middleware fails open, and/or that TZ is set on the api container but not on jobs",
+        "The deployment diagram appears exactly once in the document"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "how does an order flow through evals/files/sample-repo from the HTTP call to the database? sequence diagram for confirm and pay would be great, and tell me what background processes exist",
+      "expected_output": "The full architecture document (not just two diagrams), with confirm and pay flows as sequence diagrams, the jobs process identified as a background component, and the dependency issues still reported.",
+      "files": [
+        "evals/files/sample-repo"
+      ],
+      "expectations": [
+        "Output includes the overview, module map, runtime components, dependency analysis, flows, deployment and cross-cutting sections",
+        "Sequence diagrams exist for the confirm-order and pay-order flows",
+        "The reminder cron job is identified as a separate runtime component/process",
+        "The services cycle is reported as an XARC issue with all fields",
+        "Sequence diagram participants match component diagram nodes",
+        "A short answer directly under Overview names the reminder cron job as the only background process",
+        "Sequence-diagram participants use the same alias and label as the component-diagram nodes"
+      ]
+    }
+  ]
+}

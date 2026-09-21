@@ -1,0 +1,56 @@
+{
+  "skill": "audit-owasp-asvs-mapper",
+  "generated_at": "2026-09-11T12:23:35.264491+00:00",
+  "target": {
+    "root": ".",
+    "commit": null
+  },
+  "stack": {},
+  "scope": {
+    "checked": [
+      "11 findings files under audit\\findings",
+      "11 completed skills counted toward Verified"
+    ],
+    "not_checked": [
+      {
+        "item": "ASVS level 2/3 controls without findings",
+        "reason": "listed only when named; run with --min-level 3 to see all"
+      }
+    ]
+  },
+  "findings": [
+    {
+      "id": "MAP-001",
+      "title": "51 ASVS 4.0 sections were not assessed by any audit skill",
+      "severity": "Info",
+      "confidence": "confirmed",
+      "location": {
+        "file": "audit/findings",
+        "symbol": "coverage matrix"
+      },
+      "evidence": "V1.1 Secure Software Development Lifecycle\nV1.2 Authentication Architecture\nV1.5 Input and Output Architecture\nV1.6 Cryptographic Architecture\nV1.7 Errors, Logging and Auditing Architecture\nV1.8 Data Protection and Privacy Architecture\nV1.9 Communications Architecture\nV1.10 Malicious Software Architecture\nV1.11 Business Logic Architecture\nV1.12 Secure File Upload Architecture\nV1.14 Configuration Architecture\nV2.1 Password Security\nV2.3 Authenticator Lifecycle\nV2.4 Credential Storage\nV2.5 Credential Recovery\nV2.6 Look-up Secret Verifier\nV2.7 Out of Band Verifier\nV2.8 One Time Verifier\nV2.9 Cryptographic Verifier\nV2.10 Service Authentication\nV3.1 Fundamental Session Management Security\nV3.2 Session Binding\nV3.3 Session Termination\nV3.4 Cookie-based Session Management\nV3.6 Federated Re-authentication\nV3.7 Defenses Against Session Management Exploits\nV5.4 Memory, String, and Unmanaged Code\nV6.1 Data Classification\nV6.2 Algorithms\nV6.3 Random Values\nV6.4 Secret Management\nV7.1 Log Content\nV7.2 Log Processing\nV7.3 Log Protection\nV7.4 Error Handling\nV8.1 General Data Protection\nV8.2 Client-side Data Protection\nV8.3 Sensitive Private Data\nV9.1 Client Communication Security\nV9.2 Server Communication Security\nV10.1 Code Integrity\nV10.2 Malicious Code Search\nV12.2 File Integrity\nV12.3 File Execution\nV12.4 File Storage\nV12.5 File Download\nV13.1 Generic Web Service Security\nV13.2 RESTful Web Service\nV13.3 SOAP Web Service\nV13.4 GraphQL\nV14.5 HTTP Request Header Validation",
+      "impact": "The audit cannot claim ASVS coverage for these areas; a reader could mistake silence for a pass. Rated Info because it is a gap in the audit, not in the product.",
+      "remediation": "Run the skill that owns each section (see skill_coverage in scripts/mapping.json), or record a manual check in that skill's scope.checked as 'ASVS-x.y verified: <how>'.",
+      "references": [
+        "ASVS-1.1.2"
+      ],
+      "tags": [
+        "audit-coverage"
+      ]
+    }
+  ],
+  "summary": {
+    "Critical": 0,
+    "High": 0,
+    "Medium": 0,
+    "Low": 0,
+    "Info": 1
+  },
+  "extra": {
+    "sections_verified": 11,
+    "sections_failed": 7,
+    "sections_not_assessed": 51,
+    "mapped": 9,
+    "unmapped": 0
+  }
+}

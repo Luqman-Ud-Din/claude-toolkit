@@ -1,0 +1,17 @@
+{
+  "skill_name": "audit-llm-evals-and-red-teaming",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "We don't have any automated tests for our prompts, we just try them manually before shipping - how bad is that?",
+      "expected_output": "Places the app at eval maturity level 1 (manual spot-check), rates it Medium-High, and gives a specific incremental remediation to reach a gated static eval set rather than jumping straight to 'add adversarial red-teaming'.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "The other audits found a few real prompt injection and jailbreak issues - should those become permanent tests?",
+      "expected_output": "Recommends converting each confirmed finding into a regression eval case, notes which findings currently have no corresponding eval case, and flags this as input for propose-llm-eval-suite rather than writing test files itself unprompted.",
+      "files": []
+    }
+  ]
+}

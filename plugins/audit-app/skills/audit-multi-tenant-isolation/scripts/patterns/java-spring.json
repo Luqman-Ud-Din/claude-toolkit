@@ -1,0 +1,42 @@
+[
+  {
+    "id": "NATIVE-QUERY",
+    "pattern": "createNativeQuery|@Query\\(.*nativeQuery\\s*=\\s*true|entityManager\\.createQuery",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "High",
+    "description": "Native/JPQL query bypasses Hibernate @Filter - confirm it filters by tenant id",
+    "reference": "CWE-284"
+  },
+  {
+    "id": "DISABLE-FILTER",
+    "pattern": "disableFilter\\(|filterOff|session\\.disableFilter",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "High",
+    "description": "Hibernate tenant filter disabled - the query spans all tenants",
+    "reference": "CWE-284"
+  },
+  {
+    "id": "TENANT-FROM-REQUEST",
+    "pattern": "(dto|request|body)\\.get?(TenantId|CompanyId|OrgId|OrganizationId)",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "High",
+    "description": "Tenant id from request input - derive it from the security context / token claim instead",
+    "reference": "CWE-639"
+  },
+  {
+    "id": "CACHE-KEY",
+    "pattern": "@Cacheable|redisTemplate\\.|cache\\.(put|get)\\(|cacheManager\\.getCache",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "Medium",
+    "description": "Cache access - confirm the key/@Cacheable(key=..) includes the tenant id",
+    "reference": "CWE-524"
+  },
+  {
+    "id": "BACKGROUND-JOB",
+    "pattern": "@Scheduled|implements\\s+Job\\b|@KafkaListener|@RabbitListener|@JmsListener",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "Medium",
+    "description": "Scheduled task / message listener - no request scope; confirm it sets tenant context per item",
+    "reference": "CWE-284"
+  }
+]

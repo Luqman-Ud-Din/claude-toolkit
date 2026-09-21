@@ -1,0 +1,15 @@
+{
+  "skill": "audit-performance-and-scalability",
+  "status": "completed",
+  "reason": "limited access: no running environment URL for the load test",
+  "started_at": "2026-09-11T12:23:32.491222+00:00",
+  "finished_at": "2026-09-11T12:23:33.137883+00:00",
+  "scripts": [
+    "../audit-stack-detection/scripts/detect_stack.py",
+    "../audit-code-scan/scripts/grep_scan.py",
+    "../audit-finding-writer/scripts/findings.py"
+  ],
+  "limited_access": [
+    "no running environment URL for the load test"
+  ]
+}

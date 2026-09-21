@@ -1,0 +1,44 @@
+{
+  "skill_name": "explore-schema",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Document the database schema of evals/files/sample-repo - it's a Knex/Objection app on Postgres. I want every table with columns and constraints, the relationships, and ER diagrams I can paste into our wiki. Also tell me where the ORM models and the migrations disagree. Write the result under docs/analysis/ in the current directory.",
+      "expected_output": "A schema document with a table inventory of exactly six tables (customers, products, orders, order_lines, payments, shipments) rebuilt from all five migrations (including products.reorder_level and orders.paid_at added later), a relationship list with the four DB foreign keys plus the ORM-only order_lines.product_id relation flagged as not backed by FK, a domain grouping, an overview erDiagram plus per-domain erDiagrams, and a Discrepancies section in XSCH issue format covering at least: order_lines.product_id ORM relation with no FK; shipments FK with no ORM relation; unindexed FKs on order_lines.order_id and payments.order_id; status columns unconstrained.",
+      "files": [
+        "evals/files/sample-repo"
+      ],
+      "expectations": [
+        "Table inventory lists exactly six tables: customers, products, orders, order_lines, payments, shipments",
+        "The inventory reflects later migrations: products has reorder_level and orders has paid_at",
+        "Relationships table contains all four DB foreign keys (orders.customer_id, order_lines.order_id, payments.order_id, shipments.order_id) and the ORM-only order_lines.product_id relation marked as not backed by an FK",
+        "There is an overview erDiagram and at least one per-domain erDiagram, each syntactically valid Mermaid (erDiagram keyword, crow's-foot relationships, single-token attribute types)",
+        "Discrepancies section has an XSCH-numbered issue for order_lines.product_id declared in the Objection model but with no FK in migrations",
+        "Discrepancies section has an XSCH-numbered issue for the shipments.order_id FK that has no ORM relation mapping",
+        "Every XSCH issue has all six fields: ID, Severity, Area, Location, Impact, Remediation, none reading N/A",
+        "Header states sources used (migrations count, ORM models) and the last migration replayed",
+        "The document is written to docs/analysis/explore-schema/<date>.md and the reply states the path",
+        "Exactly two FK columns are reported as unindexed: order_lines.order_id and payments.order_id",
+        "order_lines.order_id is the only relationship reported with ON DELETE CASCADE",
+        "The ORM-only relation order_lines.product_id is drawn dashed with N:1 cardinality (crow's foot on order_lines only), not as many-to-many"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "show me how the tables are related in evals/files/sample-repo, ER diagram please, grouped by what part of the business they belong to",
+      "expected_output": "Same schema document format; the diagram request does not bypass the inventory. Domain grouping puts orders and order_lines together, payments and shipments as transactional/fulfilment, customers and products as reference. Diagrams under 40 nodes and valid.",
+      "files": [
+        "evals/files/sample-repo"
+      ],
+      "expectations": [
+        "Output contains the Table inventory, Relationships, Domain grouping, ER diagrams and Discrepancies sections",
+        "Every table appears in exactly one domain in the grouping table",
+        "orders and order_lines are in the same domain",
+        "All erDiagram blocks are valid Mermaid and each has fewer than 40 entities",
+        "The ORM-only relation order_lines.product_id is drawn or labelled as lacking an FK",
+        "The ORM-only relation order_lines.product_id is drawn with N:1 cardinality, not many-to-many",
+        "customers and products are in different domains from orders/payments/shipments (reference data separated from transactional tables)"
+      ]
+    }
+  ]
+}

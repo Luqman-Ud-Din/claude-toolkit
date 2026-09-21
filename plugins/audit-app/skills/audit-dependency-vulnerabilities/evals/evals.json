@@ -1,0 +1,66 @@
+{
+  "skill_name": "audit-dependency-vulnerabilities",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Run a dependency vulnerability audit on the repo in evals/files/sample-repo. It has a .NET API, a Spring service, a small Express app and a Django project. I want the table of vulnerable packages, the upgrade commands, and proper findings under audit/.",
+      "expected_output": "One de-duplicated table with at least four rows: Newtonsoft.Json 12.0.1 (nuget, High, direct, fixed 13.0.1, not breaking), log4j-core 2.14.1 (maven, Critical, direct, fixed 2.17.1, not breaking), lodash 4.17.15 (npm, High, direct, fixed 4.17.21, not breaking), Django 3.2.0 (pypi, High, direct, fixed 3.2.25 within the line and a note that 3.2 is EOL so the real target is 4.2 LTS = breaking). express 4.18.2 flagged Medium (CVE-2024-29041). Safe versions (axios 1.7.4, helmet, Serilog, commons-lang3 3.17.0, requests 2.32.3, gunicorn 22) are NOT flagged. Scanners that are not installed appear under Not checked, as does the missing lockfile for web/package.json. Upgrade commands per row (dotnet add package, npm install, pip install, pom edit). Findings written with the DEP prefix and findings.json validates.",
+      "files": [
+        "evals/files/sample-repo/Api/Api.csproj",
+        "evals/files/sample-repo/pom.xml",
+        "evals/files/sample-repo/web/package.json",
+        "evals/files/sample-repo/web/server.js",
+        "evals/files/sample-repo/requirements.txt",
+        "evals/files/sample-repo/manage.py",
+        "evals/files/sample-repo/Dockerfile",
+        "evals/files/sample-repo/.github/workflows/ci.yml"
+      ],
+      "expectations": [
+        "Table contains a row for Newtonsoft.Json 12.0.1 with fixed-in 13.0.1 or higher",
+        "Table contains a row for log4j-core 2.14.1 rated Critical referencing CVE-2021-44228",
+        "Table contains a row for lodash 4.17.15 with fixed-in 4.17.21",
+        "Table contains a row for Django 3.2.0",
+        "axios 1.7.4, helmet, Serilog.AspNetCore, commons-lang3 and requests 2.32.3 are not reported as vulnerable",
+        "Each vulnerable row states direct/transitive and whether the upgrade is breaking",
+        "Output lists exact upgrade commands including 'dotnet add' and 'npm install lodash@'",
+        "Not-checked section names every scanner that was not installed or could not run and the missing web lockfile",
+        "Findings use ids starting with DEP- and audit/findings/audit-dependency-vulnerabilities.json validates",
+        "The lodash finding's Impact mentions that request body input reaches _.merge in server.js"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Are there any CVEs in our packages? Check evals/files/sample-repo/web only, we don't have network access on this box so skip anything that needs the registry.",
+      "expected_output": "A run of dep_audit.py with --no-network on the web folder: lodash 4.17.15 (High) and express 4.18.2 (Medium) reported from the built-in knowledge base and grep patterns, both marked as needing confirmation against npm audit once a lockfile and network are available; abandoned-package check listed as not checked because of --no-network; axios and helmet not flagged; upgrade commands 'npm install lodash@4.17.21' and 'npm install express@4.19.2' or newer.",
+      "files": [
+        "evals/files/sample-repo/web/package.json",
+        "evals/files/sample-repo/web/server.js"
+      ],
+      "expectations": [
+        "lodash 4.17.15 is reported with severity High",
+        "express 4.18.2 is reported with CVE-2024-29041",
+        "axios and helmet are not reported",
+        "Abandoned-package check is explicitly listed as not checked with the reason no network",
+        "Output states that results came from the built-in knowledge base / manifest patterns and need confirmation with npm audit",
+        "Upgrade commands include npm install lodash@4.17.21"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Supply-chain check before release: does the CI in evals/files/sample-repo run any dependency scanning, and are any of our packages abandoned?",
+      "expected_output": "One Medium finding that .github/workflows/ci.yml runs npm install and dotnet build but no npm audit, dotnet list package --vulnerable, pip-audit, trivy, Dependabot or Renovate; a note that npm install (not npm ci) with no lockfile makes builds non-reproducible; the abandoned-package table populated from registry metadata when network is available, otherwise every package listed as not checked with the reason.",
+      "files": [
+        "evals/files/sample-repo/.github/workflows/ci.yml",
+        "evals/files/sample-repo/web/package.json",
+        "evals/files/sample-repo/requirements.txt",
+        "evals/files/sample-repo/Api/Api.csproj"
+      ],
+      "expectations": [
+        "A finding states that no dependency scanner runs in CI and names the workflow file",
+        "The finding recommends a concrete CI step (npm audit, dotnet list package --vulnerable, pip-audit, trivy, or Dependabot/Renovate)",
+        "Missing lockfile / npm install instead of npm ci is mentioned",
+        "Abandoned packages section is either populated with last-release dates or marked not checked with a reason"
+      ]
+    }
+  ]
+}

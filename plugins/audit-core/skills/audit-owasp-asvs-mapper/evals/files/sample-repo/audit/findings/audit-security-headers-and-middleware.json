@@ -1,0 +1,22 @@
+{
+  "skill": "audit-security-headers-and-middleware",
+  "generated_at": "2026-09-10T10:00:00Z",
+  "target": {"root": ".", "commit": "abc123"},
+  "stack": {"primary_backend": "dotnet", "primary_frontend": "angular"},
+  "scope": {"checked": ["Api/Program.cs middleware pipeline", "ASVS-14.4.4 verified: X-Content-Type-Options set by middleware"], "not_checked": [{"item": "reverse proxy headers", "reason": "nginx config not in repo"}]},
+  "findings": [
+    {
+      "id": "HDR-001",
+      "title": "HSTS is not enabled in the production pipeline",
+      "severity": "Medium",
+      "confidence": "confirmed",
+      "location": {"file": "Api/Program.cs", "line": 33, "symbol": "app.UseHttpsRedirection"},
+      "evidence": "app.UseHttpsRedirection();\n// no app.UseHsts() in any environment branch",
+      "impact": "A user who types the site name without https can be intercepted on the first request; the browser is never told to insist on TLS.",
+      "remediation": "Add app.UseHsts() outside the Development branch and configure max-age of at least one year with includeSubDomains.",
+      "references": [],
+      "tags": ["hsts", "headers"]
+    }
+  ],
+  "summary": {"Critical": 0, "High": 0, "Medium": 1, "Low": 0, "Info": 0}
+}

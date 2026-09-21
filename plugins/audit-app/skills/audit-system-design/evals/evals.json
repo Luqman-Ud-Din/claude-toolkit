@@ -1,0 +1,49 @@
+{
+  "skill_name": "audit-system-design",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Can you review the architecture of the repo in evals/files/sample-repo? It's a small .NET ledger backend: gateway, orders API, billing worker, notifications worker, RabbitMQ and SQL Server. We're a team of four and expect about 10x growth next year. Is it designed well, and does the README still describe it correctly?",
+      "expected_output": "A report with a discovered-architecture Mermaid diagram (gateway -> orders-api; orders-api and billing-worker -> ledger-db; orders-api/billing-worker/notifications-worker -> rabbitmq x1), a trust-boundary diagram, a coupling table showing the Orders.Api <-> Billing.Core cycle, a data-ownership table showing Invoices written by both Orders.Api and Billing.Core, an ADR-drift list (README shows Payments.Service, Redis cache, RabbitMQ 'cluster', separate orders-db/payments-db that do not exist; ADR-0001 outbox not implemented - OrdersController publishes directly), findings with ARCH- ids for all four planted issues (cycle Medium, shared Invoices table High, single RabbitMQ SPOF High, stale README/ADR drift Low-Medium), a 12-month risks section, delegations to audit-api-contract / audit-performance-and-scalability / audit-infra-and-deployment, and a not-checked list. Shared.Contracts and Notifications.Worker's resilient HTTP client are not flagged.",
+      "files": ["evals/files/sample-repo"],
+      "expectations": [
+        "Report contains a Mermaid discovered-architecture diagram and a Mermaid trust-boundary diagram",
+        "A finding reports the circular reference between Orders.Api and Billing.Core",
+        "A finding reports that Invoices is written by both Orders.Api and Billing.Core (shared table / unclear ownership)",
+        "A finding reports RabbitMQ as a single-instance component that every flow depends on",
+        "ADR-drift section lists README components that do not exist (Payments.Service, Redis) and notes ADR-0001 outbox is not implemented",
+        "Coupling table lists fan-in and fan-out per module",
+        "Report contains a 'design risks for the next 12 months' section",
+        "Shared.Contracts is not reported as a defect and Notifications.Worker's HTTP client is not flagged for missing resilience",
+        "Report states delegations to audit-api-contract, audit-performance-and-scalability and audit-infra-and-deployment",
+        "Finding ids start with ARCH- and findings.json validates"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Where are the single points of failure in evals/files/sample-repo? Just the resilience angle - what goes down if one box dies?",
+      "expected_output": "Runs topology_scan.py and traces: rabbitmq (1 instance, 3 dependents) stops order events, billing and notifications; ledger-db (1 instance, shared by orders-api and billing-worker) stops everything; gateway single instance; orders-api publishes directly with no retry/outbox so a broker outage loses events. Findings for the broker SPOF (High) and the publish-without-outbox (Medium/High, tied to ADR-0001), an Info/Low note that DB replication may be managed outside the repo (not checked). Notifications.Worker's resilient SMS client cited as the good example.",
+      "files": ["evals/files/sample-repo"],
+      "expectations": [
+        "Identifies rabbitmq as single-instance with orders-api, billing-worker and notifications-worker depending on it",
+        "Identifies ledger-db as a single database shared by two services",
+        "Notes that OrdersController publishes directly after SaveChanges with no outbox or retry",
+        "Lists DB high-availability outside the repo as not checked rather than asserting it is missing",
+        "Does not flag Notifications.Worker's HTTP client"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Does the README diagram in evals/files/sample-repo match the code? Give me a drift list.",
+      "expected_output": "Runs module_graph.py, topology_scan.py and doc_drift.py; produces the ADR/documentation drift table: Payments.Service (documented, absent), Redis cache (documented, absent), orders-db/payments-db (documented, actual is one ledger-db), 'RabbitMQ cluster' (documented, single instance), Billing.Core and Gateway ocelot route (present, undocumented), ADR-0001 outbox (Accepted, not implemented). One or two findings (Low/Medium) for drift plus a recommendation to regenerate the diagram from the discovered architecture and supersede ADR-0001 or implement it.",
+      "files": ["evals/files/sample-repo"],
+      "expectations": [
+        "Drift table lists Payments.Service and Redis as documented but not found",
+        "Drift table lists Billing.Core as present but undocumented",
+        "ADR-0001 is reported as accepted but not implemented, citing OrdersController's direct publish",
+        "Notes that the README claims a RabbitMQ cluster while compose has one instance",
+        "Provides a corrected Mermaid diagram"
+      ]
+    }
+  ]
+}

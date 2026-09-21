@@ -1,0 +1,49 @@
+{
+  "skill_name": "audit-logging-and-observability",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "We're about to put the orders API in evals/files/sample-repo into production. Can you review the logging? I mainly want to know whether anything sensitive ends up in our logs and whether we could actually follow a single request during an incident.",
+      "expected_output": "audit/findings/audit-logging-and-observability.json and audit/reports/audit-logging-and-observability.md with LOG- findings: Critical for src/routes/auth.js:10 logging req.body (which carries the password) on the login route; High for no correlation-id middleware (nothing in app.js reads/creates an id, none forwarded to the inventory service call); High for src/services/orders.js:11 catching the reservation failure and logging it at debug then continuing. The report contains the sensitive-field table (file:line, logger call, sensitive fields, level), the correlation-id propagation table frontend -> backend -> downstream, the alert coverage matrix, and a Not checked list.",
+      "files": ["evals/files/sample-repo/package.json", "evals/files/sample-repo/src/app.js", "evals/files/sample-repo/src/logger.js", "evals/files/sample-repo/src/routes/auth.js", "evals/files/sample-repo/src/routes/orders.js", "evals/files/sample-repo/src/services/orders.js", "evals/files/sample-repo/src/repositories/users.js", "evals/files/sample-repo/monitoring/prometheus-rules.yml"],
+      "expectations": [
+        "A finding rated Critical has location src/routes/auth.js line 10 and says the request body containing the password is logged",
+        "A finding rated High states there is no correlation-id / request-id middleware and names src/app.js",
+        "A finding rated High names src/services/orders.js line 11 and says the caught exception is logged at debug",
+        "Every finding id starts with LOG-",
+        "The report has a table with columns for file:line, logger call, sensitive fields and level, and it lists src/routes/auth.js:10 with password",
+        "The report has a correlation-id propagation table covering frontend, backend inbound, log enrichment and downstream calls, with backend inbound marked absent and the frontend marked not present in this repo",
+        "The line logger.info('password reset email sent') is NOT reported as a sensitive-field leak",
+        "The payment capture catch block (logger.error with err, then rethrow) is NOT reported as a low-level catch",
+        "The report contains a Not checked section that mentions the log sink/retention or alert routing outside the repo",
+        "findings.json validates with ../audit-finding-writer/scripts/findings.py validate"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "honest question - if the API in evals/files/sample-repo starts throwing 500s at 2am, does anyone get paged? what alerts do we actually have?",
+      "expected_output": "An alert coverage matrix built from monitoring/prometheus-rules.yml (signal -> alert exists Y/N -> source file): latency Y (OrdersApiHighLatencyP95), error rate N, saturation N, dependency health N, security signals N; a finding that no error-rate alert exists and that no alert routing (Alertmanager receivers / on-call) is defined in the repo; not-checked note that alerting in a SaaS console was not visible.",
+      "files": ["evals/files/sample-repo/monitoring/prometheus-rules.yml", "evals/files/sample-repo/src/app.js"],
+      "expectations": [
+        "The output contains an alert coverage matrix with a row for error rate marked N",
+        "The latency row is marked Y and cites monitoring/prometheus-rules.yml",
+        "Saturation and security-event rows are present and marked N",
+        "A finding says no alert fires on error rate / 5xx responses",
+        "The answer says no alert routing or on-call receiver is defined in the repo, or lists it as not checked"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Last week an order in evals/files/sample-repo went through without stock being reserved and nobody noticed for two days. Can you look at how exceptions get logged in the orders service?",
+      "expected_output": "A High LOG- finding for src/services/orders.js:11 (reserveStock catches the inventory call failure, logs it at debug which the default info level drops, and returns true), with remediation in pino idiom (logger.error({ err, orderId }, ...) and fail or retry) plus an error-rate/job-failure alert; the capturePayment catch is identified as correct; the missing correlation id is mentioned because the failed downstream call cannot be tied to the order request.",
+      "files": ["evals/files/sample-repo/src/services/orders.js", "evals/files/sample-repo/src/logger.js", "evals/files/sample-repo/src/app.js"],
+      "expectations": [
+        "A finding rated High references src/services/orders.js line 11",
+        "The impact explains that debug is below the configured info level so the failure never appears in logs",
+        "The remediation uses logger.error with the err object and stops returning success",
+        "capturePayment's catch block is described as acceptable and is not a finding",
+        "The answer mentions that the downstream axios call carries no correlation id"
+      ]
+    }
+  ]
+}

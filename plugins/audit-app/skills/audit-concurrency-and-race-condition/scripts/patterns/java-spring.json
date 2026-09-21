@@ -1,0 +1,122 @@
+[
+  {
+    "id": "CHECK-THEN-ACT",
+    "pattern": "if\\s*\\(\\s*!?\\s*\\w+\\.(existsBy\\w+|exists|count\\w*)\\s*\\(|\\.findBy\\w+\\([^)]*\\)\\.isPresent\\(\\)|if\\s*\\(\\s*\\w+\\.get(Balance|Quantity|Qty|Stock|Available|Credit)\\w*\\(\\)\\s*(>=|>|<|<=|\\.compareTo)",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "High",
+    "description": "Existence/threshold check; if a save or decrement follows without @Lock/@Version/conditional @Modifying query, it races",
+    "reference": "CWE-367"
+  },
+  {
+    "id": "STATUS-GUARD-IN-MEMORY",
+    "pattern": "if\\s*\\(\\s*\\w+\\.get(Status|State)\\(\\)\\s*(==|!=|\\.equals)",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "Medium",
+    "description": "Status checked in memory; the later write needs a conditional update or @Version to be safe",
+    "reference": "CWE-367"
+  },
+  {
+    "id": "STATIC-MUTABLE",
+    "pattern": "\\b(public|private|protected)?\\s*static\\s+(?!final\\b)(Map|List|Set|HashMap|ArrayList|HashSet|int|long|boolean|String|StringBuilder|SimpleDateFormat)\\b[^=;(]*\\s+\\w+\\s*(=|;)",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "Medium",
+    "description": "Static mutable field; shared by every request and thread",
+    "reference": "CWE-662"
+  },
+  {
+    "id": "SINGLETON-UNSAFE-FIELD",
+    "pattern": "(private|protected)\\s+(final\\s+)?(Map|List|Set|HashMap|ArrayList|HashSet)\\s*<[^>]*>\\s+\\w*(cache|Cache|map|store|Store|sessions|counters?|registry)\\w*\\s*=\\s*new\\s+(HashMap|ArrayList|HashSet)|private\\s+(final\\s+)?SimpleDateFormat\\s+\\w+",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "Medium",
+    "description": "Non-thread-safe collection or SimpleDateFormat field in what is probably a singleton bean",
+    "reference": "CWE-662"
+  },
+  {
+    "id": "PAYMENT-NO-KEY",
+    "pattern": "@(Post|Put)Mapping|public\\s+\\w+(<\\w+>)?\\s+(charge|pay|refund|capture|debit|credit|transfer|withdraw|deposit|checkout|placeOrder|redeem)\\w*\\s*\\(",
+    "globs": ["*Payment*.java", "*Pay*.java", "*Checkout*.java", "*Wallet*.java", "*Refund*.java", "*Order*.java", "*Billing*.java"],
+    "severity_hint": "High",
+    "description": "Money-moving handler; confirm an Idempotency-Key / request id is stored before the side effect",
+    "reference": "CWE-362"
+  },
+  {
+    "id": "IDEMPOTENCY-PRESENT",
+    "pattern": "Idempotency-Key|idempotencyKey|idempotency_key|eventId|event\\.getId\\(\\)",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "Info",
+    "description": "Idempotency marker present; record in the inventory",
+    "reference": "CWE-362"
+  },
+  {
+    "id": "LISTENER-NO-DEDUPE",
+    "pattern": "@(KafkaListener|RabbitListener|SqsListener|JmsListener|StreamListener)\\b",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "Medium",
+    "description": "At-least-once consumer; confirm message-id dedupe in the same transaction as the effect",
+    "reference": "CWE-362"
+  },
+  {
+    "id": "RETRY-ON-SIDE-EFFECT",
+    "pattern": "@Retryable|@Retry\\(|RetryTemplate|\\.retryWhen\\(|Retry\\.backoff\\(",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "Medium",
+    "description": "Retry on a method; if it creates side effects without a key, each retry is a replay",
+    "reference": "CWE-362"
+  },
+  {
+    "id": "VERSION-DEFINED",
+    "pattern": "@Version\\b",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "Info",
+    "description": "Optimistic lock version present; pair with OPTIMISTIC-HANDLED",
+    "reference": "CWE-362"
+  },
+  {
+    "id": "OPTIMISTIC-HANDLED",
+    "pattern": "catch\\s*\\(\\s*(OptimisticLockException|ObjectOptimisticLockingFailureException|StaleObjectStateException|OptimisticLockingFailureException)",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "Info",
+    "description": "Optimistic lock failure handled; absence with VERSION-DEFINED means unhandled 500s",
+    "reference": "CWE-362"
+  },
+  {
+    "id": "UNIQUE-CONSTRAINT",
+    "pattern": "unique\\s*=\\s*true|@UniqueConstraint|uniqueConstraints|UNIQUE\\s*\\(|CREATE\\s+UNIQUE|addUniqueConstraint",
+    "globs": ["*.java", "*.kt", "*.sql", "*.xml", "*.yaml", "*.yml"],
+    "severity_hint": "Info",
+    "description": "Unique constraint present; match against each CHECK-THEN-ACT existence check",
+    "reference": "CWE-362"
+  },
+  {
+    "id": "TRANSACTIONAL-PRIVATE",
+    "pattern": "@Transactional[\\s\\S]{0,80}private\\s+\\w+",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "Medium",
+    "description": "@Transactional on a private method (proxy bypass: no transaction)",
+    "reference": "CWE-362"
+  },
+  {
+    "id": "JOB-NO-LOCK",
+    "pattern": "@Scheduled\\(",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "Low",
+    "description": "Scheduled method; confirm @SchedulerLock (ShedLock) or a clustered Quartz store when instances > 1, and an idempotent body",
+    "reference": "CWE-362"
+  },
+  {
+    "id": "JOB-LOCK-PRESENT",
+    "pattern": "@SchedulerLock|@DisallowConcurrentExecution|RedissonClient|getLock\\(|tryLock\\(",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "Info",
+    "description": "Job/distributed lock present; record in the inventory",
+    "reference": "CWE-362"
+  },
+  {
+    "id": "LOCK-OR-ATOMIC-PRESENT",
+    "pattern": "@Lock\\(|LockModeType\\.|@Modifying|FOR UPDATE|SELECT\\s+\\.\\.\\.\\s+FOR|@Transactional\\((?=[^)]*isolation)",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "Info",
+    "description": "Pessimistic lock, conditional update, or explicit isolation present; record in the inventory",
+    "reference": "CWE-362"
+  }
+]

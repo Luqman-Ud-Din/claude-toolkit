@@ -1,0 +1,17 @@
+{
+  "skill_name": "explore-llm-behavior",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "We don't have source access to this vendor's chatbot widget on our site - can you poke at it and tell me how it actually behaves?",
+      "expected_output": "Confirms authorization/scope via shared-llm-probe-runner before sending anything, sends a spread of normal/ambiguous/out-of-scope/partial-capability requests, tags each behaviorally without over-judging severity, and writes explore-llm-behavior.json.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "After our last prompt change, can you get a behavioral baseline so we can compare before/after?",
+      "expected_output": "Runs the same representative spread of request types, records exact prompts/responses with neutral tags, and notes it as a baseline suitable for a before/after diff rather than a security verdict.",
+      "files": []
+    }
+  ]
+}

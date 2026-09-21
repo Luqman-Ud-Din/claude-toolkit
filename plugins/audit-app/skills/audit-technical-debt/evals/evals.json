@@ -1,0 +1,51 @@
+{
+  "skill_name": "audit-technical-debt",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "We launch the order service next month and then want to spend a quarter paying down tech debt. Can you do a technical debt audit of evals/files/sample-repo and tell us what to clean up first? It's an export without a .git folder, so use evals/files/synthetic-git-history.json as the git history (the scripts take it with --history). The test-coverage and dependency audits already ran and their findings are in sample-repo/audit/findings.",
+      "expected_output": "Runs complexity.py, churn.py --history evals/files/synthetic-git-history.json (10-commit window), todo_age.py --history, duplicates.py, dead_code.py, eol_check.py, suppressions.py, docs_check.py --history, ../audit-code-scan/scripts/grep_scan.py with scripts/patterns/dotnet.json, and debt_score.py. Report contains: a debt inventory table (item, category, location, age, impact, effort, priority, bucket) ranked with OrderImportService.ImportOrders first (hotspot: ~405 lines, CC ~118, changed in 8 of the last 10 commits); the near-identical CalculateInvoiceTotal / CalculateQuoteTotal pair; the unused LegacyCsvExporter module; the Program.cs:15 TODO aged over 3 years (2023-06-14); IdentityServer4 4.1.2 past end-of-life (2022-12-13); plus smaller items (WebClient deprecated API with its SYSLIB0014 pragma, commented-out block in QuoteService, mixed Newtonsoft/System.Text.Json, stale README with dangling paths, no runbook/ADRs). A hotspot table with ImportOrders at rank 1. A roadmap split into quick wins / next quarter / long term. A maintainability score with each input, its weight and contribution (quality-findings input excluded because those skills did not run). Consumed TEST-001 and DEP-001 appear as inventory rows referencing their ids and are not re-flagged; audit-frontend-best-practices, audit-orm-query-and-data-access, audit-async-and-dependency-injection, audit-backend-resource-leak, audit-frontend-memory-leak and audit-system-design are listed as not run. findings.json holds only launch risks: DEBT High for IdentityServer4 EOL and DEBT Medium for the untested hotspot.",
+      "files": ["evals/files/sample-repo", "evals/files/synthetic-git-history.json"],
+      "expectations": [
+        "The skill passes evals/files/synthetic-git-history.json to the history-aware scripts (--history) instead of failing for lack of .git",
+        "The debt inventory ranks OrderImportService.ImportOrders first and describes it as both complex (hundreds of lines, very high cyclomatic complexity) and changed in 8 of the last 10 commits",
+        "The churn-vs-complexity hotspot list shows ImportOrders at rank 1",
+        "CalculateInvoiceTotal (PricingService) and CalculateQuoteTotal (QuoteService) are reported as near-identical / duplicated functions",
+        "LegacyCsvExporter is reported as an unused / unreferenced module, with a note that dead-code detection is heuristic",
+        "The TODO at OrderService.Api/Program.cs:15 is reported with an age of more than three years from blame",
+        "IdentityServer4 4.1.2 is reported as past end-of-life, and the EOL table's as-of date is mentioned",
+        "The roadmap has three sections: quick wins, next quarter, long term",
+        "A single maintainability score is given with its inputs and weights explained",
+        "TEST-001 and DEP-001 are mapped into the inventory by id and not duplicated as new DEBT findings; Newtonsoft.Json is not reported as end-of-life",
+        "OrdersController, Config and the Models classes are not reported as dead code",
+        "findings.json contains only launch-risk DEBT findings (IdentityServer4 EOL, untested hotspot) and validates with ../audit-finding-writer/scripts/findings.py validate"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Where should we refactor first in evals/files/sample-repo? I want the files or functions that are both complicated and constantly changing. No .git in that folder - history is in evals/files/synthetic-git-history.json, pass it with --history and use the last 10 commits.",
+      "expected_output": "Runs complexity.py then churn.py --history evals/files/synthetic-git-history.json --last-commits 10. Hotspot list: #1 ImportOrders in OrderImportService.cs (8 commits x CC ~118, score far above the rest), then OrdersController.cs (3 commits, low complexity), QuoteService.cs and PricingService.cs (1 commit each). Explains the score (commits x cyclomatic complexity) and why low-complexity files with some churn and complex code without churn rank lower. Recommends a first slice for ImportOrders (characterization tests, then extracting validation, pricing, tax, FX and stock allocation) and notes there are no tests (TEST-001). Mentions that function-level churn comes from the synthetic history's function names.",
+      "files": ["evals/files/sample-repo", "evals/files/synthetic-git-history.json"],
+      "expectations": [
+        "Uses --history evals/files/synthetic-git-history.json with a 10-commit window",
+        "Ranks ImportOrders (OrderImportService.cs) first with 8 commits in the window",
+        "States the hotspot score formula (change frequency multiplied by complexity)",
+        "Proposes an incremental first step such as characterization tests before extracting parts of ImportOrders",
+        "Does not rank LegacyCsvExporter as a hotspot (no commits in the window)"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Quick one on evals/files/sample-repo: are we on any end-of-life runtimes, frameworks or packages, and how old are the TODOs in the code? The folder has no git metadata; use evals/files/synthetic-git-history.json via --history for blame dates.",
+      "expected_output": "Runs eol_check.py and todo_age.py --history evals/files/synthetic-git-history.json. EOL: IdentityServer4 4.1.2 is past end-of-life since 2022-12-13 (successor Duende IdentityServer or OpenIddict) - High launch risk because it issues tokens; net10.0 is supported; Newtonsoft.Json and Swashbuckle are not EOL (Newtonsoft's vulnerability is DEP-001, owned by audit-dependency-vulnerabilities). Mentions the EOL table as-of date and that it must be refreshed periodically. TODOs: Program.cs:15 'drop the v1 route aliases' written 2023-06-14 (over 3 years old) and OrderImportService.cs:37 'move the region tax table into configuration' from 2026-08-18 (weeks old), sorted oldest first, plus the commented-out block in QuoteService.cs.",
+      "files": ["evals/files/sample-repo", "evals/files/synthetic-git-history.json"],
+      "expectations": [
+        "Reports IdentityServer4 4.1.2 as past end-of-life with its EOL date",
+        "Does not report net10.0, Newtonsoft.Json or Swashbuckle.AspNetCore as end-of-life",
+        "States the as-of date of the bundled EOL table and that it needs periodic refresh",
+        "Reports the Program.cs TODO as more than three years old and the OrderImportService.cs TODO as recent, using blame data from the synthetic history",
+        "Lists TODOs with location, age and text"
+      ]
+    }
+  ]
+}

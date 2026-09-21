@@ -1,0 +1,130 @@
+[
+  {
+    "id": "IMAGE-LATEST-TAG",
+    "pattern": "^\\s*(FROM|-?\\s*image:)\\s+['\"]?[\\w./:@-]*:latest\\b",
+    "globs": ["Dockerfile*", "*.dockerfile", "*.yml", "*.yaml"],
+    "severity_hint": "Low",
+    "description": "Image pinned to :latest - non-reproducible builds and deploys",
+    "reference": "CIS-Docker-4.2; hadolint DL3007; CKV_K8S_14"
+  },
+  {
+    "id": "DOCKER-USER-ROOT",
+    "pattern": "^\\s*USER\\s+(root|0)(:|\\s|$)",
+    "globs": ["Dockerfile*", "*.dockerfile"],
+    "severity_hint": "Medium",
+    "description": "Dockerfile switches to root; confirm it is not the last USER of the final stage",
+    "reference": "CIS-Docker-4.1; hadolint DL3002; CWE-250"
+  },
+  {
+    "id": "COPY-SECRET-FILE",
+    "pattern": "^\\s*(COPY|ADD)\\s+(?!--from).*(\\.env\\b|secrets?[\\w.-]*\\.(json|ya?ml|txt)|\\.pem\\b|\\.pfx\\b|\\.p12\\b|\\.key\\b|id_rsa|\\.npmrc|credentials)",
+    "globs": ["Dockerfile*", "*.dockerfile"],
+    "severity_hint": "High",
+    "description": "Secret-like file copied into an image layer",
+    "reference": "CIS-Docker-4.10; CWE-798; CWE-538"
+  },
+  {
+    "id": "ENV-ARG-SECRET",
+    "pattern": "^\\s*(ENV|ARG)\\s+\\S*(PASSWORD|PASSWD|SECRET|TOKEN|API_?KEY|PRIVATE_?KEY|ConnectionStrings__)\\S*",
+    "globs": ["Dockerfile*", "*.dockerfile"],
+    "severity_hint": "High",
+    "description": "Secret-like ENV/ARG - values persist in image config/history",
+    "reference": "CIS-Docker-4.10; CWE-798"
+  },
+  {
+    "id": "ADD-REMOTE-URL",
+    "pattern": "^\\s*ADD\\s+https?://",
+    "globs": ["Dockerfile*", "*.dockerfile"],
+    "severity_hint": "Low",
+    "description": "ADD fetches a remote URL without checksum verification",
+    "reference": "CIS-Docker-4.9; hadolint DL3020"
+  },
+  {
+    "id": "CURL-PIPE-SH",
+    "pattern": "(curl|wget)\\s[^|]*\\|\\s*(sudo\\s+)?(ba|z)?sh\\b",
+    "globs": ["Dockerfile*", "*.dockerfile", "*.sh"],
+    "severity_hint": "Medium",
+    "description": "Remote script piped to a shell at build/deploy time",
+    "reference": "CIS-Docker-4.11; CWE-494"
+  },
+  {
+    "id": "K8S-PRIVILEGED",
+    "pattern": "^\\s*privileged:\\s*true",
+    "globs": ["*.yml", "*.yaml"],
+    "severity_hint": "High",
+    "description": "Privileged container",
+    "reference": "CIS-K8s-5.2.2; CIS-Docker-5.x; CWE-250"
+  },
+  {
+    "id": "K8S-HOST-NAMESPACE",
+    "pattern": "^\\s*(hostNetwork|hostPID|hostIPC):\\s*true|^\\s*network_mode:\\s*['\"]?host",
+    "globs": ["*.yml", "*.yaml"],
+    "severity_hint": "High",
+    "description": "Pod/service shares the host network/PID/IPC namespace",
+    "reference": "CIS-K8s-5.2.3-5.2.5"
+  },
+  {
+    "id": "ALLOW-PRIV-ESCALATION",
+    "pattern": "^\\s*allowPrivilegeEscalation:\\s*true",
+    "globs": ["*.yml", "*.yaml"],
+    "severity_hint": "Medium",
+    "description": "allowPrivilegeEscalation explicitly true",
+    "reference": "CIS-K8s-5.2.6; CKV_K8S_20"
+  },
+  {
+    "id": "ENV-VALUE-PASSWORD",
+    "pattern": "^\\s*value:\\s*['\"]?[^$'\"{]*(Password|Pwd)=[^;'\"$]+",
+    "globs": ["*.yml", "*.yaml"],
+    "severity_hint": "High",
+    "description": "Connection string with a literal password in a manifest env value",
+    "reference": "CIS-K8s-5.4.2; CWE-798"
+  },
+  {
+    "id": "DOCKER-SOCKET-MOUNT",
+    "pattern": "/var/run/docker\\.sock",
+    "globs": ["*.yml", "*.yaml", "Dockerfile*"],
+    "severity_hint": "High",
+    "description": "Docker socket mounted - equivalent to root on the host",
+    "reference": "CIS-Docker-5.x (Docker socket not mounted inside containers); CWE-250"
+  },
+  {
+    "id": "REVISION-HISTORY-ZERO",
+    "pattern": "^\\s*revisionHistoryLimit:\\s*0\\b",
+    "globs": ["*.yml", "*.yaml"],
+    "severity_hint": "Medium",
+    "description": "No ReplicaSet history kept - kubectl rollout undo cannot roll back",
+    "reference": "Rollback readiness"
+  },
+  {
+    "id": "TF-BACKUP-RETENTION-ZERO",
+    "pattern": "backup_retention_period\\s*=\\s*0\\b|BackupRetentionPeriod['\"]?\\s*:\\s*['\"]?0\\b",
+    "globs": ["*.tf", "*.json", "*.yml", "*.yaml"],
+    "severity_hint": "High",
+    "description": "Automated database backups disabled",
+    "reference": "SOC2-A1.2; CKV_AWS_133"
+  },
+  {
+    "id": "IAC-PUBLIC-DB",
+    "pattern": "publicly_accessible\\s*=\\s*true|PubliclyAccessible['\"]?\\s*:\\s*['\"]?true",
+    "globs": ["*.tf", "*.json", "*.yml", "*.yaml"],
+    "severity_hint": "High",
+    "description": "Database instance reachable from the internet",
+    "reference": "CKV_AWS_17; CWE-284"
+  },
+  {
+    "id": "IAC-WEAK-TLS",
+    "pattern": "(minimum_tls_version|min_tls_version|minTlsVersion|minimumTlsVersion)['\"]?\\s*[=:]\\s*['\"](1\\.0|1\\.1|TLS1_0|TLS1_1)['\"]|https_?only['\"]?\\s*[=:]\\s*false",
+    "globs": ["*.tf", "*.json"],
+    "severity_hint": "Medium",
+    "description": "TLS below 1.2 or HTTPS-only disabled",
+    "reference": "CKV_AZURE_14/15; CWE-326"
+  },
+  {
+    "id": "TFSTATE-COMMITTED",
+    "pattern": "\"terraform_version\"\\s*:",
+    "globs": ["*.tfstate", "*.tfstate.backup", "*.json"],
+    "severity_hint": "High",
+    "description": "Terraform state file content in the repo (contains resource secrets in plain text)",
+    "reference": "CWE-312"
+  }
+]

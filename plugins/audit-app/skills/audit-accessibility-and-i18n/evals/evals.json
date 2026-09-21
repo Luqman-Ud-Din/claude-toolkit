@@ -1,0 +1,48 @@
+{
+  "skill_name": "audit-accessibility-and-i18n",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "We need a WCAG 2.2 AA review of our Angular checkout in evals/files/sample-repo before launch, and we are adding Arabic next quarter so check i18n readiness too. Read-only.",
+      "expected_output": "Findings with A11Y- ids grouped by WCAG criterion: 1.1.1 (img [src] without alt), 1.3.1/3.3.2/4.1.2 (email input with placeholder only), 2.1.1 (div (click) Apply coupon with no role/tabindex/keydown), 2.1.2/2.4.3 (confirm modal role=dialog without focus trap or aria-modal), 4.1.2 (icon-only delete button without aria-label; dialog without name), 2.4.7 (outline: none in styles.scss). i18n: hard-coded strings counted per file (checkout.component.html: Checkout, Apply coupon, items, Confirm order, Are you sure..., Yes, Cancel; toast text in checkout.component.ts), toLocaleDateString() without locale, ' items' plural concatenation, '$' + toFixed(2) currency, dir=\"ltr\" in index.html, margin-left/text-align:left in styles.scss. confirm-dialog.component.html, the labelled name/phone fields and the logo image are not flagged. Prioritized fix list and Not checked (axe not run, no screen reader pass).",
+      "files": ["evals/files/sample-repo/package.json", "evals/files/sample-repo/src/index.html", "evals/files/sample-repo/src/app/checkout/checkout.component.html", "evals/files/sample-repo/src/app/checkout/checkout.component.ts", "evals/files/sample-repo/src/app/shared/confirm-dialog/confirm-dialog.component.html", "evals/files/sample-repo/src/styles.scss", "evals/files/sample-repo/src/assets/i18n/en.json", "evals/files/sample-repo/src/assets/i18n/ar.json"],
+      "expectations": [
+        "Findings are grouped under WCAG criterion headings (e.g. 1.1.1, 1.3.1, 2.1.2, 4.1.2)",
+        "A finding cites the email input with placeholder as the only label, with file:line",
+        "A finding cites the img [src] without alt",
+        "A finding cites the role=dialog modal in checkout.component.html as lacking a focus trap",
+        "Report contains a hard-coded strings by file table with a count for checkout.component.html",
+        "An i18n finding cites toLocaleDateString() or the ' items' concatenation in checkout.component.ts",
+        "confirm-dialog.component.html and the logo img with alt are not flagged",
+        "Report contains a prioritized fix list",
+        "Report contains a Not checked section mentioning the automated checker was not run",
+        "Finding ids start with A11Y-"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "is our checkout page accessible for screen reader users? evals/files/sample-repo/src/app/checkout/checkout.component.html",
+      "expected_output": "No: the email field has no accessible name, the product image has no alt, the delete icon button has no name, the Apply coupon div is not keyboard reachable, and the confirmation dialog has no name, no aria-modal and no focus trap. Each with line numbers, WCAG criteria, and an Angular remediation (label for / mat-label, [alt], aria-label, button element, cdkTrapFocus + aria-labelledby). Notes the name and phone fields are fine.",
+      "files": ["evals/files/sample-repo/src/app/checkout/checkout.component.html"],
+      "expectations": [
+        "Lists the unlabeled email input, the img without alt, the icon-only button, the clickable div and the dialog with line numbers",
+        "Each issue cites a WCAG 2.2 criterion",
+        "Remediation for the dialog mentions a focus trap (cdkTrapFocus) and aria-labelledby or aria-label",
+        "Does not flag the name or phone fields"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Scan evals/files/react-sample/src/Profile.tsx for a11y and i18n issues.",
+      "expected_output": "Flags: img src={avatar} without alt (1.1.1), search input with placeholder only (3.3.2), role=dialog without focus trap/aria-modal/name (2.1.2, 4.1.2), hard-coded strings Profile, Edit, Update your details, Close, Search (attribute). Not flagged: the decorative logo with alt=\"\", the labelled bio textarea, t('profile.welcome').",
+      "files": ["evals/files/react-sample/package.json", "evals/files/react-sample/src/Profile.tsx"],
+      "expectations": [
+        "Flags the avatar img without alt and not the logo with alt=\"\"",
+        "Flags the search input as placeholder-only and not the bio textarea",
+        "Flags the role=dialog block as lacking a focus trap",
+        "Counts hard-coded strings in Profile.tsx and excludes t() calls",
+        "Finding ids start with A11Y-"
+      ]
+    }
+  ]
+}

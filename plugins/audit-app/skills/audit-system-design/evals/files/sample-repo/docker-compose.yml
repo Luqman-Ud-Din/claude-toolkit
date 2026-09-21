@@ -1,0 +1,47 @@
+services:
+  gateway:
+    build: ./Gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - orders-api
+      - billing-worker
+
+  orders-api:
+    build: ./Orders.Api
+    ports:
+      - "5001:8080"
+    environment:
+      - ConnectionStrings__Ledger=Server=ledger-db;Database=Ledger;User Id=sa;Password=${DB_PASSWORD}
+      - RabbitMQ__Host=rabbitmq
+    depends_on:
+      - ledger-db
+      - rabbitmq
+
+  billing-worker:
+    build: ./Billing.Core
+    environment:
+      - ConnectionStrings__Ledger=Server=ledger-db;Database=Ledger;User Id=sa;Password=${DB_PASSWORD}
+      - RabbitMQ__Host=rabbitmq
+    depends_on:
+      - ledger-db
+      - rabbitmq
+
+  notifications-worker:
+    build: ./Notifications.Worker
+    environment:
+      - RabbitMQ__Host=rabbitmq
+    depends_on:
+      - rabbitmq
+
+  # Planted issue: single broker instance, every flow depends on it (README says "cluster").
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    ports:
+      - "5672:5672"
+
+  ledger-db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=${DB_PASSWORD}

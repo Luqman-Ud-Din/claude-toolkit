@@ -1,0 +1,17 @@
+{
+  "skill_name": "audit-llm-observability-and-cost",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "We only find out our AI feature is behaving badly when a customer complains - can you check what we're actually monitoring?",
+      "expected_output": "Checks for tracing of each model/tool call and for production quality signals like refusal rate and fallback usage, distinguishes this from generic uptime monitoring, and writes an LLM-OC-NNN finding for the gap.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "We show users 'estimated cost: $0.02' for a report-generation feature but I suspect it's way off in practice - can you check?",
+      "expected_output": "Checks whether the shown estimate is derived from real historical data vs. a guessed constant, flags drift risk, and distinguishes this from audit-llm-output-quality's content-accuracy focus.",
+      "files": []
+    }
+  ]
+}

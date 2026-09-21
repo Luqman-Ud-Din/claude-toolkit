@@ -1,0 +1,74 @@
+[
+  {
+    "id": "PII-VUE-CONSOLE-LOG-PII",
+    "pattern": "console\\.(?:log|info|debug|warn|error)\\s*\\([^;]*\\b(?:email|phone|mobile|firstName|lastName|fullName|address|dob|ssn|password|user|profile|token)\\b",
+    "globs": ["*.js", "*.ts", "*.vue"],
+    "severity_hint": "Medium",
+    "description": "console.* with a PII or user object - browser console, error trackers and session replay capture it",
+    "reference": "CWE-532"
+  },
+  {
+    "id": "PII-VUE-LOCALSTORAGE-PII",
+    "pattern": "(?:localStorage|sessionStorage)\\.setItem\\s*\\(\\s*['\"][^'\"]*(?:email|phone|user|profile|customer)[^'\"]*['\"]|(?:localStorage|sessionStorage)\\.setItem\\s*\\([^;]*JSON\\.stringify\\s*\\(\\s*(?:user|profile|customer)|persist(?:edState|ence)\\s*:",
+    "globs": ["*.js", "*.ts", "*.vue"],
+    "severity_hint": "Medium",
+    "description": "PII / user profile persisted in web storage or a persisted Pinia/Vuex store - a client-side storage location",
+    "reference": "CWE-922"
+  },
+  {
+    "id": "PII-VUE-ANALYTICS-CALL",
+    "pattern": "\\b(?:gtag|ga|fbq|mixpanel|amplitude|posthog|analytics|hj|clarity|\\$gtag|\\$ga|logEvent|trackEvent|track|identify|setUserId|setUserProperties|dataLayer\\.push)\\s*[.(]",
+    "globs": ["*.js", "*.ts", "*.vue"],
+    "severity_hint": "Info",
+    "description": "Analytics / telemetry call - check the properties for PII",
+    "reference": "GDPR-Art.28"
+  },
+  {
+    "id": "PII-VUE-ANALYTICS-WITH-PII",
+    "pattern": "\\b(?:gtag|mixpanel|amplitude|posthog|analytics|\\$gtag|logEvent|trackEvent|track|identify|setUserProperties|dataLayer\\.push)\\b[^;]*\\b(?:email|phone|mobile|firstName|lastName|fullName|name)\\s*:",
+    "globs": ["*.js", "*.ts", "*.vue"],
+    "severity_hint": "High",
+    "description": "Analytics event whose properties include PII",
+    "reference": "CWE-359"
+  },
+  {
+    "id": "PII-VUE-SENTRY-SET-USER",
+    "pattern": "Sentry\\.setUser\\s*\\(\\s*\\{[^}]*(?:email|username)",
+    "globs": ["*.js", "*.ts", "*.vue"],
+    "severity_hint": "Medium",
+    "description": "Sentry user context includes email/username",
+    "reference": "CWE-359"
+  },
+  {
+    "id": "PII-VUE-PII-IN-QUERY",
+    "pattern": "[?&](?:email|phone|mobile|ssn)=\\$\\{|query\\s*:\\s*\\{[^}]*\\b(?:email|phone|mobile)\\b|params\\s*:\\s*\\{[^}]*\\b(?:email|phone|mobile)\\b",
+    "globs": ["*.js", "*.ts", "*.vue"],
+    "severity_hint": "Medium",
+    "description": "PII sent as a query/route parameter",
+    "reference": "CWE-598"
+  },
+  {
+    "id": "PII-VUE-THIRD-PARTY-SCRIPT",
+    "pattern": "<script[^>]*src\\s*=\\s*['\"]https?://(?:www\\.googletagmanager\\.com|www\\.google-analytics\\.com|static\\.hotjar\\.com|cdn\\.segment\\.com|js\\.intercomcdn\\.com|widget\\.intercom\\.io|www\\.clarity\\.ms|connect\\.facebook\\.net|cdn\\.mxpnl\\.com|js\\.stripe\\.com)",
+    "globs": ["index.html", "*.html", "nuxt.config.*"],
+    "severity_hint": "Info",
+    "description": "Third-party tag loaded in the page",
+    "reference": "GDPR-Art.28"
+  },
+  {
+    "id": "PII-VUE-FORM-FIELD-PII",
+    "pattern": "v-model\\s*=\\s*['\"](?:form\\.|model\\.|user\\.)?(?:email|phone|mobile|firstName|lastName|fullName|address|dob|ssn|iban|cardNumber)['\"]",
+    "globs": ["*.vue"],
+    "severity_hint": "Info",
+    "description": "v-model bound to a PII field - a collection point",
+    "reference": "GDPR-Art.30"
+  },
+  {
+    "id": "PII-VUE-NUXT-SERVER-OUTBOUND",
+    "pattern": "\\$fetch\\s*\\(\\s*[`'\"]https?://(?!localhost)|useFetch\\s*\\(\\s*[`'\"]https?://(?!localhost)|\\b(?:axios|fetch)\\s*(?:\\.(?:post|put|patch|get))?\\s*\\(\\s*[`'\"]https?://(?!localhost)",
+    "globs": ["*.js", "*.ts", "*.vue"],
+    "severity_hint": "Info",
+    "description": "Outbound call to an external host from Vue/Nuxt code - inspect the body for PII",
+    "reference": "GDPR-Art.28"
+  }
+]

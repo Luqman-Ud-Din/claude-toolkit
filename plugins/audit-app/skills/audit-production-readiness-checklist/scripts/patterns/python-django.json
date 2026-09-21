@@ -1,0 +1,14 @@
+[
+  {"id": "DEBUG-TRUE", "pattern": "^\\s*DEBUG\\s*=\\s*True", "globs": ["*.py"], "severity_hint": "High", "description": "DEBUG = True; confirm it is not the production settings module", "reference": "CWE-489"},
+  {"id": "ALLOWED-HOSTS-ANY", "pattern": "ALLOWED_HOSTS\\s*=\\s*\\[\\s*['\"]\\*['\"]", "globs": ["*.py"], "severity_hint": "Medium", "description": "Any Host header accepted", "reference": "CWE-16"},
+  {"id": "SECRET-KEY-LITERAL", "pattern": "SECRET_KEY\\s*=\\s*['\"][^'\"]{10,}['\"]", "globs": ["*.py"], "severity_hint": "Critical", "description": "SECRET_KEY literal (fine only in dev/test settings)", "reference": "CWE-798"},
+  {"id": "DB-PASSWORD-LITERAL", "pattern": "['\"]PASSWORD['\"]\\s*:\\s*['\"](?!['\"])[^'\"]{4,}['\"]", "globs": ["*.py"], "severity_hint": "Critical", "description": "Database password literal in settings", "reference": "CWE-798"},
+  {"id": "BROKER-URL-CREDENTIALS", "pattern": "(amqps?|rediss?|postgres(ql)?|mysql)://[^:\\s/]+:[^@\\s/]+@(?!localhost|127\\.0\\.0\\.1|db|redis|rabbitmq|postgres|mysql)[^/\\s'\"]+", "globs": ["*.py", ".env*", "*.yml", "*.yaml"], "severity_hint": "Critical", "description": "Broker/DB URL with credentials to a non-local host", "reference": "CWE-798"},
+  {"id": "DEBUG-TOOLBAR", "pattern": "['\"]debug_toolbar['\"]", "globs": ["*.py"], "severity_hint": "Medium", "description": "django-debug-toolbar installed; confirm dev-only", "reference": "CWE-489"},
+  {"id": "BROWSABLE-API", "pattern": "BrowsableAPIRenderer", "globs": ["*.py"], "severity_hint": "Low", "description": "DRF browsable API renderer; confirm disabled in production", "reference": ""},
+  {"id": "FLASK-DEBUG-RUN", "pattern": "app\\.run\\([^)]*debug\\s*=\\s*True|FastAPI\\([^)]*debug\\s*=\\s*True", "globs": ["*.py"], "severity_hint": "High", "description": "Framework debug mode", "reference": "CWE-489"},
+  {"id": "HEALTH-CHECK-APP", "pattern": "health_check|healthz|/health", "globs": ["*.py"], "severity_hint": "Info", "description": "Health endpoint present (absence is the finding)", "reference": ""},
+  {"id": "REQUESTS-NO-TIMEOUT", "pattern": "requests\\.(get|post|put|delete|patch|request)\\((?![^)]*timeout)", "globs": ["*.py"], "severity_hint": "Medium", "description": "requests call without timeout", "reference": "CWE-400"},
+  {"id": "GUNICORN-TIMEOUT-ZERO", "pattern": "--timeout\\s+0|^\\s*timeout\\s*=\\s*0", "globs": ["*.py", "*.sh", "Dockerfile*", "Procfile", "*.yml", "*.yaml", "*.cfg", "*.conf"], "severity_hint": "Medium", "description": "Worker timeout disabled", "reference": ""},
+  {"id": "SETTINGS-MODULE-SET", "pattern": "DJANGO_SETTINGS_MODULE\\s*[=:]", "globs": ["Dockerfile*", "*.yml", "*.yaml", "*.sh", "Procfile", "*.py"], "severity_hint": "Info", "description": "Settings module selection (which module is production?)", "reference": ""}
+]

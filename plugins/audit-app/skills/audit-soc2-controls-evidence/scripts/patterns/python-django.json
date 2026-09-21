@@ -1,0 +1,82 @@
+[
+  {
+    "id": "SOC2-BRANCH-PROTECTION-OFF",
+    "pattern": "protection\\s*:\\s*(?:null|~|false)|required_pull_request_reviews\\s*:\\s*(?:null|~)|required_status_checks\\s*:\\s*(?:null|~)|enforce_admins\\s*:\\s*false|Branch not protected",
+    "globs": ["*.yml", "*.yaml", "*.json"],
+    "severity_hint": "High",
+    "description": "Branch protection disabled or reviews/status checks not required",
+    "reference": "SOC2-CC8.1"
+  },
+  {
+    "id": "SOC2-CI-SCAN-STEP",
+    "pattern": "pip-audit|safety check|bandit|github/codeql-action|trivy|grype|snyk|semgrep|gitleaks|sonar|dependency-review-action|osv-scanner",
+    "globs": ["*.yml", "*.yaml", "Jenkinsfile", "tox.ini", "noxfile.py", "Makefile"],
+    "severity_hint": "Info",
+    "description": "Security scan in CI. ZERO hits means no CI security scan - write the CC7.1 finding",
+    "reference": "SOC2-CC7.1"
+  },
+  {
+    "id": "SOC2-RBAC-MARKER",
+    "pattern": "@permission_required|PermissionRequiredMixin|permission_classes|IsAdminUser|DjangoModelPermissions|has_perm\\(|@user_passes_test|AllowAny",
+    "globs": ["*.py"],
+    "severity_hint": "Info",
+    "description": "Permission enforcement and AllowAny exceptions (CC6.1/CC6.3)",
+    "reference": "SOC2-CC6.1"
+  },
+  {
+    "id": "SOC2-MFA-SSO-MARKER",
+    "pattern": "mozilla_django_oidc|allauth|social_django|django_otp|two_factor|pyotp|webauthn|SAML",
+    "globs": ["*.py", "requirements*.txt", "pyproject.toml"],
+    "severity_hint": "Info",
+    "description": "SSO / MFA marker. ZERO hits means MFA needs IdP evidence",
+    "reference": "SOC2-CC6.1"
+  },
+  {
+    "id": "SOC2-AUDIT-TRAIL-MARKER",
+    "pattern": "simple_history|HistoricalRecords|auditlog|django_auditlog|LogEntry|pghistory",
+    "globs": ["*.py", "requirements*.txt"],
+    "severity_hint": "Info",
+    "description": "Audit trail marker. ZERO hits means no data-change audit trail evidence",
+    "reference": "SOC2-CC7.2"
+  },
+  {
+    "id": "SOC2-HEALTH-ENDPOINT",
+    "pattern": "health_check|['\"]health/?['\"]|healthz|django-health-check",
+    "globs": ["*.py", "requirements*.txt"],
+    "severity_hint": "Info",
+    "description": "Health endpoint for uptime monitoring (A1.1)",
+    "reference": "SOC2-A1.1"
+  },
+  {
+    "id": "SOC2-CONSOLE-ONLY-LOGGING",
+    "pattern": "logging\\.StreamHandler|['\"]class['\"]\\s*:\\s*['\"]logging\\.StreamHandler",
+    "globs": ["*.py"],
+    "severity_hint": "Medium",
+    "description": "Stream-only logging - prove shipping, retention and tamper-evidence (CC7.2)",
+    "reference": "SOC2-CC7.2"
+  },
+  {
+    "id": "SOC2-BACKUP-JOB",
+    "pattern": "pg_dump|mysqldump|dbbackup|aws_backup_plan|backup_retention_period|velero",
+    "globs": ["*.sh", "*.tf", "*.yml", "*.yaml", "*.md", "*.py"],
+    "severity_hint": "Info",
+    "description": "Backup configuration - pair with a restore test record",
+    "reference": "SOC2-A1.2"
+  },
+  {
+    "id": "SOC2-RESTORE-TEST-RECORD",
+    "pattern": "restore[ _-]?(?:test|drill|exercise|verified)|test[ _-]?restore|restored on|last restore|\\bRTO\\b|\\bRPO\\b",
+    "globs": ["*.md", "*.txt"],
+    "severity_hint": "Info",
+    "description": "Restore test record. ZERO hits while backups exist means no documented restore test",
+    "reference": "SOC2-A1.2"
+  },
+  {
+    "id": "SOC2-SECRET-LITERAL",
+    "pattern": "(?:SECRET_KEY|PASSWORD|API_KEY|TOKEN)\\s*=\\s*['\"][A-Za-z0-9+/_\\-!@#$%^&*]{12,}['\"]",
+    "globs": ["*.py"],
+    "severity_hint": "High",
+    "description": "Credential-looking literal in settings - confirm with audit-secrets-and-config",
+    "reference": "SOC2-C1.1"
+  }
+]

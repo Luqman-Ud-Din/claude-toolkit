@@ -1,0 +1,58 @@
+[
+  {
+    "id": "TEST-SKIP-PYTEST",
+    "pattern": "@pytest\\.mark\\.(?:skip|skipif|xfail)\\b",
+    "globs": ["*.py"],
+    "severity_hint": "Medium",
+    "description": "pytest test skipped or expected-to-fail - it never guards anything",
+    "reference": "CWE-1120"
+  },
+  {
+    "id": "TEST-SKIP-UNITTEST",
+    "pattern": "@(?:unittest\\.)?skip(?:If|Unless)?\\s*\\(|self\\.skipTest\\(",
+    "globs": ["*.py"],
+    "severity_hint": "Medium",
+    "description": "unittest test skipped",
+    "reference": "CWE-1120"
+  },
+  {
+    "id": "TEST-SQLITE-SUBSTITUTE",
+    "pattern": "django\\.db\\.backends\\.sqlite3|'NAME'\\s*:\\s*':memory:'",
+    "globs": ["settings*.py", "*test*.py", "conftest.py"],
+    "severity_hint": "Medium",
+    "description": "Tests run on SQLite while production is PostgreSQL/MySQL - migrations, constraints and vendor SQL untested",
+    "reference": "CWE-1120"
+  },
+  {
+    "id": "TEST-SLEEP",
+    "pattern": "time\\.sleep\\(",
+    "globs": ["test_*.py", "*_test.py", "tests.py"],
+    "severity_hint": "Low",
+    "description": "Timing-dependent test - a common source of flakiness",
+    "reference": "CWE-1120"
+  },
+  {
+    "id": "TEST-CI-ADVISORY",
+    "pattern": "pytest[^\\n]*\\|\\|\\s*true|continue-on-error:\\s*true|allow_failure:\\s*true|--exitfirst\\s*\\|\\|",
+    "globs": ["*.yml", "*.yaml", "Jenkinsfile*"],
+    "severity_hint": "High",
+    "description": "Test step cannot fail the build",
+    "reference": "ASVS-1.14.4"
+  },
+  {
+    "id": "TEST-NO-COV",
+    "pattern": "(?:python -m )?pytest(?![^\\n]*--cov)",
+    "globs": ["*.yml", "*.yaml", "Jenkinsfile*", "tox.ini"],
+    "severity_hint": "Low",
+    "description": "Tests run without --cov - no coverage measured in CI",
+    "reference": "ASVS-1.14.4"
+  },
+  {
+    "id": "TEST-PROD-DB",
+    "pattern": "DATABASE_URL\\s*=\\s*['\"]?[a-z]+://(?!localhost|127\\.0\\.0\\.1)",
+    "globs": ["settings*.py", "conftest.py", ".env.test"],
+    "severity_hint": "High",
+    "description": "Test settings point at a remote database",
+    "reference": "CWE-1188"
+  }
+]

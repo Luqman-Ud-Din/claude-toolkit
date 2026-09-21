@@ -1,0 +1,15 @@
+# probot/settings - repository configuration as code
+repository:
+  name: inventory-api
+  default_branch: main
+  delete_branch_on_merge: true
+branches:
+  - name: main
+    # Branch protection was disabled during the migration and never re-enabled.
+    protection: null
+  - name: develop
+    protection:
+      required_pull_request_reviews: null
+      required_status_checks: null
+      enforce_admins: false
+      restrictions: null

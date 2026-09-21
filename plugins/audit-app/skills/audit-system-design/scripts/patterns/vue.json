@@ -1,0 +1,11 @@
+[
+  {"id": "CROSS-MODULE-IMPORT", "pattern": "from\\s+['\"](\\.\\./)+(modules|features)/\\w+/(?!index)", "globs": ["*.ts", "*.js", "*.vue"], "severity_hint": "Medium", "description": "Import into another module's internals (boundary leak)", "reference": ""},
+  {"id": "DEEP-RELATIVE-IMPORT", "pattern": "from\\s+['\"](\\.\\./){3,}", "globs": ["*.ts", "*.js", "*.vue"], "severity_hint": "Low", "description": "Deep relative import across module roots", "reference": ""},
+  {"id": "MULTIPLE-BASE-URLS", "pattern": "(NUXT_PUBLIC|VITE)_\\w*(URL|API|HOST)\\w*|https?://[\\w.-]+(:\\d+)?/|baseURL\\s*:", "globs": ["*.ts", "*.js", "*.vue", ".env*"], "severity_hint": "Info", "description": "Backend origin referenced; count distinct origins", "reference": ""},
+  {"id": "WEBSOCKET-DIRECT", "pattern": "new\\s+WebSocket\\(|new\\s+EventSource\\(|io\\(\\s*['\"]", "globs": ["*.ts", "*.js", "*.vue"], "severity_hint": "Info", "description": "Realtime edge: backend needs a backplane for multiple instances", "reference": ""},
+  {"id": "POLLING", "pattern": "useIntervalFn\\(|setInterval\\(", "globs": ["*.ts", "*.js", "*.vue"], "severity_hint": "Low", "description": "Polling; integration style check", "reference": ""},
+  {"id": "GLOBAL-MUTABLE", "pattern": "window\\.\\w+\\s*=|^(export\\s+)?let\\s+\\w*(cache|store|state)\\w*\\s*[:=]", "globs": ["*.ts", "*.js"], "severity_hint": "Low", "description": "Global/module mutable state as a source of truth", "reference": ""},
+  {"id": "CLIENT-BUSINESS-MATH", "pattern": "(total|grandTotal|netAmount|tax|discount)\\w*\\s*[=+]=?\\s*[^;]*\\*[^;]*;", "globs": ["*.ts", "*.js", "*.vue"], "severity_hint": "Low", "description": "Money computed on the client; confirm the server recomputes", "reference": ""},
+  {"id": "NUXT-SERVER-DB-ACCESS", "pattern": "(prisma\\.|drizzle\\(|knex\\(|mongoose\\.)", "globs": ["*.ts", "*.js"], "severity_hint": "Low", "description": "Nuxt server code touching the DB directly; apply backend checklist", "reference": ""},
+  {"id": "NUXT-SERVER-MIDDLEWARE", "pattern": "defineEventHandler\\(", "globs": ["*.ts"], "severity_hint": "Info", "description": "Server route/middleware: map the auth boundary", "reference": "CWE-306"}
+]

@@ -1,0 +1,47 @@
+{
+  "skill_name": "audit-api-contract",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Before we open this API to partners, review the contract of the ASP.NET Core project in evals/files/sample-api. I want to know if the endpoints are consistent - pagination, validation, error responses, what we return - and whether Swagger is safe.",
+      "expected_output": "Runs ../audit-stack-detection/scripts/detect_stack.py (dotnet), audit-endpoint-inventory, ../audit-code-scan/scripts/grep_scan.py with patterns/dotnet.json. Report at audit/reports/audit-api-contract.md with the endpoint table covering all 9 endpoints (route, method, versioned?, paginated?, validated?, error shape consistent?). Findings (API- prefix): GET /api/v1/users/{id} returns the User entity including PasswordHash and SecurityStamp (High, UsersController.cs:35); GET /api/v1/products returns every product with no page/pageSize or cap (Medium, ProductsController.cs:23); ProductsController returns ad-hoc { error } bodies while UsersController and OrdersController return ProblemDetails (Low or Medium, ProductsController.cs:40 and :49); CreateProductRequest has no validation attributes (Medium). Negatives not flagged: Swagger is inside IsDevelopment() so it is not exposed in production; all routes are versioned (api/v{version:apiVersion}); OrdersController and UsersController.List are paginated with a clamp and validated; Orders uses 201 CreatedAtAction, 204 NoContent, 404 and 409 correctly; dates are DateTimeOffset and JSON is camelCase with string enums.",
+      "files": ["evals/files/sample-api"],
+      "expectations": [
+        "Report contains an endpoint table with columns for route, method, versioned, paginated, validated and error shape consistent, listing GET /api/v1/products as not paginated",
+        "Output contains a High (or Critical) finding that GET /api/v1/users/{id} returns the User entity including PasswordHash, located in UsersController.cs",
+        "Output contains a finding that GET /api/v1/products is an unpaginated list endpoint, located in ProductsController.cs",
+        "Output contains a finding about inconsistent error shapes naming ProductsController ({ error }) versus ProblemDetails in UsersController or OrdersController",
+        "Output does not report Swagger/OpenAPI as exposed in production (UseSwagger is inside IsDevelopment())",
+        "Output does not flag OrdersController list or create endpoints for missing pagination, validation or wrong status codes",
+        "Finding ids start with API- and findings.json validates with ../audit-finding-writer/scripts/findings.py validate",
+        "Report has a Not checked section (for example gateway rewrites or runtime spec served in production not verified)"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "We just regenerated our OpenAPI file. Compare evals/files/sample-api/docs/openapi/openapi-v1.0.json (last release) with openapi-v1.1.json and tell me if anything will break existing clients.",
+      "expected_output": "Runs spec_diff.py old new. Reports breaking changes: DELETE /api/v1/products/{id} removed; POST /api/v1/orders has a new required request field branchId; OrderDto.status enum lost 'Refunded' (GET /orders, GET /orders/{id}, POST /orders responses); OrderDto.customerName removed from responses. Notable non-breaking: new paths /api/v1/orders/{id}/cancel, /api/v1/users, /api/v1/users/{id}; new optional query parameter status on GET /api/v1/orders; 404 responses now documented. Points out that the breaking changes shipped under the same /v1 version, recommends a v2 or a deprecation window, and notes that the new spec documents a User schema with passwordHash and securityStamp on GET /api/v1/users/{id}, which is an over-exposure finding.",
+      "files": ["evals/files/sample-api/docs/openapi/openapi-v1.0.json", "evals/files/sample-api/docs/openapi/openapi-v1.1.json"],
+      "expectations": [
+        "Lists removal of DELETE /api/v1/products/{id} as breaking",
+        "Lists branchId as a new required request field on POST /api/v1/orders",
+        "Lists removal of the Refunded enum value and of the customerName response field as breaking",
+        "Classifies the added users and cancel paths and the optional status parameter as non-breaking",
+        "Notes that breaking changes were made without a version bump (still /api/v1) and recommends versioning or deprecation",
+        "Mentions that the new spec exposes passwordHash in the User schema"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Quick check on evals/files/sample-api: do any of our API responses return more data than they should? Our security lead is worried about DTOs.",
+      "expected_output": "Runs audit-endpoint-inventory (response.sensitive_fields) and the ENTITY-RETURNED / SENSITIVE-FIELD-SERIALISABLE patterns. One High finding: UsersController.Get returns ActionResult<User> and User carries PasswordHash, SecurityStamp, CompanyId and IsDeleted; remediation returns a UserDto projection (or reuses UserSummaryDto) and optionally [JsonIgnore] on the credential fields. States that products and orders endpoints project to ProductDto/OrderDto and do not leak CostPrice, CompanyId or IsDeleted. May mention that CreateProductRequest accepts CostPrice unvalidated as a secondary validation note, and hands authorization questions to audit-authz-and-access-control.",
+      "files": ["evals/files/sample-api"],
+      "expectations": [
+        "Identifies GET /api/v1/users/{id} (UsersController.Get) as returning the User entity with PasswordHash and SecurityStamp",
+        "Remediation proposes a response DTO projection instead of the entity",
+        "Does not claim that ProductDto or OrderDto expose CostPrice, CompanyId or IsDeleted",
+        "Finding uses the standard format with Location, Evidence, Impact, Remediation and a Reference such as CWE-200 or OWASP API3:2023"
+      ]
+    }
+  ]
+}

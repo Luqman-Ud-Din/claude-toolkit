@@ -1,0 +1,12 @@
+{
+  "base_path": "",
+  "endpoints": [
+    {"method": "GET",  "path": "/api/invoices",              "operation": "list",   "tenant_scoped": "global-filter"},
+    {"method": "GET",  "path": "/api/invoices/report",       "operation": "read",   "tenant_scoped": "NONE (raw SQL + IgnoreQueryFilters)"},
+    {"method": "POST", "path": "/api/invoices/create",       "operation": "write",  "tenant_scoped": "NONE (tenantId from body)", "body": {"tenantId": "{tenant_b}", "total": 1, "number": "PROBE"}},
+    {"method": "GET",  "path": "/api/documents/{id}",        "operation": "read",   "tenant_scoped": "cache key has no tenant", "id_params": {"id": "document"}},
+    {"method": "GET",  "path": "/api/documents/{id}/download","operation": "download","tenant_scoped": "blob path has no tenant", "id_params": {"id": "document"}},
+    {"method": "GET",  "path": "/api/documents/search",      "operation": "search", "query": {"q": "acme"}, "tenant_scoped": "?"},
+    {"method": "GET",  "path": "/api/invoices/export",       "operation": "export", "tenant_scoped": "?"}
+  ]
+}

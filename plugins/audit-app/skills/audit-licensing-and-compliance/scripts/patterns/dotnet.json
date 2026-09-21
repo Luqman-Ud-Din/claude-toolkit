@@ -1,0 +1,7 @@
+[
+  {"id": "LIC-VENDORED-GPL-HEADER", "pattern": "GNU (Affero )?General Public License|SPDX-License-Identifier:\\s*(A?GPL|SSPL|BUSL)", "globs": ["*.cs", "*.cshtml", "*.razor"], "severity_hint": "High", "description": "Copyleft licence header inside copied source", "reference": "CWE-1104"},
+  {"id": "LIC-PACKAGE-LICENSE-EXPR", "pattern": "<PackageLicenseExpression>[^<]*(A?GPL|SSPL|BUSL)|<license type=\"expression\">[^<]*(A?GPL|SSPL|BUSL)", "globs": ["*.csproj", "*.nuspec", "*.props"], "severity_hint": "High", "description": "Project or nuspec declares a copyleft/restricted licence", "reference": "CWE-1104"},
+  {"id": "LIC-DLL-REFERENCE", "pattern": "<HintPath>", "globs": ["*.csproj"], "severity_hint": "Medium", "description": "Direct DLL reference (not a NuGet package) - licence must be checked by hand", "reference": "CWE-1104"},
+  {"id": "LIC-KNOWN-COPYLEFT-NUGET", "pattern": "PackageReference Include=\"(iTextSharp|itext7|itext|Ghostscript\\.NET|MySql\\.Data|MySqlConnector\\.Legacy|QuestPDF|SharpZipLib\\.Legacy)\"", "globs": ["*.csproj"], "severity_hint": "High", "description": "Well-known NuGet packages with AGPL/GPL/commercial-on-revenue terms", "reference": "CWE-1104"},
+  {"id": "LIC-CONTAINER-BASE-IMAGE", "pattern": "^\\s*FROM\\s+", "globs": ["Dockerfile", "*.dockerfile"], "severity_hint": "Low", "description": "Base image - licence lives in OCI labels (docker inspect)", "reference": ""}
+]

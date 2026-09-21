@@ -1,0 +1,42 @@
+[
+  {
+    "id": "CLIENT-SENDS-MONEY",
+    "pattern": "\\b(total|grandTotal|netAmount|discountAmount|taxAmount|unitPrice|amountPaid)\\s*:\\s*\\w+[\\s\\S]{0,120}(fetch\\(|axios\\.|mutate|useMutation)|(fetch\\(|axios\\.(post|put|patch)|mutate\\()[\\s\\S]{0,200}\\b(total|grandTotal|discountAmount|taxAmount)\\s*:",
+    "globs": ["*.ts", "*.tsx", "*.js", "*.jsx"],
+    "severity_hint": "Medium",
+    "description": "Client sends a computed money field; verify the server ignores it and recomputes",
+    "reference": "CWE-602"
+  },
+  {
+    "id": "SERVER-TRUSTS-BODY",
+    "pattern": "formData\\.get\\(\\s*['\"](total|amount|status|role)['\"]\\s*\\)|body\\.(total|grandTotal|status|role|isAdmin)\\b|data:\\s*body\\b|\\.\\.\\.body\\b",
+    "globs": ["route.ts", "route.js", "*.server.ts", "*.ts", "*.js"],
+    "severity_hint": "High",
+    "description": "Next.js route handler or server action persists client-supplied total/status/role",
+    "reference": "CWE-915"
+  },
+  {
+    "id": "UI-ONLY-RULE",
+    "pattern": "disabled=\\{[^}]*\\.(status|state)\\b|\\{\\s*(isAdmin|canApprove|canCancel)\\s*&&",
+    "globs": ["*.tsx", "*.jsx"],
+    "severity_hint": "Info",
+    "description": "Business rule enforced in JSX; add it to the flow rules table and verify on the server",
+    "reference": "CWE-602"
+  },
+  {
+    "id": "DISCOUNT-APPLY-UI",
+    "pattern": "\\b(apply|add|redeem)(Discount|Coupon|Promo|Voucher)\\w*\\s*\\(|useEffect\\([\\s\\S]{0,120}(coupon|discount)",
+    "globs": ["*.ts", "*.tsx", "*.js", "*.jsx"],
+    "severity_hint": "Info",
+    "description": "Coupon/discount trigger in the client (possibly in an effect); check the server dedupes",
+    "reference": "CWE-840"
+  },
+  {
+    "id": "MUTATION-RETRY",
+    "pattern": "retry:\\s*[1-9]|retries:\\s*[1-9]",
+    "globs": ["*.ts", "*.tsx", "*.js", "*.jsx"],
+    "severity_hint": "Info",
+    "description": "Retry configured; if on a mutation that moves money/stock, hand the replay case to audit-concurrency-and-race-condition",
+    "reference": "CWE-840"
+  }
+]

@@ -1,0 +1,75 @@
+{
+  "skill_name": "audit-application",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "/audit-application --dry-run --profile pre-launch on evals/files/sample-repo. It's our multi-tenant inventory SaaS (every company is a tenant). I just want to see which audits would run and in what order before we commit to it.",
+      "expected_output": "plan.py is run with --profile pre-launch --multi-tenant yes --dry-run and nothing is written (no audit/ folder appears). The printed plan shows Phase 1 setup steps with the multi-tenant and scope-profile checkpoints; Phase 2 with no discovery skills but the audit-endpoint-inventory infrastructure step (used by authz, multi-tenant isolation and performance) and the critical-flows checkpoint (needed by business-logic, concurrency, datetime); Phase 3 wave 1 authz, multi-tenant isolation, secrets, dependencies and wave 2 injection and XSS, followed by the security-gate checkpoint; Phase 4 business-logic then concurrency, datetime, performance; Phase 5 production-readiness-checklist; Phase 6 the audit-findings-rollup step (de-duplication and go/no-go), owasp-asvs-mapper, report-generator; and 19 out-of-profile skills. The JSON form (--json --stable) matches evals/files/expected-dry-run-pre-launch.json exactly.",
+      "files": [
+        "evals/files/sample-repo/Inventory.Api/Inventory.Api.csproj",
+        "evals/files/sample-repo/Inventory.Api/Program.cs",
+        "evals/files/sample-repo/Inventory.Api/Controllers/OrdersController.cs",
+        "evals/files/sample-repo/web/package.json",
+        "evals/files/sample-repo/web/src/app/app.component.ts",
+        "evals/files/expected-dry-run-pre-launch.json"
+      ],
+      "expectations": [
+        "plan.py is invoked with --dry-run and the pre-launch profile, and the multi-tenant answer (yes) is passed rather than asked again",
+        "No audit/ directory is created under evals/files/sample-repo",
+        "The stack is reported as dotnet backend and angular frontend",
+        "The plan lists exactly these eleven profile skills plus audit-owasp-asvs-mapper and audit-report-generator: authz-and-access-control, multi-tenant-isolation, secrets-and-config, dependency-vulnerabilities, injection-vulnerabilities, frontend-xss-and-dom-safety, business-logic, concurrency-and-race-condition, datetime-and-timezone, performance-and-scalability, production-readiness-checklist",
+        "Security skills appear in wave order (authz, multi-tenant isolation, secrets, dependencies before injection and XSS) and are followed by the security-gate checkpoint",
+        "The critical-flows checkpoint is present even though no discovery skill is in the profile, because business-logic needs it",
+        "Phase 2 lists the audit-endpoint-inventory infrastructure step before the security skills, used by authz, multi-tenant isolation and performance, and it is not counted among the skills",
+        "Reporting runs the audit-findings-rollup step (de-duplication and go/no-go), then the OWASP/ASVS mapper, then the report generator",
+        "The output states that checkpoints in non-interactive runs are recorded as auto-continued",
+        "python scripts/plan.py evals/files/sample-repo --profile pre-launch --multi-tenant yes --json --stable produces JSON identical to evals/files/expected-dry-run-pre-launch.json"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Copy evals/files/sample-repo to a scratch folder and run /audit-application --profile pre-launch --non-interactive --simulate-failure audit-secrets-and-config on the copy. It's multi-tenant. I want to see that one broken audit doesn't kill the whole run.",
+      "expected_output": "run_state.py init writes audit/stack.json (multi_tenant true), audit/plan.json, audit/run-log.json and skipped status files for the 19 out-of-profile skills. The run follows run_state.py next. audit-secrets-and-config is not invoked; run_state.py fail records it with reason 'simulated failure (--simulate-failure audit-secrets-and-config)', and the run continues through every remaining security, quality, readiness and reporting item. The endpoint-inventory and dedupe infrastructure steps run through run_state.py start/complete and write audit/evidence/audit-endpoint-inventory/endpoints.json and audit/evidence/audit-findings-rollup/rollup.json, with no status file of their own. The critical-flows and security-gate checkpoints are recorded with mode auto-continued. audit/audit-report.md is generated; its scope table row reads 'secrets and config | failed - simulated failure ...' and the verdict carries the incomplete-audit caveat. The console summary lists the failed skill, the limited-access skill, finding counts after de-duplication and the go/no-go line (NO-GO, with the rollup's caveats naming the failed, skipped and limited-access areas). The end state resembles evals/files/after-run-b/sample-repo/audit.",
+      "files": [
+        "evals/files/sample-repo/Inventory.Api/Inventory.Api.csproj",
+        "evals/files/sample-repo/web/package.json",
+        "evals/files/after-run-b/sample-repo/audit/status/audit-secrets-and-config.json",
+        "evals/files/after-run-b/sample-repo/audit/run-log.json",
+        "evals/files/after-run-b/sample-repo/audit/audit-report.md"
+      ],
+      "expectations": [
+        "audit/status/audit-secrets-and-config.json exists with status failed and a non-empty reason",
+        "Every other planned skill (authz, multi-tenant isolation, dependencies, injection, XSS, business-logic, concurrency, datetime, performance, readiness, mapper, report generator) has status completed, i.e. the run did not stop at the failure",
+        "Out-of-profile skills have status skipped with skipped_by audit-application and a reason naming the pre-launch profile",
+        "audit/run-log.json records start and finish events with duration_s for each item and the two in-run checkpoints with mode auto-continued",
+        "The Scope and methodology section of audit/audit-report.md lists secrets and config as failed with the simulated-failure reason",
+        "audit/evidence/audit-findings-rollup/rollup.json exists and the rollup step added no file to audit/findings/ and did not modify any findings file",
+        "The console summary shows skills run / skipped / failed counts, severity counts and a GO/NO-GO line",
+        "No audit/status file exists for audit-endpoint-inventory or audit-findings-rollup, and neither appears as a row in the report or is counted as a skill in the console summary"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "The secrets audit failed last time. Copy evals/files/after-run-b to a scratch folder and re-run /audit-application on the sample-repo inside it (non-interactive). Don't redo the audits that already finished.",
+      "expected_output": "run_state.py init (no --force, no profile) reuses pre-launch from audit/plan.json and multi_tenant from audit/stack.json and opens run #2 marked resumed. run_state.py status --json lists exactly one pending item, audit-secrets-and-config (failed in an earlier run), and next returns it. Only that child is invoked. After it completes, next returns the security-gate checkpoint (a security skill finished after the last answer) and then the dedupe step (audit-findings-rollup), audit-owasp-asvs-mapper and audit-report-generator (stale because an upstream skill finished after them). The endpoint-inventory step is reported as not needed, because every skill that reads it already has a result, and it is not run. No other audit skill is started. The summary shows 13 planned, 3 run this time (audit-secrets-and-config, plus audit-owasp-asvs-mapper and audit-report-generator, which re-run because their inputs changed) and 10 reused from earlier runs, 0 failed. The dedupe step is an infrastructure step and is not counted as a skill.",
+      "files": [
+        "evals/files/after-run-b/sample-repo/audit/plan.json",
+        "evals/files/after-run-b/sample-repo/audit/stack.json",
+        "evals/files/after-run-b/sample-repo/audit/run-log.json",
+        "evals/files/after-run-b/sample-repo/audit/status/audit-secrets-and-config.json",
+        "evals/files/after-run-b/sample-repo/audit/status/audit-authz-and-access-control.json",
+        "evals/files/after-run-b/sample-repo/audit/findings/audit-authz-and-access-control.json"
+      ],
+      "expectations": [
+        "The re-run does not pass --force and does not ask for the profile or multi-tenant answer again",
+        "Immediately after init, the only pending item is audit-secrets-and-config",
+        "No run_state.py start event is recorded in run #2 for any skill whose status was completed in run #1 (authz, multi-tenant isolation, dependencies, injection, XSS, business-logic, concurrency, datetime, performance, readiness)",
+        "audit-secrets-and-config is started, invoked and ends with a completed (or again failed) status recorded in run #2",
+        "The security-gate checkpoint is recorded again in run #2 after the secrets retry",
+        "The reporting steps (dedupe = audit-findings-rollup, mapper, report generator) run again in run #2 because their inputs changed",
+        "The final summary reports 3 run this time (the secrets retry, the mapper and the report generator) and 10 reused from earlier runs, and 0 failed if the retry succeeded",
+        "The endpoint-inventory step is not started in run #2 (status shows it done as not needed)"
+      ]
+    }
+  ]
+}

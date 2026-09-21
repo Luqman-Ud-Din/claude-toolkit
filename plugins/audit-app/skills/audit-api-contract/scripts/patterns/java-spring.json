@@ -1,0 +1,106 @@
+[
+  {
+    "id": "SPEC-EXPOSED",
+    "pattern": "springdoc\\.(api-docs|swagger-ui)\\.enabled\\s*[=:]\\s*true|permitAll\\(\\)[^\\n]*(api-docs|swagger)|(api-docs|swagger)[^\\n]*permitAll\\(\\)|@EnableSwagger2|springfox",
+    "globs": ["*.java", "*.kt", "*.yml", "*.yaml", "*.properties"],
+    "severity_hint": "Medium",
+    "description": "Spec/Swagger enabled or permitted; confirm the production profile disables it or requires authentication",
+    "reference": "OWASP-API8:2023"
+  },
+  {
+    "id": "ENTITY-RETURNED",
+    "pattern": "ResponseEntity<\\s*(List<|Page<)?\\s*(User|Account|Order|Product|Customer|Invoice|Payment|Employee|Company|Tenant)\\s*>|public\\s+(List<|Iterable<)?\\s*(User|Account|Order|Product|Customer|Invoice|Payment)\\s*>?\\s+\\w+\\s*\\([^)]*\\)\\s*\\{|@RepositoryRestResource",
+    "globs": ["*Controller.java", "*Resource.java", "*Repository.java", "*.kt"],
+    "severity_hint": "High",
+    "description": "Handler or exported repository returns what looks like an entity; check its fields for secrets/internal columns",
+    "reference": "CWE-200"
+  },
+  {
+    "id": "SENSITIVE-FIELD-SERIALISABLE",
+    "pattern": "(private|protected|public)\\s+(String|byte\\[\\])\\s+(password|passwordHash|hash|salt|securityStamp|refreshToken|accessToken|apiKey|secretKey|otp|pin)\\w*\\s*;",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "High",
+    "description": "Credential-like field; confirm @JsonIgnore / WRITE_ONLY or DTO projection keeps it out of responses",
+    "reference": "CWE-200"
+  },
+  {
+    "id": "UNPAGINATED-LIST",
+    "pattern": "\\.findAll\\(\\s*\\)|@GetMapping(\\([^)]*\\))?\\s*(public\\s+)?(List|Iterable|Collection)<",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "Medium",
+    "description": "findAll() without Pageable or a GET returning a List; confirm pagination and max-page-size",
+    "reference": "CWE-770"
+  },
+  {
+    "id": "PAGINATION-PRESENT",
+    "pattern": "Pageable\\b|Page<|Slice<|PageRequest\\.of|max-page-size",
+    "globs": ["*.java", "*.kt", "*.yml", "*.yaml", "*.properties"],
+    "severity_hint": "Info",
+    "description": "Pagination marker present; record in the endpoint table",
+    "reference": "CWE-770"
+  },
+  {
+    "id": "ADHOC-ERROR-SHAPE",
+    "pattern": "\\.body\\(\\s*Map\\.of\\(\\s*\"(error|message|msg|success|status)\"|new\\s+\\w*(Error|Fail)\\w*(Response|Dto|Body)\\s*\\(|\\.body\\(\\s*(e|ex|exception)\\.getMessage\\(\\)",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "Low",
+    "description": "Ad-hoc error body; collect shapes per controller and compare with ProblemDetail / @ControllerAdvice output",
+    "reference": "CWE-209"
+  },
+  {
+    "id": "PROBLEMDETAILS-PRESENT",
+    "pattern": "ProblemDetail\\b|@ControllerAdvice|@RestControllerAdvice|ResponseEntityExceptionHandler|problemdetails\\.enabled",
+    "globs": ["*.java", "*.kt", "*.yml", "*.yaml", "*.properties"],
+    "severity_hint": "Info",
+    "description": "Global error handling / RFC 9457 marker present; record as the expected shape",
+    "reference": "CWE-209"
+  },
+  {
+    "id": "STACKTRACE-EXPOSED",
+    "pattern": "include-stacktrace\\s*[=:]\\s*(always|on_param|on-param)|include-message\\s*[=:]\\s*always|include-binding-errors\\s*[=:]\\s*always",
+    "globs": ["*.yml", "*.yaml", "*.properties"],
+    "severity_hint": "Medium",
+    "description": "Error details/stack traces included in responses; confirm not active in the production profile",
+    "reference": "CWE-209"
+  },
+  {
+    "id": "UNVALIDATED-DTO",
+    "pattern": "@RequestBody\\s+(?!@Valid|@Validated)\\s*\\w+\\s+\\w+",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "Medium",
+    "description": "@RequestBody without @Valid; validation constraints on the DTO are not enforced",
+    "reference": "CWE-20"
+  },
+  {
+    "id": "VALIDATION-PRESENT",
+    "pattern": "@(NotNull|NotBlank|NotEmpty|Size|Min|Max|Positive|Email|Pattern|Valid|Validated)\\b",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "Info",
+    "description": "Bean Validation marker present; record in the endpoint table",
+    "reference": "CWE-20"
+  },
+  {
+    "id": "CREATE-RETURNS-200",
+    "pattern": "@PostMapping(?![\\s\\S]{0,120}@ResponseStatus)",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "Info",
+    "description": "POST handler; confirm creates return 201 (ResponseEntity.created or @ResponseStatus(CREATED))",
+    "reference": "ASVS-13.2"
+  },
+  {
+    "id": "NON-ISO-DATE-OUT",
+    "pattern": "@JsonFormat\\([^)]*pattern\\s*=\\s*\"(?!yyyy-MM-dd'T')|write-dates-as-timestamps\\s*[=:]\\s*true|WRITE_DATES_AS_TIMESTAMPS,\\s*true",
+    "globs": ["*.java", "*.kt", "*.yml", "*.yaml", "*.properties"],
+    "severity_hint": "Low",
+    "description": "Non-ISO or epoch date serialisation; hand the zone question to audit-datetime-and-timezone",
+    "reference": "ASVS-13.1"
+  },
+  {
+    "id": "UNVERSIONED-ROUTE",
+    "pattern": "@RequestMapping\\(\\s*(value\\s*=\\s*)?\"/?api/(?!v\\d)",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "Low",
+    "description": "Controller base path without a version segment; compare with other controllers",
+    "reference": "ASVS-13.1"
+  }
+]

@@ -1,0 +1,17 @@
+{
+  "skill_name": "shared-llm-context-bootstrap",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Run audit-llm-prompt-injection on this repo - I haven't run any explore skills yet.",
+      "expected_output": "Checks for audit/llm/explore/*.json and audit/llm-stack.json, finds none, and falls back to the narrow discovery audit-llm-prompt-injection declares (stack detection + locating the prompt assembly site) rather than running the full explore phase.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "We have an explore-llm-tools-and-permissions.json from three weeks ago, but the agent's tools folder has had a bunch of commits since. Should the excessive-agency audit just use the old map?",
+      "expected_output": "Flags the staleness (map generated_at predates recent changes to the relevant area) and recommends re-running the explore skill or treating the map as a starting point only, rather than silently trusting it.",
+      "files": []
+    }
+  ]
+}

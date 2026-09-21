@@ -1,0 +1,14 @@
+{
+  "id": "critical-flows",
+  "answer": "order payment; order cancellation; stock reservation",
+  "mode": "auto-continued",
+  "at": "2026-09-11T12:23:23.863048+00:00",
+  "data": {
+    "flows": [
+      "order payment (Pay endpoint)",
+      "order cancellation",
+      "stock reservation"
+    ],
+    "source": "audit-business-logic/scripts/flow_inventory.py candidates, top 3"
+  }
+}

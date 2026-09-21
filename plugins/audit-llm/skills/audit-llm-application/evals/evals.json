@@ -1,0 +1,17 @@
+{
+  "skill_name": "audit-llm-application",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Run a full AI security audit on our agentic support bot - it has tools, no code execution, single agent.",
+      "expected_output": "Detects the LLM stack, asks about live-probe scope, selects all applicable audit-llm-* skills while skipping (with a stated not-applicable reason) audit-llm-code-execution-and-multi-agent, runs them, consolidates via audit-findings-rollup, and reports per-skill status.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Just run the security-relevant LLM audits, skip the process/quality ones like evals and observability for now.",
+      "expected_output": "Selects the security-relevant subset (prompt-injection, jailbreak-resistance, guardrails, excessive-agency, data-privacy-and-isolation, supply-chain, code-execution-and-multi-agent as applicable) and explicitly reports the quality-focused skills as skipped by user choice.",
+      "files": []
+    }
+  ]
+}

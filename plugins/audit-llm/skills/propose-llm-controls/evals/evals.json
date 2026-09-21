@@ -1,0 +1,17 @@
+{
+  "skill_name": "propose-llm-controls",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "LLM-EA-003 flagged our refund tool has no approval gate - design the actual fix for our .NET backend.",
+      "expected_output": "Proposes a propose/confirm tool split with a server-side amount cap, gives a concrete .NET code sketch (not pseudocode), states the operational trade-off of needing an approval queue, and estimates effort.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "LLM-EA-004 says our agent's tools all share one broad service credential - what's the fix, and does it need more than just code?",
+      "expected_output": "Proposes scoping each tool to a narrower credential, explicitly flags that provisioning a new service credential likely needs infra/ops involvement beyond a pure code change, and states that in the proposal rather than presenting it as engineering-only.",
+      "files": []
+    }
+  ]
+}

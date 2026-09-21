@@ -1,0 +1,82 @@
+[
+  {
+    "id": "LOG-REQUEST-BODY",
+    "pattern": "\\b(?:_?logger|Log)\\.(?:Log)?(?:Information|Debug|Warning|Error|Trace|Critical|Verbose|Fatal)\\(.*(?:Request\\.(?:Body|Headers|Form)|ReadFromJsonAsync|ReadAsStringAsync|\\{@\\w*(?:Request|Model|Dto|Body|Command|Input)\\w*\\})",
+    "globs": ["*.cs"],
+    "severity_hint": "High",
+    "description": "Request body/headers or a destructured request DTO ({@...}) logged - every property, including passwords and tokens, is written",
+    "reference": "CWE-532"
+  },
+  {
+    "id": "LOG-SENSITIVE-FIELD",
+    "pattern": "\\b(?:_?logger|Log)\\.(?:Log)?(?:Information|Debug|Warning|Error|Trace|Critical|Verbose|Fatal)\\(.*\\b\\w*(?:Password|Passwd|Secret|Token|ApiKey|Authorization|Cookie|CardNumber|Cvv|Ssn|Iban)\\b(?!\\s*(?:Reset|Policy|Expir|Hash))",
+    "globs": ["*.cs"],
+    "severity_hint": "Critical",
+    "description": "Log call names a credential/token/card field - confirm a value is logged, not a constant",
+    "reference": "CWE-532"
+  },
+  {
+    "id": "LOG-CATCH-DEBUG",
+    "pattern": "\\.(?:LogDebug|LogTrace|Debug|Verbose)\\(\\s*(?:ex|e|exception|err)\\b|catch\\s*(?:\\([^)]*\\))?\\s*\\{\\s*_?logger\\.(?:LogDebug|LogTrace|LogInformation)",
+    "globs": ["*.cs"],
+    "severity_hint": "High",
+    "description": "Exception logged at Debug/Trace - filtered out at the production minimum level (multi-line catch: log_scan.py)",
+    "reference": "CWE-778"
+  },
+  {
+    "id": "LOG-CONCAT-MESSAGE",
+    "pattern": "\\b(?:_?logger|Log)\\.(?:Log)?(?:Information|Debug|Warning|Error|Trace|Critical|Verbose|Fatal)\\(\\s*(?:(?:\\w+\\s*,\\s*)?\\$@?\"|(?:\\w+\\s*,\\s*)?\"[^\"]*\"\\s*\\+|string\\.Format)",
+    "globs": ["*.cs"],
+    "severity_hint": "Low",
+    "description": "Interpolated/concatenated message instead of a message template (CA2254) - loses structure, bakes PII into the text",
+    "reference": "CWE-117"
+  },
+  {
+    "id": "LOG-CORRELATION-MARKER",
+    "pattern": "X-Correlation-Id|X-Request-Id|CorrelationId|LogContext\\.PushProperty|AddOpenTelemetry|UseSerilogRequestLogging|Enrich\\.FromLogContext|traceparent|Activity\\.Current",
+    "globs": ["*.cs", "*.json", "*.csproj"],
+    "severity_hint": "Info",
+    "description": "Correlation-id middleware / trace-context marker. ZERO hits across the repo means no correlation-id middleware - write that finding",
+    "reference": "CWE-778"
+  },
+  {
+    "id": "LOG-ERROR-MESSAGE-ONLY",
+    "pattern": "\\.(?:LogError|LogCritical|LogWarning|Error|Fatal)\\(\\s*(?:ex|e|exception)\\.Message\\s*[,)]",
+    "globs": ["*.cs"],
+    "severity_hint": "Medium",
+    "description": "Only ex.Message logged - pass the exception object so the stack trace is kept",
+    "reference": "CWE-778"
+  },
+  {
+    "id": "LOG-SWALLOWED-ERROR",
+    "pattern": "catch\\s*(?:\\([^)]*\\))?\\s*\\{\\s*\\}|catch\\s*(?:\\([^)]*\\))?\\s*\\{\\s*return\\s+(?:null|default|false)\\s*;\\s*\\}",
+    "globs": ["*.cs"],
+    "severity_hint": "Medium",
+    "description": "Exception swallowed with no log",
+    "reference": "CWE-390"
+  },
+  {
+    "id": "LOG-CONSOLE-IN-SERVER",
+    "pattern": "\\b(?:Console\\.Write(?:Line)?|Debug\\.WriteLine|Trace\\.Write(?:Line)?)\\(",
+    "globs": ["*.cs"],
+    "severity_hint": "Low",
+    "description": "Console/Debug writes in service code bypass the logger, levels and sinks",
+    "reference": "CWE-778"
+  },
+  {
+    "id": "LOG-EF-SENSITIVE-DATA",
+    "pattern": "EnableSensitiveDataLogging\\(",
+    "globs": ["*.cs"],
+    "severity_hint": "Medium",
+    "description": "EF Core logs SQL parameter values (credentials, PII) - confirm it is guarded by IsDevelopment()",
+    "reference": "CWE-532"
+  },
+  {
+    "id": "LOG-PROD-DEBUG-LEVEL",
+    "pattern": "\"(?:Default|MinimumLevel)\"\\s*:\\s*\"(?:Debug|Verbose|Trace)\"",
+    "globs": ["appsettings.Production*.json", "appsettings.json"],
+    "severity_hint": "Low",
+    "description": "Debug/Verbose minimum level in production configuration",
+    "reference": "CWE-532"
+  }
+]

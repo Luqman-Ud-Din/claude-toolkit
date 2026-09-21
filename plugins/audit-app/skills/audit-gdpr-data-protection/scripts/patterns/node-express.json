@@ -1,0 +1,114 @@
+[
+  {
+    "id": "GDPR-NODE-CONSENT-BOOL-ONLY",
+    "pattern": "\\b\\w*(?:consent|optIn|agreed|acceptedTerms|acceptedPrivacy|marketingAllowed|newsletter)\\w*\\s*[?!]?\\s*:\\s*(?:boolean|Boolean)\\b|\\b\\w*(?:consent|optIn|agreed|marketing)\\w*\\s*:\\s*\\{\\s*type\\s*:\\s*Boolean|@Column\\s*\\(\\s*\\{[^}]*default\\s*:\\s*(?:true|false)[^}]*\\}\\s*\\)\\s*\\w*(?:consent|optIn|agreed|marketing)",
+    "globs": ["*.ts", "*.js", "*.prisma"],
+    "severity_hint": "Medium",
+    "description": "Consent stored as a boolean; look for consentGivenAt / consentVersion siblings and a withdrawal route",
+    "reference": "GDPR-Art.7(1)"
+  },
+  {
+    "id": "GDPR-NODE-LOG-PII",
+    "pattern": "\\b(?:console|logger|log|winston|pino)\\.(?:log|info|debug|warn|error)\\s*\\([^;]*\\b(?:email|phone|mobile|firstName|lastName|fullName|address|dob|ssn|iban)\\b",
+    "globs": ["*.ts", "*.js", "*.mjs"],
+    "severity_hint": "High",
+    "description": "Personal data in a log call",
+    "reference": "GDPR-Art.5(1)(c)"
+  },
+  {
+    "id": "GDPR-NODE-LOG-REQ-BODY",
+    "pattern": "\\b(?:console|logger|log)\\.(?:log|info|debug|warn|error)\\s*\\([^;]*\\breq\\.(?:body|query|headers)\\b",
+    "globs": ["*.ts", "*.js"],
+    "severity_hint": "High",
+    "description": "Whole request body/query/headers logged",
+    "reference": "GDPR-Art.5(1)(c)"
+  },
+  {
+    "id": "GDPR-NODE-ANALYTICS-IDENTIFY-PII",
+    "pattern": "\\b(?:identify|track|people\\.set|setUser|setUserProperties)\\s*\\(",
+    "globs": ["*.ts", "*.js"],
+    "severity_hint": "Medium",
+    "description": "Analytics / error-tracker identify call - open the object literal: traits with email/name are a transfer to the vendor",
+    "reference": "GDPR-Art.28"
+  },
+  {
+    "id": "GDPR-NODE-SENTRY-PII",
+    "pattern": "sendDefaultPii\\s*:\\s*true|Sentry\\.setUser\\s*\\(",
+    "globs": ["*.ts", "*.js"],
+    "severity_hint": "Medium",
+    "description": "Sentry sends user PII / user context set",
+    "reference": "GDPR-Art.28"
+  },
+  {
+    "id": "GDPR-NODE-SUBJECT-DELETE-ROUTE",
+    "pattern": "(?:router|app)\\.delete\\s*\\(\\s*['\"`][^'\"`]*(?:users?|customers?|accounts?|profiles?|me)\\b|@Delete\\s*\\(|(?:anonymi[sz]e|erase|forget|deleteAccount|deleteUser|purgeUser)\\w*\\s*\\(",
+    "globs": ["*.ts", "*.js"],
+    "severity_hint": "Info",
+    "description": "Deletion/anonymisation entry point on a subject resource - evidence for the erasure row",
+    "reference": "GDPR-Art.17"
+  },
+  {
+    "id": "GDPR-NODE-NON-SUBJECT-DELETE-ROUTE",
+    "pattern": "(?:router|app)\\.delete\\s*\\(\\s*['\"`][^'\"`]*(?:sessions?|tokens?|carts?|orders?|items?|files?)\\b",
+    "globs": ["*.ts", "*.js"],
+    "severity_hint": "Info",
+    "description": "DELETE route on a non-subject resource (logout, cart) - does NOT satisfy erasure; listed so it is not mistaken for it",
+    "reference": "GDPR-Art.17"
+  },
+  {
+    "id": "GDPR-NODE-EXPORT-ROUTE",
+    "pattern": "(?:router|app)\\.get\\s*\\(\\s*['\"`][^'\"`]*(?:export|download|/me\\b|my-?data|personal-?data|gdpr)",
+    "globs": ["*.ts", "*.js"],
+    "severity_hint": "Info",
+    "description": "Export / self-service data route - evidence for access and portability rows",
+    "reference": "GDPR-Art.15"
+  },
+  {
+    "id": "GDPR-NODE-RETENTION-JOB",
+    "pattern": "cron\\.schedule\\s*\\(|new\\s+CronJob\\s*\\(|@Cron\\s*\\(|schedule\\.scheduleJob|agenda\\.define|queue\\.add\\s*\\([^)]*repeat",
+    "globs": ["*.ts", "*.js"],
+    "severity_hint": "Info",
+    "description": "Scheduled job - check whether it purges or anonymises personal data past retention",
+    "reference": "GDPR-Art.5(1)(e)"
+  },
+  {
+    "id": "GDPR-NODE-SOFT-DELETE-ONLY",
+    "pattern": "@DeleteDateColumn|softDelete\\s*\\(|softRemove\\s*\\(|deletedAt\\s*[:=]\\s*new Date|paranoid\\s*:\\s*true",
+    "globs": ["*.ts", "*.js"],
+    "severity_hint": "Medium",
+    "description": "Soft delete - personal data stays in the table after erasure unless purged",
+    "reference": "GDPR-Art.17"
+  },
+  {
+    "id": "GDPR-NODE-DB-TLS-OFF",
+    "pattern": "\\bssl\\s*:\\s*false|sslmode=disable|rejectUnauthorized\\s*:\\s*false",
+    "globs": ["*.ts", "*.js", "*.json", "*.env", ".env*"],
+    "severity_hint": "Medium",
+    "description": "Database / outbound TLS disabled or certificate validation off",
+    "reference": "GDPR-Art.32"
+  },
+  {
+    "id": "GDPR-NODE-HTTPS-CONFIG",
+    "pattern": "helmet\\s*\\(|hsts\\s*\\(|express-sslify|enforce\\.HTTPS|trust proxy",
+    "globs": ["*.ts", "*.js"],
+    "severity_hint": "Info",
+    "description": "HSTS / HTTPS enforcement - evidence for encryption in transit",
+    "reference": "GDPR-Art.32"
+  },
+  {
+    "id": "GDPR-NODE-AUDIT-TRAIL",
+    "pattern": "\\b(?:AuditLog|auditLog|audit_log|EntitySubscriber|afterUpdate|afterRemove|mongoose-history|sequelize-paper-trail)\\b",
+    "globs": ["*.ts", "*.js"],
+    "severity_hint": "Info",
+    "description": "Audit trail mechanism - evidence for access logging of personal data",
+    "reference": "GDPR-Art.30"
+  },
+  {
+    "id": "GDPR-NODE-PII-IN-QUERY",
+    "pattern": "req\\.query\\.(?:email|phone|mobile|ssn)\\b|(?:router|app)\\.get\\s*\\(\\s*['\"`][^'\"`]*:(?:email|phone|mobile|ssn)\\b",
+    "globs": ["*.ts", "*.js"],
+    "severity_hint": "Medium",
+    "description": "Personal data in URL - access logs, proxies, browser history",
+    "reference": "GDPR-Art.5(1)(c)"
+  }
+]

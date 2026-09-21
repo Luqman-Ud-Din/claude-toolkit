@@ -1,0 +1,185 @@
+{
+  "skill": "audit-application",
+  "kind": "cross-skill-deduplication",
+  "generated_at": "2026-09-11T12:23:34.620856+00:00",
+  "note": "View only; original findings files are untouched. No top-level 'findings' array on purpose (see dedupe_all.py).",
+  "sources": [
+    {
+      "file": "audit/findings/audit-authz-and-access-control.json",
+      "skill": "audit-authz-and-access-control",
+      "findings": 2
+    },
+    {
+      "file": "audit/findings/audit-business-logic.json",
+      "skill": "audit-business-logic",
+      "findings": 1
+    },
+    {
+      "file": "audit/findings/audit-concurrency-and-race-condition.json",
+      "skill": "audit-concurrency-and-race-condition",
+      "findings": 1
+    },
+    {
+      "file": "audit/findings/audit-datetime-and-timezone.json",
+      "skill": "audit-datetime-and-timezone",
+      "findings": 1
+    },
+    {
+      "file": "audit/findings/audit-dependency-vulnerabilities.json",
+      "skill": "audit-dependency-vulnerabilities",
+      "findings": 1
+    },
+    {
+      "file": "audit/findings/audit-frontend-xss-and-dom-safety.json",
+      "skill": "audit-frontend-xss-and-dom-safety",
+      "findings": 1
+    },
+    {
+      "file": "audit/findings/audit-injection-vulnerabilities.json",
+      "skill": "audit-injection-vulnerabilities",
+      "findings": 0
+    },
+    {
+      "file": "audit/findings/audit-multi-tenant-isolation.json",
+      "skill": "audit-multi-tenant-isolation",
+      "findings": 1
+    },
+    {
+      "file": "audit/findings/audit-performance-and-scalability.json",
+      "skill": "audit-performance-and-scalability",
+      "findings": 1
+    },
+    {
+      "file": "audit/findings/audit-production-readiness-checklist.json",
+      "skill": "audit-production-readiness-checklist",
+      "findings": 1
+    }
+  ],
+  "parse_errors": [],
+  "groups": [
+    {
+      "root_cause_key": "orders:missing-branch-filter",
+      "severity": "High",
+      "primary": {
+        "skill": "audit-authz-and-access-control",
+        "id": "AUTHZ-001"
+      },
+      "members": [
+        {
+          "skill": "audit-authz-and-access-control",
+          "id": "AUTHZ-001",
+          "severity": "High",
+          "title": "Order payment is scoped by company but not by branch",
+          "location": "Inventory.Api/Controllers/OrdersController.cs:30"
+        },
+        {
+          "skill": "audit-multi-tenant-isolation",
+          "id": "TENANT-001",
+          "severity": "High",
+          "title": "Tenant filter applied by hand per query; payment path misses BranchId",
+          "location": "Inventory.Api/Controllers/OrdersController.cs:30"
+        }
+      ],
+      "skills": [
+        "audit-authz-and-access-control",
+        "audit-multi-tenant-isolation"
+      ],
+      "cross_skill": true
+    }
+  ],
+  "unique": [
+    {
+      "skill": "audit-authz-and-access-control",
+      "id": "AUTHZ-002",
+      "severity": "Critical",
+      "title": "JWT bearer registered without token validation parameters",
+      "location": "Inventory.Api/Program.cs:6",
+      "root_cause_key": null,
+      "merged_ids": []
+    },
+    {
+      "skill": "audit-authz-and-access-control",
+      "id": "AUTHZ-001",
+      "severity": "High",
+      "title": "Order payment is scoped by company but not by branch",
+      "location": "Inventory.Api/Controllers/OrdersController.cs:30",
+      "root_cause_key": "orders:missing-branch-filter",
+      "merged_ids": [
+        "TENANT-001"
+      ]
+    },
+    {
+      "skill": "audit-business-logic",
+      "id": "BIZ-001",
+      "severity": "High",
+      "title": "Pay moves an order to Paid from any status, including Cancelled",
+      "location": "Inventory.Api/Controllers/OrdersController.cs:32",
+      "root_cause_key": "orders.status:no-transition-guard",
+      "merged_ids": []
+    },
+    {
+      "skill": "audit-production-readiness-checklist",
+      "id": "READY-001",
+      "severity": "High",
+      "title": "No health check endpoint is registered",
+      "location": "Inventory.Api/Program.cs:1",
+      "root_cause_key": null,
+      "merged_ids": []
+    },
+    {
+      "skill": "audit-concurrency-and-race-condition",
+      "id": "RACE-001",
+      "severity": "Medium",
+      "title": "Order payment has no idempotency or concurrency token",
+      "location": "Inventory.Api/Controllers/OrdersController.cs:33",
+      "root_cause_key": "orders.pay:no-idempotency",
+      "merged_ids": []
+    },
+    {
+      "skill": "audit-dependency-vulnerabilities",
+      "id": "DEP-001",
+      "severity": "Medium",
+      "title": "Transitive System.Text.Json with a known DoS advisory",
+      "location": "Inventory.Api/Inventory.Api.csproj:1",
+      "root_cause_key": null,
+      "merged_ids": []
+    },
+    {
+      "skill": "audit-datetime-and-timezone",
+      "id": "TIME-001",
+      "severity": "Low",
+      "title": "No timestamp is recorded when an order is paid",
+      "location": "Inventory.Api/Controllers/OrdersController.cs:33",
+      "root_cause_key": null,
+      "merged_ids": []
+    },
+    {
+      "skill": "audit-performance-and-scalability",
+      "id": "PERF-001",
+      "severity": "Low",
+      "title": "Order lookups have no response caching headers",
+      "location": "Inventory.Api/Controllers/OrdersController.cs:18",
+      "root_cause_key": null,
+      "merged_ids": []
+    }
+  ],
+  "summary": {
+    "raw": {
+      "Critical": 1,
+      "High": 4,
+      "Medium": 2,
+      "Low": 2,
+      "Info": 0
+    },
+    "deduplicated": {
+      "Critical": 1,
+      "High": 3,
+      "Medium": 2,
+      "Low": 2,
+      "Info": 0
+    },
+    "merged": 1,
+    "false_positives": 1,
+    "cross_skill_groups": 1
+  }
+}

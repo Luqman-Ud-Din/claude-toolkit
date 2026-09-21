@@ -1,0 +1,50 @@
+[
+  {
+    "id": "VUE-2-EOL",
+    "pattern": "\"vue\"\\s*:\\s*\"[~^]?2\\.",
+    "globs": ["package.json"],
+    "severity_hint": "Medium",
+    "description": "Vue 2 reached end of life on 2023-12-31; no security fixes are published (CVE-2024-6783 in vue-template-compiler is unfixed for 2.x)",
+    "reference": "CVE-2024-6783"
+  },
+  {
+    "id": "VUE-TEMPLATE-COMPILER-XSS",
+    "pattern": "\"vue-template-compiler\"\\s*:\\s*\"[~^]?2\\.",
+    "globs": ["package.json"],
+    "severity_hint": "Medium",
+    "description": "vue-template-compiler 2.x: XSS through crafted template input (CVE-2024-6783) when templates are compiled at runtime from user data",
+    "reference": "CVE-2024-6783"
+  },
+  {
+    "id": "VUE-LODASH-LT-4.17.21",
+    "pattern": "\"lodash(?:-es)?\"\\s*:\\s*\"[~^]?4\\.17\\.(?:[0-9]|1\\d|20)\"",
+    "globs": ["package.json"],
+    "severity_hint": "High",
+    "description": "lodash below 4.17.21: prototype pollution (CVE-2020-8203)",
+    "reference": "CVE-2020-8203"
+  },
+  {
+    "id": "VUE-VITE-LT-6.2.3-FS-BYPASS",
+    "pattern": "\"vite\"\\s*:\\s*\"[~^]?(?:[0-4]\\.|5\\.[0-3]\\.|5\\.4\\.(?:[0-9]|1[0-4])\\b|6\\.[01]\\.|6\\.2\\.[0-2]\\b)",
+    "globs": ["package.json"],
+    "severity_hint": "Medium",
+    "description": "Vite dev server versions with server.fs.deny bypass (CVE-2025-30208 and follow-ups); dev-only exposure",
+    "reference": "CVE-2025-30208"
+  },
+  {
+    "id": "VUE-WILDCARD-OR-LATEST",
+    "pattern": "\"[^\"]+\"\\s*:\\s*\"(?:\\*|latest)\"",
+    "globs": ["package.json"],
+    "severity_hint": "Low",
+    "description": "Dependency pinned to * or latest",
+    "reference": "CWE-1104"
+  },
+  {
+    "id": "VUE-GIT-OR-URL-DEPENDENCY",
+    "pattern": "\"[^\"]+\"\\s*:\\s*\"(?:git\\+|github:|https?://)",
+    "globs": ["package.json"],
+    "severity_hint": "Medium",
+    "description": "Dependency fetched from git/URL: not covered by npm audit",
+    "reference": "CWE-829"
+  }
+]

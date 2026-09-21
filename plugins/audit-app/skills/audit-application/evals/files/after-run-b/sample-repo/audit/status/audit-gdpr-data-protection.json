@@ -1,0 +1,9 @@
+{
+  "skill": "audit-gdpr-data-protection",
+  "status": "skipped",
+  "reason": "not in scope profile 'pre-launch'",
+  "started_at": null,
+  "finished_at": "2026-09-11T12:23:23.548822+00:00",
+  "skipped_by": "audit-application",
+  "skip_kind": "out-of-profile"
+}

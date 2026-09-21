@@ -1,0 +1,50 @@
+{
+  "skill_name": "audit-multi-tenant-isolation",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "This is a multi-tenant SaaS backend under evals/files/sample-repo. Audit it for cross-tenant data leaks: establish the tenancy model, inventory the data-access paths, and find every place one tenant could reach another tenant's data. Write findings in the standard format.",
+      "expected_output": "Tenancy model (shared DB, TenantId column, tenant from token claim) and a tenant-context flow diagram, a data-access-path inventory flagging unscoped paths, and TENANT findings covering all five planted issues: (1) InvoicesController.Report raw SQL + IgnoreQueryFilters returns all tenants; (2) CreateInvoiceDto.TenantId taken from the body; (3) NightlyBillingJob runs with no tenant context; (4) DocumentsController.Get cache key document:{id} has no tenant segment; (5) DocumentsController.Download blob path has no tenant folder. Negatives (InvoicesController.List global filter, CreateSafe, DocumentsController.Thumbnail, TenantAwareJob) are not flagged.",
+      "files": [
+        "evals/files/sample-repo/Data/AppDbContext.cs",
+        "evals/files/sample-repo/Infrastructure/TenantContext.cs",
+        "evals/files/sample-repo/Controllers/InvoicesController.cs",
+        "evals/files/sample-repo/Controllers/DocumentsController.cs",
+        "evals/files/sample-repo/Jobs/NightlyBillingJob.cs",
+        "evals/files/sample-repo/Jobs/TenantAwareJob.cs",
+        "evals/files/sample-repo/Saas.Api.csproj"
+      ],
+      "expectations": [
+        "Detects the stack as dotnet",
+        "States the tenancy model is shared-database with a TenantId column and tenant resolved from the token claim",
+        "Produces a tenant-context flow diagram (resolution -> propagation -> enforcement)",
+        "Flags the raw SQL + IgnoreQueryFilters in InvoicesController.Report as returning all tenants' data",
+        "Flags CreateInvoiceDto/Create taking TenantId from the request body",
+        "Flags NightlyBillingJob for running with no tenant context",
+        "Flags the DocumentsController.Get cache key that omits the tenant id",
+        "Flags the DocumentsController.Download blob path that omits a tenant segment",
+        "Does NOT flag InvoicesController.List, CreateSafe, DocumentsController.Thumbnail, or TenantAwareJob",
+        "All finding ids start with TENANT-",
+        "findings.json validates with ../audit-finding-writer/scripts/findings.py validate"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "We have a staging environment with two throwaway tenants and a token for each. Build the data-access-path inventory for evals/files/sample-repo and produce the cross-tenant probe command that, as tenant A, tries to read, write, list, search, download and export tenant B's data including with a tampered tenant id. Do not fabricate results.",
+      "expected_output": "Runs data_access_paths.py and audit-endpoint-inventory, turns endpoints.probe.json into an endpoints.json in tenant_probe.py's shape (id_params and operation from the inventory, tamper body/query with {tenant_b} added) and a tenants.json template, and prints the exact tenant_probe.py invocation (--base-url, --tenants, --endpoints, --tenant-header). States the probe covers read/write/list/search/download/export and tampered tenant identifiers, only runs when a URL is supplied, and targets a disposable environment; does not invent pass/fail rows.",
+      "files": [
+        "evals/files/sample-repo/Controllers/InvoicesController.cs",
+        "evals/files/sample-repo/Controllers/DocumentsController.cs",
+        "evals/files/endpoints.sample.json",
+        "evals/files/tenants.sample.json"
+      ],
+      "expectations": [
+        "Uses scripts/data_access_paths.py to inventory data-access paths",
+        "Emits an endpoint inventory in tenant_probe.py's shape with operations and id_params, taken from audit-endpoint-inventory's endpoints.probe.json",
+        "Shows the tenant_probe.py command covering read/write/list/search/download/export and tampered ids",
+        "Explicitly says the probe only runs when the user supplies a URL and targets a disposable test environment",
+        "Does not fabricate pass/fail results"
+      ]
+    }
+  ]
+}

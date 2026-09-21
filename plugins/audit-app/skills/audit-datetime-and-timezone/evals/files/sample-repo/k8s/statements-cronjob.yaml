@@ -1,0 +1,32 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: nightly-statements
+spec:
+  # ISSUE: no timeZone; runs at 02:00 in the controller's zone (UTC), not branch local
+  schedule: "0 2 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: statements
+              image: billing/statements:1.0
+          restartPolicy: OnFailure
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: retention-purge
+spec:
+  # correct (negative case): explicit zone on a local wall-clock schedule
+  schedule: "30 3 * * *"
+  timeZone: "Asia/Karachi"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: purge
+              image: billing/purge:1.0
+          restartPolicy: OnFailure

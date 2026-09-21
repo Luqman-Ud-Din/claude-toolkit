@@ -1,0 +1,50 @@
+[
+  {
+    "id": "NG-ANGULAR-CORE-EOL",
+    "pattern": "\"@angular/core\"\\s*:\\s*\"[~^]?(?:[0-9]|1[0-6])\\.",
+    "globs": ["package.json"],
+    "severity_hint": "Medium",
+    "description": "Angular 16 or older is out of long-term support; framework XSS/sanitizer fixes are no longer backported",
+    "reference": "OWASP-A06:2021"
+  },
+  {
+    "id": "NG-LODASH-LT-4.17.21",
+    "pattern": "\"lodash(?:-es)?\"\\s*:\\s*\"[~^]?4\\.17\\.(?:[0-9]|1\\d|20)\"",
+    "globs": ["package.json"],
+    "severity_hint": "High",
+    "description": "lodash below 4.17.21 bundled into the browser: prototype pollution reachable via _.merge/_.set on user data",
+    "reference": "CVE-2020-8203"
+  },
+  {
+    "id": "NG-WEBPACK-DEV-SERVER-LT-5.2.1",
+    "pattern": "\"webpack-dev-server\"\\s*:\\s*\"[~^]?(?:[0-4]\\.|5\\.[01]\\.|5\\.2\\.0\\b)",
+    "globs": ["package.json"],
+    "severity_hint": "Medium",
+    "description": "webpack-dev-server below 5.2.1: source code exposure to malicious sites during local dev (CVE-2025-30360)",
+    "reference": "CVE-2025-30360"
+  },
+  {
+    "id": "NG-CRYPTO-JS-LT-4.2",
+    "pattern": "\"crypto-js\"\\s*:\\s*\"[~^]?(?:[0-3]\\.|4\\.[01]\\.)",
+    "globs": ["package.json"],
+    "severity_hint": "High",
+    "description": "crypto-js below 4.2.0: PBKDF2 uses SHA1 with one iteration by default (CVE-2023-46233); also check how storage encryption uses it",
+    "reference": "CVE-2023-46233"
+  },
+  {
+    "id": "NG-WILDCARD-OR-LATEST",
+    "pattern": "\"[^\"]+\"\\s*:\\s*\"(?:\\*|latest)\"",
+    "globs": ["package.json"],
+    "severity_hint": "Low",
+    "description": "Dependency pinned to * or latest",
+    "reference": "CWE-1104"
+  },
+  {
+    "id": "NG-GIT-OR-URL-DEPENDENCY",
+    "pattern": "\"[^\"]+\"\\s*:\\s*\"(?:git\\+|github:|https?://)",
+    "globs": ["package.json"],
+    "severity_hint": "Medium",
+    "description": "Dependency fetched from git/URL: not covered by npm audit",
+    "reference": "CWE-829"
+  }
+]

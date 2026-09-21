@@ -1,0 +1,63 @@
+{
+  "skill": "audit-multi-tenant-isolation",
+  "generated_at": "2026-09-11T12:23:25.453358+00:00",
+  "target": {
+    "root": ".",
+    "commit": null
+  },
+  "stack": {
+    "primary_backend": "dotnet",
+    "primary_frontend": "angular"
+  },
+  "scope": {
+    "checked": [
+      "OrdersController data access paths"
+    ],
+    "not_checked": [
+      {
+        "item": "cross-tenant probe",
+        "reason": "no tenants.json supplied"
+      }
+    ]
+  },
+  "findings": [
+    {
+      "id": "TENANT-001",
+      "title": "Tenant filter applied by hand per query; payment path misses BranchId",
+      "severity": "High",
+      "confidence": "confirmed",
+      "location": {
+        "file": "Inventory.Api/Controllers/OrdersController.cs",
+        "line": 30
+      },
+      "evidence": "Inventory.Api/Controllers/OrdersController.cs:30",
+      "impact": "One branch can change another branch's data.",
+      "remediation": "Add a global query filter on CompanyId and BranchId in the DbContext.",
+      "references": [
+        "CWE-639",
+        "ASVS-4.2.1",
+        "OWASP-A01:2021",
+        "ASVS-4.1.3"
+      ],
+      "tags": [],
+      "root_cause_key": "orders:missing-branch-filter",
+      "extra": {
+        "mapping": {
+          "rule": "idor",
+          "matched_by": "cwe:CWE-639",
+          "added": [
+            "OWASP-A01:2021",
+            "ASVS-4.1.3"
+          ],
+          "top10": "A01",
+          "asvs": [
+            "4.2.1",
+            "4.1.3"
+          ],
+          "cwe": "CWE-639"
+        }
+      }
+    }
+  ],
+  "summary": {}
+}

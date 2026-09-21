@@ -1,0 +1,1844 @@
+{
+  "catalog": "audit-sensitive-data-catalog",
+  "version": "1.0.0",
+  "categories": {
+    "identifier": {
+      "description": "Identifies a natural person directly or by linkage (date of birth, national ids, IP, device ids, location, demographic and image data).",
+      "gdpr_special": false
+    },
+    "contact": {
+      "description": "How to reach or name a person (email, phone, names, postal address, postal code).",
+      "gdpr_special": false
+    },
+    "financial": {
+      "description": "Money and payment instruments (bank accounts, payment cards, card security data, pay).",
+      "gdpr_special": false
+    },
+    "health": {
+      "description": "Physical or mental health and care data.",
+      "gdpr_special": true
+    },
+    "special-category": {
+      "description": "GDPR Art.9 data other than health, plus Art.10 criminal-record data.",
+      "gdpr_special": true
+    },
+    "credential": {
+      "description": "Authenticates a person or a user session (passwords, PINs, OTPs, session tokens, cookies) and values derived from them (hashes, salts).",
+      "gdpr_special": false
+    },
+    "secret": {
+      "description": "Authenticates an application or protects data (API keys, client secrets, private and signing keys, connection strings, service credentials).",
+      "gdpr_special": false
+    }
+  },
+  "tokenizer": {
+    "description": "Identifiers are split on every non-alphanumeric character (_ - . : / space and so on) and on camelCase / PascalCase boundaries, then lower-cased. A rule form matches when the concatenation of one to six adjacent tokens equals the form, after optionally stripping trailing digits and a plural s/es/ies. Forms are therefore written collapsed: 'firstname' matches firstName, first_name, FIRST-NAME and first.name.",
+    "max_window": 6
+  },
+  "name_rules": [
+    {
+      "id": "N-ID-DOB",
+      "category": "identifier",
+      "subcategory": "date-of-birth",
+      "canonical": "date_of_birth",
+      "forms": [
+        "dob",
+        "dateofbirth",
+        "birthdate",
+        "birthday",
+        "birthdt"
+      ],
+      "notes": "A date of birth identifies a person in combination with a name or postal code."
+    },
+    {
+      "id": "N-ID-NATIONAL",
+      "category": "identifier",
+      "subcategory": "national-id",
+      "canonical": "national_id",
+      "forms": [
+        "ssn",
+        "socialsecurity",
+        "socialsecuritynumber",
+        "socialsecurityno",
+        "nationalid",
+        "nationalidnumber",
+        "nationalidno",
+        "nationalidentifier",
+        "nationalidentitynumber",
+        "cnic",
+        "cnicno",
+        "cnicnumber",
+        "nicop",
+        "iqama",
+        "iqamano",
+        "iqamanumber",
+        "aadhaarnumber",
+        "nino",
+        "nationalinsurancenumber",
+        "passport",
+        "passportno",
+        "passportnum",
+        "passportnumber",
+        "taxid",
+        "taxidnumber",
+        "ntn",
+        "driverlicense",
+        "driverlicence",
+        "drivinglicense",
+        "drivinglicence",
+        "driverslicense",
+        "driverslicence",
+        "idcard",
+        "idcardno",
+        "idcardnumber",
+        "identityno",
+        "identitynumber",
+        "identitycard",
+        "emiratesid"
+      ],
+      "standalone_forms": [
+        "nid",
+        "tin"
+      ],
+      "patterns": [
+        "aadha+r"
+      ],
+      "notes": "Covers US SSN, Pakistan CNIC/NICOP/NTN, Saudi Iqama, India Aadhaar, UK NINO, passports, tax ids and driving licences. 'passport' also names the Node.js auth library; confirm the value. Short tokens nid and tin only match as a whole delimited segment."
+    },
+    {
+      "id": "N-ID-IP",
+      "category": "identifier",
+      "subcategory": "ip-address",
+      "canonical": "ip_address",
+      "forms": [
+        "ipaddress",
+        "ipaddr",
+        "remoteip",
+        "clientip",
+        "userip",
+        "sourceip",
+        "remoteipaddress",
+        "clientipaddress",
+        "remoteaddr",
+        "remoteaddress",
+        "xforwardedfor",
+        "forwardedfor"
+      ],
+      "notes": "IP addresses are personal data under GDPR (CJEU Breyer). More specific than the bare address rule, so ipAddress is an identifier, not a postal address."
+    },
+    {
+      "id": "N-ID-DEVICE",
+      "category": "identifier",
+      "subcategory": "device-id",
+      "canonical": "device_id",
+      "forms": [
+        "deviceid",
+        "deviceidentifier",
+        "imei",
+        "advertisingid",
+        "idfa",
+        "gaid",
+        "udid",
+        "macaddress",
+        "macaddr"
+      ],
+      "notes": "Device and advertising identifiers and MAC addresses single out a device and therefore its user."
+    },
+    {
+      "id": "N-ID-GEO",
+      "category": "identifier",
+      "subcategory": "geolocation",
+      "canonical": "geolocation",
+      "forms": [
+        "latitude",
+        "longitude",
+        "geolocation",
+        "gpslat",
+        "gpslng",
+        "gpscoord",
+        "gpscoords",
+        "gpscoordinates"
+      ],
+      "notes": "Precise location. 'lat' and 'lng' alone are not matched because they are too common as loop and chart variables."
+    },
+    {
+      "id": "N-ID-GENDER",
+      "category": "identifier",
+      "subcategory": "gender",
+      "canonical": "gender",
+      "tier": "adjacent",
+      "forms": [
+        "gender"
+      ],
+      "standalone_forms": [
+        "sex"
+      ],
+      "notes": "Personal but low sensitivity alone. 'sex' only matches as a whole delimited segment (not Sussex, sextant)."
+    },
+    {
+      "id": "N-ID-AGE",
+      "category": "identifier",
+      "subcategory": "age",
+      "canonical": "age",
+      "tier": "adjacent",
+      "standalone_forms": [
+        "age"
+      ],
+      "notes": "Only matches as a whole delimited segment (user_age, customer.age), never inside camelCase such as minPasswordAge, page or usage."
+    },
+    {
+      "id": "N-ID-SIGNATURE",
+      "category": "identifier",
+      "subcategory": "signature",
+      "canonical": "signature",
+      "tier": "adjacent",
+      "forms": [
+        "signatureimage",
+        "signaturedata",
+        "signatureurl"
+      ],
+      "notes": "Handwritten signature images. Cryptographic signatures are not personal data and are not matched."
+    },
+    {
+      "id": "N-ID-PHOTO",
+      "category": "identifier",
+      "subcategory": "photo",
+      "canonical": "photo",
+      "tier": "adjacent",
+      "forms": [
+        "profilephoto",
+        "profileimage",
+        "profilepicture",
+        "profilepic",
+        "userphoto",
+        "userimage",
+        "userpicture",
+        "userpic",
+        "avatarphoto",
+        "avatarimage",
+        "avatarpicture",
+        "avatarpic",
+        "passportphoto",
+        "passportimage",
+        "passportpicture",
+        "passportpic",
+        "selfie",
+        "selfiephoto",
+        "selfieimage",
+        "selfiepicture",
+        "selfiepic"
+      ],
+      "notes": "Photos of people. A face photo becomes biometric (special category) only when used for recognition."
+    },
+    {
+      "id": "N-CT-EMAIL",
+      "category": "contact",
+      "subcategory": "email",
+      "canonical": "email",
+      "forms": [
+        "email",
+        "emailaddress",
+        "emailaddr"
+      ],
+      "keep_suffixes": [
+        "id"
+      ],
+      "notes": "emailId is kept because many codebases use it for the address itself."
+    },
+    {
+      "id": "N-CT-PHONE",
+      "category": "contact",
+      "subcategory": "phone",
+      "canonical": "phone",
+      "forms": [
+        "phone",
+        "phoneno",
+        "phonenum",
+        "phonenumber",
+        "mobilephone",
+        "mobilephoneno",
+        "mobilephonenum",
+        "mobilephonenumber",
+        "cellphone",
+        "cellphoneno",
+        "cellphonenum",
+        "cellphonenumber",
+        "telephone",
+        "telephoneno",
+        "telephonenum",
+        "telephonenumber",
+        "mobile",
+        "mobileno",
+        "mobilenum",
+        "mobilenumber",
+        "cellnumber",
+        "msisdn",
+        "whatsapp",
+        "whatsappnumber",
+        "contactnumber",
+        "contactno"
+      ],
+      "notes": "Phone numbers. isMobile and mobileApp are excluded by the prefix and structural qualifiers."
+    },
+    {
+      "id": "N-CT-FIRST-NAME",
+      "category": "contact",
+      "subcategory": "person-name",
+      "canonical": "first_name",
+      "forms": [
+        "firstname",
+        "givenname",
+        "forename"
+      ],
+      "notes": "Bare 'name' is never matched (ProductName, TableName)."
+    },
+    {
+      "id": "N-CT-LAST-NAME",
+      "category": "contact",
+      "subcategory": "person-name",
+      "canonical": "last_name",
+      "forms": [
+        "lastname",
+        "familyname",
+        "surname"
+      ],
+      "notes": "Family name."
+    },
+    {
+      "id": "N-CT-FULL-NAME",
+      "category": "contact",
+      "subcategory": "person-name",
+      "canonical": "full_name",
+      "forms": [
+        "fullname",
+        "displayname",
+        "username",
+        "customername",
+        "contactname",
+        "personname",
+        "ownername",
+        "employeename",
+        "patientname",
+        "holdername",
+        "cardholdername",
+        "accountholdername",
+        "nameoncard",
+        "middlename",
+        "maidenname",
+        "fathername",
+        "mothername"
+      ],
+      "notes": "Qualified names only. CustomerName may be a company name; the consumer confirms whether the entity is a natural person."
+    },
+    {
+      "id": "N-CT-ADDRESS",
+      "category": "contact",
+      "subcategory": "postal-address",
+      "canonical": "address",
+      "forms": [
+        "address",
+        "streetaddress",
+        "streetaddr",
+        "homeaddress",
+        "homeaddr",
+        "postaladdress",
+        "postaladdr",
+        "mailingaddress",
+        "mailingaddr",
+        "billingaddress",
+        "billingaddr",
+        "shippingaddress",
+        "shippingaddr",
+        "residentialaddress",
+        "residentialaddr",
+        "addressline",
+        "addr1",
+        "addr2",
+        "addrline"
+      ],
+      "notes": "Bare address is matched (it was in the logging list); IP, MAC, email and remote addresses resolve to their more specific rules because the longest form wins."
+    },
+    {
+      "id": "N-CT-POSTAL-CODE",
+      "category": "contact",
+      "subcategory": "postal-code",
+      "canonical": "postal_code",
+      "forms": [
+        "zipcode",
+        "postalcode",
+        "postcode",
+        "pincode"
+      ],
+      "notes": "pinCode is the Indian postal code and wins over the PIN credential rule because it is the longer form. Bare 'zip' is not matched (archives)."
+    },
+    {
+      "id": "N-FIN-BANK-ACCOUNT",
+      "category": "financial",
+      "subcategory": "bank-account",
+      "canonical": "iban",
+      "forms": [
+        "iban",
+        "bankaccount",
+        "bankaccountno",
+        "bankaccountnum",
+        "bankaccountnumber",
+        "accountnumber",
+        "accountno",
+        "acctno",
+        "acctnumber",
+        "routingnumber",
+        "swift",
+        "swiftcode",
+        "bic",
+        "biccode",
+        "sortcode"
+      ],
+      "notes": "In accounting software AccountNumber can be a ledger account code rather than a bank account; confirm the entity."
+    },
+    {
+      "id": "N-FIN-CARD",
+      "category": "financial",
+      "subcategory": "payment-card",
+      "canonical": "card_number",
+      "forms": [
+        "card",
+        "cardnumber",
+        "cardno",
+        "cardnum",
+        "creditcard",
+        "creditcardnumber",
+        "creditcardno",
+        "creditcardnum",
+        "debitcard",
+        "debitcardnumber",
+        "debitcardno",
+        "debitcardnum",
+        "ccnum",
+        "ccnumber",
+        "pan",
+        "pannumber",
+        "cardholder",
+        "primaryaccountnumber"
+      ],
+      "notes": "Bare 'card' (from the logging list) may be a card entity or a UI card; confirm the value. 'pan' is also the Indian/Pakistani Permanent Account Number (a tax id)."
+    },
+    {
+      "id": "N-FIN-CARD-SECURITY",
+      "category": "financial",
+      "subcategory": "card-security",
+      "canonical": "card_security",
+      "forms": [
+        "cvv",
+        "cvc",
+        "cvv2",
+        "cvc2",
+        "cardsecuritycode",
+        "securitycode",
+        "cardverificationvalue",
+        "cardexpiry",
+        "cardexp",
+        "cardexpiration",
+        "cardexpirydate",
+        "cardexpdate",
+        "cardexpirationdate",
+        "cardexpirymonth",
+        "cardexpmonth",
+        "cardexpirationmonth",
+        "cardexpiryyear",
+        "cardexpyear",
+        "cardexpirationyear"
+      ],
+      "notes": "PCI DSS forbids storing card security codes after authorisation."
+    },
+    {
+      "id": "N-FIN-PAY",
+      "category": "financial",
+      "subcategory": "pay",
+      "canonical": "salary",
+      "forms": [
+        "salary",
+        "wage",
+        "income",
+        "netpay",
+        "grosspay",
+        "compensation"
+      ],
+      "notes": "Personal pay. incomeAccount and incomeStatement are ledger terms and are excluded."
+    },
+    {
+      "id": "N-HEALTH",
+      "category": "health",
+      "subcategory": "health",
+      "canonical": "health",
+      "gdpr_article": "Art.9",
+      "forms": [
+        "diagnosis",
+        "diagnoses",
+        "medical",
+        "healthrecord",
+        "healthcondition",
+        "healthstatus",
+        "healthdata",
+        "prescription",
+        "bloodtype",
+        "bloodgroup",
+        "disability",
+        "disabilities",
+        "allergy",
+        "allergies",
+        "pregnant",
+        "pregnancy",
+        "mentalhealth",
+        "medication"
+      ],
+      "notes": "GDPR Art.9 special category. Bare 'health' is not matched (health checks)."
+    },
+    {
+      "id": "N-SPECIAL",
+      "category": "special-category",
+      "subcategory": "special-category",
+      "canonical": "special_category",
+      "gdpr_article": "Art.9",
+      "forms": [
+        "religion",
+        "religious",
+        "ethnic",
+        "ethnicity",
+        "racial",
+        "race",
+        "sexualorientation",
+        "sexuality",
+        "political",
+        "politicalopinion",
+        "tradeunion",
+        "tradeunionmembership",
+        "philosophicalbelief",
+        "biometric",
+        "genetic",
+        "geneticdata",
+        "fingerprint",
+        "faceid",
+        "facescan",
+        "facetemplate"
+      ],
+      "notes": "GDPR Art.9. 'fingerprint' can mean a browser/device fingerprint and 'faceId' an OS feature flag; confirm the value."
+    },
+    {
+      "id": "N-SPECIAL-CRIMINAL",
+      "category": "special-category",
+      "subcategory": "criminal-record",
+      "canonical": "special_category",
+      "gdpr_article": "Art.10",
+      "forms": [
+        "criminalrecord",
+        "criminalconviction",
+        "convictionrecord"
+      ],
+      "notes": "GDPR Art.10 criminal convictions and offences; handled like special category."
+    },
+    {
+      "id": "N-CRED-PASSWORD",
+      "category": "credential",
+      "subcategory": "password",
+      "canonical": "password",
+      "forms": [
+        "password",
+        "passwd",
+        "pwd",
+        "passphrase",
+        "passcode",
+        "smtppass",
+        "smtppassword"
+      ],
+      "substring_forms": [
+        "password",
+        "passwd",
+        "pwd",
+        "smtppass"
+      ],
+      "notes": "SMTP passwords are included. Substring forms catch run-on keys such as DBPASSWORD. passwordPolicy, passwordLength, hasPassword and similar metadata are excluded by qualifiers."
+    },
+    {
+      "id": "N-CRED-SECURITY-ANSWER",
+      "category": "credential",
+      "subcategory": "security-answer",
+      "canonical": "password",
+      "forms": [
+        "secretanswer",
+        "securityanswer",
+        "securityquestionanswer",
+        "memorableword"
+      ],
+      "notes": "Knowledge-based authentication answers."
+    },
+    {
+      "id": "N-CRED-PIN",
+      "category": "credential",
+      "subcategory": "pin",
+      "canonical": null,
+      "forms": [
+        "pin",
+        "pinnumber"
+      ],
+      "notes": "Personal identification numbers. pinCode resolves to postal code."
+    },
+    {
+      "id": "N-CRED-OTP",
+      "category": "credential",
+      "subcategory": "otp",
+      "canonical": null,
+      "forms": [
+        "otp",
+        "otpcode",
+        "onetimepassword",
+        "onetimecode",
+        "mfacode",
+        "mfatoken",
+        "twofactorcode",
+        "2facode",
+        "totp",
+        "totpcode",
+        "verificationcode",
+        "recoverycode",
+        "backupcode"
+      ],
+      "notes": "One-time and recovery codes. otpExpiry is excluded as metadata."
+    },
+    {
+      "id": "N-CRED-TOKEN",
+      "category": "credential",
+      "subcategory": "token",
+      "canonical": null,
+      "forms": [
+        "token",
+        "accesstoken",
+        "refreshtoken",
+        "idtoken",
+        "authtoken",
+        "bearertoken",
+        "authorizationtoken",
+        "sessiontoken",
+        "securitytoken",
+        "jwt",
+        "jwttoken",
+        "bearer",
+        "authorization",
+        "authorizationheader",
+        "authheader",
+        "csrftoken",
+        "xsrftoken",
+        "remembertoken",
+        "remembermetoken",
+        "authorizationcode",
+        "authcode"
+      ],
+      "substring_forms": [
+        "token"
+      ],
+      "notes": "Bearer and session tokens. A bare 'token' in configuration is often an API token; it is still a credential. tokenExpiry, tokenType and tokenId are excluded by qualifiers."
+    },
+    {
+      "id": "N-CRED-SESSION",
+      "category": "credential",
+      "subcategory": "session",
+      "canonical": null,
+      "forms": [
+        "session",
+        "sessionid",
+        "sessionkey",
+        "sessioncookie"
+      ],
+      "standalone_forms": [
+        "sid"
+      ],
+      "substring_forms": [
+        "sessid",
+        "sessionid"
+      ],
+      "notes": "Session identifiers used for authentication (PHPSESSID, ASP.NET_SessionId, connect.sid). sessionTimeout and sessionStorage are excluded."
+    },
+    {
+      "id": "N-CRED-COOKIE",
+      "category": "credential",
+      "subcategory": "cookie",
+      "canonical": null,
+      "forms": [
+        "cookie",
+        "authcookie"
+      ],
+      "notes": "Cookie headers and values. cookieName, cookiePolicy and cookieOptions are excluded."
+    },
+    {
+      "id": "N-CRED-DERIVATIVE",
+      "category": "credential",
+      "subcategory": "credential-derivative",
+      "canonical": "password",
+      "form": "hashed",
+      "forms": [
+        "passwordhash",
+        "passwordsalt",
+        "passworddigest",
+        "hashedpassword",
+        "securitystamp"
+      ],
+      "whole_forms": [
+        "hash",
+        "salt"
+      ],
+      "notes": "Values derived from a credential. Not usable to log in directly, but must not be exposed by APIs or logs. Bare hash and salt only match as the whole identifier (a property named Hash), not fileHash, commit_hash or cnic_hash."
+    },
+    {
+      "id": "N-CRED-COOKIE-HINT",
+      "category": "credential",
+      "subcategory": "session",
+      "canonical": null,
+      "contexts": [
+        "cookie"
+      ],
+      "substring_forms": [
+        "sess",
+        "auth",
+        "token",
+        "jwt",
+        "refresh",
+        "login",
+        "sid",
+        "csrf",
+        "xsrf",
+        "identity",
+        "remember"
+      ],
+      "notes": "Cookie-name context only (pass context='cookie'): these fragments mark an authentication or anti-forgery cookie. Too broad for general identifiers."
+    },
+    {
+      "id": "N-CRED-COOKIE-FRAMEWORK",
+      "category": "credential",
+      "subcategory": "session",
+      "canonical": null,
+      "contexts": [
+        "cookie"
+      ],
+      "whole_forms": [
+        "aspnetcoreidentityapplication",
+        "aspnetcoreidentityexternal",
+        "aspnetcoreidentitytwofactoruserid",
+        "aspnetcoreidentitytwofactorrememberme"
+      ],
+      "notes": "Fixed default cookie names issued by web frameworks for authentication. Matched on the whole name so a trailing qualifier token (Application, UserId) cannot exclude them. Cookie-name context only. Add other frameworks' fixed auth cookie names here."
+    },
+    {
+      "id": "N-SEC-SECRET",
+      "category": "secret",
+      "subcategory": "application-secret",
+      "canonical": null,
+      "forms": [
+        "secret",
+        "clientsecret",
+        "appsecret",
+        "consumersecret",
+        "webhooksecret",
+        "sharedsecret",
+        "signingsecret",
+        "apisecret",
+        "secretkey",
+        "jwtsecret",
+        "totpsecret",
+        "otpsecret",
+        "mfasecret",
+        "secretaccesskey",
+        "databasesecret"
+      ],
+      "substring_forms": [
+        "secret"
+      ],
+      "notes": "Application and OAuth client secrets. secretary, secretName and SecretsManager are excluded."
+    },
+    {
+      "id": "N-SEC-API-KEY",
+      "category": "secret",
+      "subcategory": "api-key",
+      "canonical": null,
+      "forms": [
+        "apikey",
+        "apitoken",
+        "accesskey",
+        "accesskeyid",
+        "subscriptionkey",
+        "masterkey",
+        "xapikey",
+        "smskey",
+        "smstoken",
+        "smssecret"
+      ],
+      "substring_forms": [
+        "apikey",
+        "accesskey",
+        "smskey",
+        "smstoken",
+        "smssecret"
+      ],
+      "notes": "Provider and service API keys. A browser key that ships in a frontend may be public by design; check is_public_hint and the value rule exposure."
+    },
+    {
+      "id": "N-SEC-KEY-MATERIAL",
+      "category": "secret",
+      "subcategory": "key-material",
+      "canonical": null,
+      "forms": [
+        "privatekey",
+        "privkey",
+        "signingkey",
+        "encryptionkey",
+        "jwtkey",
+        "hmackey",
+        "aeskey",
+        "symmetrickey",
+        "dataprotectionkey"
+      ],
+      "substring_forms": [
+        "privatekey",
+        "signingkey",
+        "encryptionkey",
+        "jwtkey"
+      ],
+      "notes": "Private, signing and encryption keys. 'publicKey' is not matched."
+    },
+    {
+      "id": "N-SEC-CONNECTION-STRING",
+      "category": "secret",
+      "subcategory": "connection-string",
+      "canonical": null,
+      "forms": [
+        "connectionstring",
+        "connstr",
+        "connstring"
+      ],
+      "substring_forms": [
+        "connectionstring",
+        "connstr"
+      ],
+      "notes": "Connection strings usually embed a password; confirm with the V-CONN-STRING-PASSWORD value rule."
+    },
+    {
+      "id": "N-SEC-CREDENTIAL",
+      "category": "secret",
+      "subcategory": "service-credential",
+      "canonical": null,
+      "forms": [
+        "credential",
+        "serviceaccount",
+        "serviceaccountkey",
+        "serviceaccountjson",
+        "saskey",
+        "sastoken",
+        "awscredential",
+        "twilio",
+        "sendgrid"
+      ],
+      "substring_forms": [
+        "credential",
+        "serviceaccount",
+        "saskey",
+        "twilio",
+        "sendgrid"
+      ],
+      "notes": "Service credentials and provider-named settings (any twilio* or sendgrid* key). TwilioSettings is excluded as structural; TwilioAccountSid is still matched."
+    }
+  ],
+  "name_qualifiers": {
+    "description": "Tokens around a matched form that change the result. Metadata and structural suffixes and boolean prefixes exclude the match; reference suffixes exclude it unless the rule keeps them; hashed, encrypted and masked tokens set the form but keep the match sensitive.",
+    "metadata_suffixes": [
+      "policy",
+      "policies",
+      "expiry",
+      "expires",
+      "expired",
+      "expiration",
+      "expire",
+      "expiresat",
+      "expiresin",
+      "length",
+      "len",
+      "count",
+      "exists",
+      "valid",
+      "validity",
+      "required",
+      "reset",
+      "sent",
+      "type",
+      "types",
+      "timeout",
+      "lifetime",
+      "ttl",
+      "duration",
+      "verified",
+      "confirmed",
+      "enabled",
+      "disabled",
+      "changed",
+      "updated",
+      "created",
+      "strength",
+      "complexity",
+      "min",
+      "max",
+      "minimum",
+      "maximum",
+      "rule",
+      "rules",
+      "requirement",
+      "requirements",
+      "regex",
+      "pattern",
+      "format",
+      "name",
+      "names",
+      "label",
+      "hint",
+      "placeholder",
+      "visible",
+      "visibility",
+      "toggle",
+      "attempt",
+      "attempts",
+      "retries",
+      "version",
+      "algorithm",
+      "algo",
+      "scheme",
+      "status",
+      "flag",
+      "flags",
+      "mode",
+      "kind",
+      "timestamp",
+      "issuer",
+      "audience",
+      "condition",
+      "statement",
+      "board",
+      "track",
+      "age",
+      "exp"
+    ],
+    "structural_suffixes": [
+      "service",
+      "controller",
+      "manager",
+      "provider",
+      "handler",
+      "middleware",
+      "factory",
+      "repository",
+      "repo",
+      "helper",
+      "util",
+      "utils",
+      "utility",
+      "validator",
+      "validation",
+      "template",
+      "config",
+      "configuration",
+      "settings",
+      "setting",
+      "options",
+      "option",
+      "defaults",
+      "events",
+      "module",
+      "component",
+      "dialog",
+      "modal",
+      "page",
+      "view",
+      "screen",
+      "form",
+      "button",
+      "btn",
+      "icon",
+      "store",
+      "storage",
+      "schema",
+      "sender",
+      "client",
+      "endpoint",
+      "route",
+      "job",
+      "worker",
+      "listener",
+      "exception",
+      "error",
+      "errors",
+      "message",
+      "notification",
+      "app",
+      "application",
+      "library",
+      "lib",
+      "plugin",
+      "sdk",
+      "api",
+      "class",
+      "interface",
+      "builder",
+      "generator",
+      "parser",
+      "serializer",
+      "formatter",
+      "encoder",
+      "hasher",
+      "filter",
+      "interceptor",
+      "guard",
+      "strategy",
+      "pipe",
+      "decorator",
+      "directive",
+      "spec",
+      "test"
+    ],
+    "reference_suffixes": [
+      "id",
+      "uid",
+      "guid",
+      "uuid",
+      "ref",
+      "fk"
+    ],
+    "boolean_prefixes": [
+      "is",
+      "has",
+      "can",
+      "should",
+      "show",
+      "hide",
+      "toggle",
+      "validate",
+      "forgot",
+      "require",
+      "requires",
+      "needs",
+      "allow",
+      "use",
+      "add"
+    ],
+    "hashed_markers": [
+      "hash",
+      "digest",
+      "bcrypt",
+      "sha1",
+      "sha256",
+      "sha512",
+      "md5",
+      "salted"
+    ],
+    "encrypted_markers": [
+      "encrypt",
+      "cipher",
+      "crypted"
+    ],
+    "encrypted_last_tokens": [
+      "enc"
+    ],
+    "masked_markers": [
+      "masked",
+      "last4",
+      "lastfour",
+      "redact",
+      "truncat",
+      "obfuscat"
+    ],
+    "masked_tokens": [
+      "mask"
+    ]
+  },
+  "name_exclusions": [
+    {
+      "id": "X-LOG-METADATA",
+      "names": [
+        "tokenexpiry",
+        "passwordpolicy",
+        "sessiontimeout",
+        "emailsent"
+      ],
+      "reason": "metadata about the value, not the value (from the logging skill's NOT_SENSITIVE list)"
+    },
+    {
+      "id": "X-DOC-METADATA",
+      "names": [
+        "passwordlength",
+        "passwordexpiresat",
+        "tokentype",
+        "cardtype",
+        "cookiename",
+        "emailverified"
+      ],
+      "reason": "metadata about the value, not the value (documented false positives)"
+    },
+    {
+      "id": "X-HOMONYMS",
+      "names": [
+        "secretary",
+        "racecondition",
+        "incomeaccount",
+        "incomestatement",
+        "secretsmanager",
+        "secretmanager",
+        "sessionstorage",
+        "passportjs",
+        "tokenizer",
+        "tokenize",
+        "tokenized",
+        "tokenization",
+        "detokenize",
+        "jsonwebtoken",
+        "cancellationtoken",
+        "canceltoken",
+        "stoppingtoken",
+        "continuationtoken",
+        "pagetoken",
+        "nextpagetoken"
+      ],
+      "reason": "a different word, a package name, or a ledger or platform term that only shares letters with a sensitive form"
+    }
+  ],
+  "value_rules": [
+    {
+      "id": "V-EMAIL",
+      "kind": "format",
+      "category": "contact",
+      "subcategory": "email",
+      "canonical": "email",
+      "exposure": "personal",
+      "priority": 14,
+      "confidence": "high",
+      "regex": "(?<![A-Za-z0-9._%+-])[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\\b",
+      "reject_regex": "@[A-Za-z0-9.-]*\\.(?:png|jpe?g|gif|svg|webp|ico|css|scss|js|mjs|ts|map|json)$",
+      "generic_local_parts": [
+        "support",
+        "noreply",
+        "no-reply",
+        "admin",
+        "info",
+        "sales",
+        "hello",
+        "contact",
+        "team",
+        "billing"
+      ],
+      "cwe": "CWE-359",
+      "notes": "Email literal. Addresses on example domains are returned with a placeholder; role mailboxes (support@, noreply@) carry attributes.generic_mailbox and are not personal data. Asset names such as logo@2x.png are rejected."
+    },
+    {
+      "id": "V-PHONE",
+      "kind": "format",
+      "category": "contact",
+      "subcategory": "phone",
+      "canonical": "phone",
+      "exposure": "personal",
+      "priority": 5,
+      "confidence": "low",
+      "regex": "(?<![\\w.])(?:\\+\\d{9,15}|\\+\\d{1,3}[ -]\\d{2,4}[ -]\\d{3,4}[ -]?\\d{3,4}|\\d{3}[- .]\\d{3}[- .]\\d{4}|0\\d{9,10})(?![\\w.])",
+      "cwe": "CWE-359",
+      "notes": "E.164, NANP-style and leading-zero national numbers. Many numeric literals look like phones; treat as low confidence."
+    },
+    {
+      "id": "V-IBAN",
+      "kind": "format",
+      "category": "financial",
+      "subcategory": "bank-account",
+      "canonical": "iban",
+      "exposure": "personal",
+      "priority": 16,
+      "confidence": "medium",
+      "checksum": "iban-mod97",
+      "regex": "\\b[A-Z]{2}\\d{2}(?:[ ]?[A-Z0-9]{4}){3,7}[ ]?[A-Z0-9]{1,4}\\b|\\b[A-Z]{2}\\d{2}[A-Z0-9]{11,30}\\b",
+      "cwe": "CWE-359",
+      "notes": "IBAN shape with the ISO 13616 mod-97 check reported in checksum_ok."
+    },
+    {
+      "id": "V-CARD",
+      "kind": "format",
+      "category": "financial",
+      "subcategory": "payment-card",
+      "canonical": "card_number",
+      "exposure": "personal",
+      "priority": 15,
+      "confidence": "high",
+      "checksum": "luhn",
+      "regex": "(?<!\\w)\\d(?:[ -]?\\d){12,18}(?!\\w)",
+      "emit": "checksum-or-brand",
+      "cwe": "CWE-359",
+      "notes": "13-19 digit PAN with optional space or dash separators. Returned when the Luhn check passes, or when the brand prefix and length fit a card scheme (checksum_ok false). Published test card numbers are placeholders."
+    },
+    {
+      "id": "V-SSN-US",
+      "kind": "format",
+      "category": "identifier",
+      "subcategory": "national-id",
+      "canonical": "national_id",
+      "exposure": "personal",
+      "priority": 12,
+      "confidence": "medium",
+      "checksum": "ssn-area",
+      "locale": "US",
+      "regex": "\\b\\d{3}-\\d{2}-\\d{4}\\b",
+      "cwe": "CWE-359",
+      "notes": "Locale-specific: United States Social Security Number. checksum_ok is false for impossible areas (000, 666, 900-999), group 00 or serial 0000."
+    },
+    {
+      "id": "V-CNIC-PK",
+      "kind": "format",
+      "category": "identifier",
+      "subcategory": "national-id",
+      "canonical": "national_id",
+      "exposure": "personal",
+      "priority": 12,
+      "confidence": "high",
+      "locale": "PK",
+      "regex": "\\b\\d{5}-\\d{7}-\\d\\b",
+      "cwe": "CWE-359",
+      "notes": "Locale-specific: Pakistan CNIC/NICOP (NADRA) in its dashed form."
+    },
+    {
+      "id": "V-NINO-GB",
+      "kind": "format",
+      "category": "identifier",
+      "subcategory": "national-id",
+      "canonical": "national_id",
+      "exposure": "personal",
+      "priority": 12,
+      "confidence": "medium",
+      "locale": "GB",
+      "regex": "\\b[A-CEGHJ-PR-TW-Z][A-CEGHJ-NPR-TW-Z] ?\\d{2} ?\\d{2} ?\\d{2} ?[A-D]\\b",
+      "cwe": "CWE-359",
+      "notes": "Locale-specific: United Kingdom National Insurance number."
+    },
+    {
+      "id": "V-AADHAAR-IN",
+      "kind": "format",
+      "category": "identifier",
+      "subcategory": "national-id",
+      "canonical": "national_id",
+      "exposure": "personal",
+      "priority": 11,
+      "confidence": "medium",
+      "checksum": "verhoeff",
+      "locale": "IN",
+      "regex": "\\b[2-9]\\d{3}[ -]?\\d{4}[ -]?\\d{4}\\b",
+      "emit": "checksum-only",
+      "cwe": "CWE-359",
+      "notes": "Locale-specific: India Aadhaar, returned only when the Verhoeff check digit is valid."
+    },
+    {
+      "id": "V-NATIONAL-ID-SA",
+      "kind": "format",
+      "category": "identifier",
+      "subcategory": "national-id",
+      "canonical": "national_id",
+      "exposure": "personal",
+      "priority": 10,
+      "confidence": "low",
+      "checksum": "luhn",
+      "locale": "SA",
+      "regex": "\\b[12]\\d{9}\\b",
+      "emit": "checksum-only",
+      "cwe": "CWE-359",
+      "notes": "Locale-specific: Saudi national id (starts 1) or Iqama (starts 2), returned only when the Luhn-style check passes. Any 10-digit number can collide; low confidence."
+    },
+    {
+      "id": "V-JWT",
+      "kind": "format",
+      "category": "credential",
+      "subcategory": "token",
+      "exposure": "secret",
+      "priority": 25,
+      "confidence": "high",
+      "regex": "\\beyJ[A-Za-z0-9_-]{10,}\\.eyJ[A-Za-z0-9_-]{10,}\\.[A-Za-z0-9_-]*",
+      "cwe": "CWE-798",
+      "notes": "Encoded JSON Web Token (header.payload.signature; an empty signature is alg=none)."
+    },
+    {
+      "id": "V-PEM-PRIVATE-KEY",
+      "kind": "format",
+      "category": "secret",
+      "subcategory": "key-material",
+      "exposure": "secret",
+      "priority": 30,
+      "confidence": "high",
+      "regex": "-----BEGIN [A-Z0-9 ]*PRIVATE KEY(?: BLOCK)?(?:-----)?",
+      "cwe": "CWE-321",
+      "notes": "PEM, OpenSSH, PGP and encrypted private-key headers."
+    },
+    {
+      "id": "V-PASSWORD-HASH",
+      "kind": "format",
+      "category": "credential",
+      "subcategory": "credential-derivative",
+      "form": "hashed",
+      "exposure": "secret",
+      "priority": 22,
+      "confidence": "high",
+      "regex": "\\$2[aby]\\$\\d\\d\\$[./A-Za-z0-9]{20,}|\\$argon2(?:id|i|d)\\$[^\\s'\"]*|pbkdf2_sha256\\$\\d+\\$[^\\s'\"]*|AQAAAA[A-Za-z0-9+/=]{20,}",
+      "cwe": "CWE-916",
+      "notes": "bcrypt, Argon2, Django PBKDF2 and ASP.NET Identity password hashes."
+    },
+    {
+      "id": "V-CONN-STRING-PASSWORD",
+      "kind": "format",
+      "category": "secret",
+      "subcategory": "connection-string",
+      "exposure": "secret",
+      "priority": 7,
+      "confidence": "medium",
+      "regex": "(?i)(?:password|pwd)\\s*=\\s*(?P<secret>[^\\s;'\"]{3,})",
+      "cwe": "CWE-798",
+      "notes": "Password=/Pwd= inside a connection string or an env line (DB_PASSWORD=...). The placeholder test runs on the password part only. Lower priority than V-ASSIGNED-SECRET so an env assignment keeps its key."
+    },
+    {
+      "id": "V-URL-CREDENTIALS",
+      "kind": "format",
+      "category": "secret",
+      "subcategory": "connection-string",
+      "exposure": "secret",
+      "priority": 21,
+      "confidence": "high",
+      "regex": "(?i)\\b[a-z][a-z0-9+.-]*://(?P<user>[^/\\s:'\"@]+):(?P<secret>[^@\\s'\"/]+)@(?P<host>[^\\s'\"/:]+)",
+      "cwe": "CWE-798",
+      "notes": "scheme://user:password@host (database, broker and HTTP URLs). The placeholder test runs on the password part; attributes.host is returned so consumers can ignore local hosts."
+    },
+    {
+      "id": "V-AWS-ACCESS-KEY-ID",
+      "kind": "provider",
+      "provider": "aws",
+      "category": "secret",
+      "subcategory": "api-key",
+      "exposure": "secret",
+      "priority": 30,
+      "confidence": "high",
+      "regex": "(?<![A-Z0-9])(?:AKIA|ASIA|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|APKA|ABIA|ACCA)[0-9A-Z]{16}(?![A-Z0-9])",
+      "cwe": "CWE-798",
+      "notes": "AWS access key id. Useless without the secret access key but always paired with one."
+    },
+    {
+      "id": "V-AWS-SECRET-KEY",
+      "kind": "provider",
+      "provider": "aws",
+      "category": "secret",
+      "subcategory": "api-key",
+      "exposure": "secret",
+      "priority": 30,
+      "confidence": "high",
+      "regex": "(?i)aws.{0,20}?(?:secret|access).{0,20}?['\"](?P<secret>[A-Za-z0-9/+=]{40})['\"]",
+      "cwe": "CWE-798",
+      "notes": "40-character AWS secret access key next to an aws secret/access label."
+    },
+    {
+      "id": "V-AWS-SECRET-KEY-NEAR",
+      "kind": "provider",
+      "provider": "aws",
+      "category": "secret",
+      "subcategory": "api-key",
+      "exposure": "secret",
+      "priority": 29,
+      "confidence": "low",
+      "regex": "\\b[0-9a-zA-Z/+]{40}\\b(?=.*AWS)",
+      "cwe": "CWE-798",
+      "notes": "Any 40-character base64-ish string on a line that later mentions AWS. Kept from the git history scanner; low confidence."
+    },
+    {
+      "id": "V-STRIPE-SECRET",
+      "kind": "provider",
+      "provider": "stripe",
+      "category": "secret",
+      "subcategory": "api-key",
+      "exposure": "secret",
+      "priority": 30,
+      "confidence": "high",
+      "regex": "\\b(?:sk|rk)_(?:live|test)_[0-9A-Za-z]{10,}",
+      "cwe": "CWE-798",
+      "notes": "Stripe secret (sk_) or restricted (rk_) key. attributes.mode is live or test; a test key is still a secret."
+    },
+    {
+      "id": "V-STRIPE-WEBHOOK-SECRET",
+      "kind": "provider",
+      "provider": "stripe",
+      "category": "secret",
+      "subcategory": "application-secret",
+      "exposure": "secret",
+      "priority": 30,
+      "confidence": "high",
+      "regex": "\\bwhsec_[A-Za-z0-9]{24,}",
+      "cwe": "CWE-798",
+      "notes": "Stripe webhook signing secret."
+    },
+    {
+      "id": "V-STRIPE-PUBLISHABLE",
+      "kind": "provider",
+      "provider": "stripe",
+      "category": "secret",
+      "subcategory": "publishable-key",
+      "exposure": "public",
+      "priority": 30,
+      "confidence": "high",
+      "regex": "\\bpk_(?:live|test)_[0-9A-Za-z]{10,}",
+      "notes": "Stripe publishable key: public by design, meant to ship in the browser. Returned with sensitive false."
+    },
+    {
+      "id": "V-SENDGRID",
+      "kind": "provider",
+      "provider": "sendgrid",
+      "category": "secret",
+      "subcategory": "api-key",
+      "exposure": "secret",
+      "priority": 30,
+      "confidence": "high",
+      "regex": "\\bSG\\.[A-Za-z0-9_\\-]{16,}\\.[A-Za-z0-9_\\-]{16,}",
+      "cwe": "CWE-798",
+      "notes": "SendGrid API key."
+    },
+    {
+      "id": "V-GITHUB-TOKEN",
+      "kind": "provider",
+      "provider": "github",
+      "category": "secret",
+      "subcategory": "api-key",
+      "exposure": "secret",
+      "priority": 30,
+      "confidence": "high",
+      "regex": "\\b(?:gh[pousr]_[0-9A-Za-z]{20,}|github_pat_[0-9A-Za-z_]{20,})",
+      "cwe": "CWE-798",
+      "notes": "GitHub personal, OAuth, user-to-server, server-to-server and refresh tokens, and fine-grained PATs."
+    },
+    {
+      "id": "V-SLACK-TOKEN",
+      "kind": "provider",
+      "provider": "slack",
+      "category": "secret",
+      "subcategory": "api-key",
+      "exposure": "secret",
+      "priority": 30,
+      "confidence": "high",
+      "regex": "\\bxox[abeoprs]-[0-9A-Za-z-]{10,}",
+      "cwe": "CWE-798",
+      "notes": "Slack bot, user, app and refresh tokens."
+    },
+    {
+      "id": "V-SLACK-WEBHOOK",
+      "kind": "provider",
+      "provider": "slack",
+      "category": "secret",
+      "subcategory": "webhook-url",
+      "exposure": "secret",
+      "priority": 30,
+      "confidence": "high",
+      "regex": "https://hooks\\.slack\\.com/(?:services|workflows)/[A-Za-z0-9/_-]{20,}",
+      "cwe": "CWE-798",
+      "notes": "Slack incoming webhook URL; anyone holding it can post to the channel."
+    },
+    {
+      "id": "V-GOOGLE-API-KEY",
+      "kind": "provider",
+      "provider": "google",
+      "category": "secret",
+      "subcategory": "api-key",
+      "exposure": "conditional",
+      "priority": 30,
+      "confidence": "high",
+      "regex": "\\bAIza[0-9A-Za-z_\\-]{35}\\b",
+      "cwe": "CWE-798",
+      "notes": "Google API key. Browser keys (Maps JavaScript, Firebase web config) are public when HTTP-referrer or API restricted; server keys are secrets. exposure conditional, sensitive true until the restriction is confirmed."
+    },
+    {
+      "id": "V-GOOGLE-OAUTH-SECRET",
+      "kind": "provider",
+      "provider": "google",
+      "category": "secret",
+      "subcategory": "application-secret",
+      "exposure": "secret",
+      "priority": 30,
+      "confidence": "high",
+      "regex": "\\bGOCSPX-[0-9A-Za-z_-]{20,}",
+      "cwe": "CWE-798",
+      "notes": "Google OAuth client secret."
+    },
+    {
+      "id": "V-TWILIO",
+      "kind": "provider",
+      "provider": "twilio",
+      "category": "secret",
+      "subcategory": "api-key",
+      "exposure": "secret",
+      "priority": 28,
+      "confidence": "medium",
+      "regex": "\\b(?:AC|SK)[0-9a-f]{32}\\b",
+      "cwe": "CWE-798",
+      "notes": "Twilio Account SID (AC) or API key SID (SK). The SID alone does not authenticate but is always paired with an auth token or key secret."
+    },
+    {
+      "id": "V-AZURE-STORAGE-CONNECTION",
+      "kind": "provider",
+      "provider": "azure",
+      "category": "secret",
+      "subcategory": "connection-string",
+      "exposure": "secret",
+      "priority": 31,
+      "confidence": "high",
+      "regex": "(?i)DefaultEndpointsProtocol=https?;AccountName=[^;\\s'\"]+;AccountKey=(?P<secret>[A-Za-z0-9+/=]{20,})",
+      "cwe": "CWE-798",
+      "notes": "Azure Storage connection string with an account key."
+    },
+    {
+      "id": "V-AZURE-ACCOUNT-KEY",
+      "kind": "provider",
+      "provider": "azure",
+      "category": "secret",
+      "subcategory": "api-key",
+      "exposure": "secret",
+      "priority": 30,
+      "confidence": "high",
+      "regex": "(?i)\\bAccountKey=(?P<secret>[A-Za-z0-9+/]{86}==)",
+      "cwe": "CWE-798",
+      "notes": "Azure Storage account key outside a full connection string."
+    },
+    {
+      "id": "V-AZURE-SAS",
+      "kind": "provider",
+      "provider": "azure",
+      "category": "secret",
+      "subcategory": "api-key",
+      "exposure": "secret",
+      "priority": 27,
+      "confidence": "medium",
+      "regex": "(?i)[?&]sig=(?P<secret>[A-Za-z0-9%+/=]{30,})",
+      "cwe": "CWE-798",
+      "notes": "Azure shared access signature (sig= parameter)."
+    },
+    {
+      "id": "V-NPM-TOKEN",
+      "kind": "provider",
+      "provider": "npm",
+      "category": "secret",
+      "subcategory": "api-key",
+      "exposure": "secret",
+      "priority": 30,
+      "confidence": "high",
+      "regex": "\\bnpm_[A-Za-z0-9]{36}\\b",
+      "cwe": "CWE-798",
+      "notes": "npm access token."
+    },
+    {
+      "id": "V-SHOPIFY-TOKEN",
+      "kind": "provider",
+      "provider": "shopify",
+      "category": "secret",
+      "subcategory": "api-key",
+      "exposure": "secret",
+      "priority": 30,
+      "confidence": "high",
+      "regex": "\\bshp(?:at|ss|ca|pa)_[a-fA-F0-9]{32}\\b",
+      "cwe": "CWE-798",
+      "notes": "Shopify Admin API, shared-secret, custom-app and private-app tokens."
+    },
+    {
+      "id": "V-ANTHROPIC-KEY",
+      "kind": "provider",
+      "provider": "anthropic",
+      "category": "secret",
+      "subcategory": "api-key",
+      "exposure": "secret",
+      "priority": 31,
+      "confidence": "high",
+      "regex": "\\bsk-ant-[A-Za-z0-9_-]{20,}",
+      "cwe": "CWE-798",
+      "notes": "Anthropic API key."
+    },
+    {
+      "id": "V-OPENAI-KEY",
+      "kind": "provider",
+      "provider": "openai",
+      "category": "secret",
+      "subcategory": "api-key",
+      "exposure": "secret",
+      "priority": 30,
+      "confidence": "medium",
+      "regex": "\\bsk-(?:proj-|svcacct-)?[A-Za-z0-9_-]{32,}",
+      "cwe": "CWE-798",
+      "notes": "OpenAI API key."
+    },
+    {
+      "id": "V-MAILGUN-KEY",
+      "kind": "provider",
+      "provider": "mailgun",
+      "category": "secret",
+      "subcategory": "api-key",
+      "exposure": "secret",
+      "priority": 30,
+      "confidence": "medium",
+      "regex": "\\bkey-[0-9a-f]{32}\\b",
+      "cwe": "CWE-798",
+      "notes": "Mailgun API key."
+    },
+    {
+      "id": "V-MAPBOX-SECRET",
+      "kind": "provider",
+      "provider": "mapbox",
+      "category": "secret",
+      "subcategory": "api-key",
+      "exposure": "secret",
+      "priority": 30,
+      "confidence": "high",
+      "regex": "\\bsk\\.eyJ[A-Za-z0-9_-]{20,}\\.[A-Za-z0-9_-]{10,}",
+      "cwe": "CWE-798",
+      "notes": "Mapbox secret token."
+    },
+    {
+      "id": "V-MAPBOX-PUBLIC",
+      "kind": "provider",
+      "provider": "mapbox",
+      "category": "secret",
+      "subcategory": "publishable-key",
+      "exposure": "public",
+      "priority": 30,
+      "confidence": "high",
+      "regex": "\\bpk\\.eyJ[A-Za-z0-9_-]{20,}\\.[A-Za-z0-9_-]{10,}",
+      "notes": "Mapbox public token: public by design (URL-restrict it)."
+    },
+    {
+      "id": "V-SENTRY-DSN",
+      "kind": "provider",
+      "provider": "sentry",
+      "category": "secret",
+      "subcategory": "public-identifier",
+      "exposure": "public",
+      "priority": 30,
+      "confidence": "high",
+      "regex": "https://[0-9a-f]{16,}@[a-z0-9.-]+/[0-9]+",
+      "notes": "Sentry DSN: public by design in frontends (it only allows sending events)."
+    },
+    {
+      "id": "V-GA-MEASUREMENT-ID",
+      "kind": "provider",
+      "provider": "google",
+      "category": "secret",
+      "subcategory": "public-identifier",
+      "exposure": "public",
+      "priority": 30,
+      "confidence": "medium",
+      "regex": "\\bG-[A-Z0-9]{8,}\\b|\\bUA-[0-9]{4,}-[0-9]+\\b",
+      "notes": "Google Analytics measurement / property id: public by design."
+    },
+    {
+      "id": "V-FIREBASE-APP-ID",
+      "kind": "provider",
+      "provider": "firebase",
+      "category": "secret",
+      "subcategory": "public-identifier",
+      "exposure": "public",
+      "priority": 30,
+      "confidence": "high",
+      "regex": "\\b1:[0-9]{9,}:web:[0-9a-f]{10,}",
+      "notes": "Firebase web app id: part of the public web config."
+    },
+    {
+      "id": "V-ASSIGNED-SECRET",
+      "kind": "assignment",
+      "category": null,
+      "subcategory": null,
+      "exposure": "secret",
+      "priority": 8,
+      "confidence": "medium",
+      "regexes": [
+        {
+          "quoted": true,
+          "regex": "[\"']?(?P<key>[A-Za-z_][A-Za-z0-9_.\\-:]*)[\"']?\\s*(?::=|=>|:|=)\\s*(?P<q>[\"'`])(?P<value>[^\"'`\\r\\n]{4,})(?P=q)"
+        },
+        {
+          "quoted": false,
+          "regex": "(?m)^[ \\t]*(?:export[ \\t]+)?(?P<key>[A-Za-z_][A-Za-z0-9_.\\-]*)[ \\t]*[=:][ \\t]*(?P<value>[^\\s\"'`#;,][^\\s#;,]{3,})[ \\t]*$"
+        }
+      ],
+      "name_categories": [
+        "credential",
+        "secret"
+      ],
+      "reject_value_regex": "^[A-Za-z_$][\\w$]*(?:\\.[A-Za-z_$][\\w$]*)+$|\\)$|^\\(|^(?:new|await|function|require)\\b",
+      "cwe": "CWE-798",
+      "notes": "A literal (4+ characters) assigned to a key whose name classifies as credential or secret, in code, JSON, YAML, .env or properties form. category and subcategory come from the key's name rule; attributes.key, attributes.key_rule_id and attributes.quoted are returned. Unquoted matches are low confidence (they can be variable references)."
+    }
+  ],
+  "placeholder_rules": [
+    {
+      "id": "P-EMPTY",
+      "kind": "empty",
+      "mode": "fullmatch",
+      "regex": "(?i)\\s*|null|none|nil|undefined|true|false|empty|n/?a|tbd|todo|-+",
+      "notes": "No value, or a boolean/null literal."
+    },
+    {
+      "id": "P-REFERENCE",
+      "kind": "reference",
+      "mode": "search",
+      "regex": "^\\$\\{?[A-Za-z_]|\\$\\{[^}]*\\}|^%[A-Za-z_(]|%\\([A-Za-z_]\\w*\\)s|\\{\\{[^}]*\\}\\}|^#\\{.*\\}#?$|\\bprocess\\.env\\b|\\bimport\\.meta\\.env\\b|\\bos\\.environ\\b|\\bos\\.getenv\\b|\\benv\\(|^__[A-Za-z0-9_]+__$|@Microsoft\\.KeyVault\\(|^\\$\\(.*\\)$|(?i:set[-_ ]in[-_ ]|secrets?[-_ ]?manager|key[-_ ]?vault|from[-_ ]env)",
+      "notes": "Environment, template, pipeline-token or secret-store reference instead of a literal."
+    },
+    {
+      "id": "P-EXAMPLE-DOMAIN",
+      "kind": "example-domain",
+      "mode": "search",
+      "regex": "(?i)@(?:[\\w-]+\\.)*(?:example\\.(?:com|org|net)|test\\.(?:com|local)|localhost|invalid|email\\.com|domain\\.com|company\\.com|mail\\.com|acme\\.\\w+)$|@[\\w.-]+\\.(?:example|test|invalid|localhost)$",
+      "notes": "Email on a reserved or conventional example domain."
+    },
+    {
+      "id": "P-DUMMY-IDENTITY",
+      "kind": "dummy",
+      "mode": "search",
+      "regex": "(?i)^(?:test|demo|user\\d*|sample|foo|bar|john\\.doe|jane\\.doe)@",
+      "notes": "Obvious fixture mailbox local part."
+    },
+    {
+      "id": "P-ANGLE-TEMPLATE",
+      "kind": "template",
+      "mode": "search",
+      "regex": "<[^<>\\s][^<>]*>",
+      "notes": "Angle-bracket placeholder such as <your-api-key>."
+    },
+    {
+      "id": "P-DUMMY-WORDS",
+      "kind": "dummy",
+      "mode": "search",
+      "regex": "(?i)your[_-]|your(?:key|secret|token|password|api)|change[_-]?me|replace[_-]?me|replace|placeholder|example|dummy|sample|redacted|insert[_-]|fixme|\\bhere\\b|test[_-]?key|x{4,}|^x{3,}$|\\*{3,}|lorem|foobar|\\bfake\\b",
+      "notes": "Placeholder vocabulary (your_key, changeme, xxxx, ***, EXAMPLE)."
+    },
+    {
+      "id": "P-DEFAULT-CREDENTIAL",
+      "kind": "default-credential",
+      "mode": "fullmatch",
+      "regex": "(?i)password|passw0rd|pass|secret|admin|root|sa|postgres|mysql|redis|guest|user|test|dev|local|default|123456|12345678|qwerty|letmein",
+      "notes": "Well-known default or development credential. It is a literal, so a consumer judging committed secrets may still report it as a weak value."
+    },
+    {
+      "id": "P-TEST-CARD",
+      "kind": "test-value",
+      "mode": "digits",
+      "values": [
+        "4111111111111111",
+        "4242424242424242",
+        "4000056655665556",
+        "4012888888881881",
+        "4222222222222",
+        "5555555555554444",
+        "5105105105105100",
+        "2223003122003222",
+        "5200828282828210",
+        "378282246310005",
+        "371449635398431",
+        "378734493671000",
+        "6011111111111117",
+        "6011000990139424",
+        "3056930009020004",
+        "30569309025904",
+        "38520000023237",
+        "36227206271667",
+        "3566002020360505",
+        "3530111333300000",
+        "6200000000000005"
+      ],
+      "notes": "Published payment-provider test card numbers."
+    },
+    {
+      "id": "P-EXAMPLE-SSN",
+      "kind": "test-value",
+      "mode": "fullmatch",
+      "regex": "123-45-6789|078-05-1120|219-09-9999",
+      "notes": "SSNs published as examples or voided."
+    },
+    {
+      "id": "P-FICTIONAL-PHONE",
+      "kind": "test-value",
+      "mode": "search",
+      "regex": "555[- .]?01\\d\\d\\b",
+      "notes": "NANP 555-0100 to 555-0199 fictional numbers."
+    },
+    {
+      "id": "P-SEQUENCE",
+      "kind": "sequence",
+      "mode": "digits",
+      "regex": "0?123456789\\d*|9876543210?|(?:1234){3,}\\d*",
+      "notes": "Ascending or descending digit runs."
+    },
+    {
+      "id": "P-LOW-VARIETY",
+      "kind": "repeated",
+      "mode": "variety",
+      "notes": "Four or more characters built from at most two distinct characters, or a digit string of 13+ digits built from at most three distinct digits (0000000000, 4444 4444 4444 4444)."
+    },
+    {
+      "id": "P-KNOWN-DOC-KEY",
+      "env_values": ["TOOLKIT_DOC_STRIPE_TEST_KEY"],
+      "kind": "test-value",
+      "mode": "fullmatch",
+      "regex": "pk_test_TYooMQauvdEDq54NiTphI7jx|AKIAIOSFODNN7EXAMPLE|wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
+      "notes": "Keys published in provider documentation."
+    }
+  ],
+  "public_hints": [
+    {
+      "id": "H-PUBLIC",
+      "substrings": [
+        "public",
+        "publishable"
+      ],
+      "notes": "Name says the value is public (NEXT_PUBLIC_*, VITE public config, publishable keys, VAPID public key)."
+    },
+    {
+      "id": "H-ANALYTICS-ID",
+      "substrings": [
+        "measurement",
+        "trackingid",
+        "pixelid"
+      ],
+      "notes": "Analytics measurement or tracking id."
+    },
+    {
+      "id": "H-SENTRY-DSN",
+      "substrings": [
+        "dsn"
+      ],
+      "notes": "Error-tracker DSN. A database DSN is not public; confirm the provider."
+    },
+    {
+      "id": "H-FIREBASE-WEB-CONFIG",
+      "substrings": [
+        "appid",
+        "projectid",
+        "messagingsenderid",
+        "authdomain",
+        "storagebucket",
+        "databaseurl"
+      ],
+      "notes": "Firebase web config fields ship in every web app by design."
+    },
+    {
+      "id": "H-OAUTH-PUBLIC",
+      "substrings": [
+        "clientid",
+        "issuer",
+        "authority"
+      ],
+      "notes": "OAuth/OIDC client id and authority are public; the client secret is not."
+    },
+    {
+      "id": "H-BROWSER-KEY",
+      "substrings": [
+        "sitekey",
+        "anonkey",
+        "storefront",
+        "browserkey"
+      ],
+      "notes": "reCAPTCHA site key, Supabase anon key, Shopify storefront token, browser-restricted API keys."
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+[
+  {
+    "id": "SECRET-KEY-LITERAL",
+    "pattern": "(?i)SECRET_KEY\\s*=\\s*['\"][^'\"]{12,}['\"]",
+    "globs": [
+      "settings*.py",
+      "*.py"
+    ],
+    "severity_hint": "Critical",
+    "description": "Django SECRET_KEY hard-coded (should come from env/secret manager)",
+    "reference": "CWE-798"
+  },
+  {
+    "id": "DB-PASSWORD",
+    "pattern": "['\"]PASSWORD['\"]\\s*:\\s*['\"][^'\"]{4,}['\"]|(postgres|postgresql|mysql):\\/\\/[^:@\\s]+:[^@\\s]+@",
+    "globs": [
+      "settings*.py",
+      "*.py",
+      "*.env",
+      "*.ini"
+    ],
+    "severity_hint": "High",
+    "description": "Database password literal in settings",
+    "reference": "CWE-798",
+    "ignore_case": true
+  },
+  {
+    "id": "DEBUG-TRUE",
+    "pattern": "(?i)^\\s*DEBUG\\s*=\\s*True",
+    "globs": [
+      "settings*.py",
+      "*prod*.py",
+      "*production*.py"
+    ],
+    "severity_hint": "High",
+    "description": "DEBUG = True (leaks stack traces / settings in production)",
+    "reference": "CWE-489"
+  },
+  {
+    "id": "CORS-ALLOW-ALL",
+    "pattern": "(?i)CORS_ORIGIN_ALLOW_ALL\\s*=\\s*True|CORS_ALLOW_ALL_ORIGINS\\s*=\\s*True",
+    "globs": [
+      "settings*.py",
+      "*.py"
+    ],
+    "severity_hint": "High",
+    "description": "CORS allows all origins - dangerous with CORS_ALLOW_CREDENTIALS=True",
+    "reference": "CWE-942"
+  },
+  {
+    "id": "CORS-CREDENTIALS",
+    "pattern": "(?i)CORS_ALLOW_CREDENTIALS\\s*=\\s*True",
+    "globs": [
+      "settings*.py",
+      "*.py"
+    ],
+    "severity_hint": "High",
+    "description": "CORS credentials enabled - check origins are an explicit allowlist",
+    "reference": "CWE-942"
+  }
+]

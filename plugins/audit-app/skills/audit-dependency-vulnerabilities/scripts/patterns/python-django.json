@@ -1,0 +1,74 @@
+[
+  {
+    "id": "PIP-DJANGO-3.2-LT-3.2.25",
+    "pattern": "^\\s*[Dd]jango\\s*==\\s*3\\.2\\.(?:[0-9]|1\\d|2[0-4])\\b",
+    "globs": ["requirements*.txt", "pyproject.toml", "Pipfile", "setup.py", "setup.cfg"],
+    "severity_hint": "High",
+    "description": "Django 3.2.0-3.2.24: multiple advisories (CVE-2023-41164, CVE-2024-24680, CVE-2024-27351); 3.2 itself is end-of-life since April 2024",
+    "reference": "CVE-2024-24680"
+  },
+  {
+    "id": "PIP-DJANGO-EOL-SERIES",
+    "pattern": "^\\s*[Dd]jango\\s*==\\s*(?:[12]\\.\\d|3\\.[01]|4\\.[01])\\.",
+    "globs": ["requirements*.txt", "pyproject.toml", "Pipfile", "setup.py", "setup.cfg"],
+    "severity_hint": "High",
+    "description": "Django series that no longer receives security releases (1.x, 2.x, 3.0, 3.1, 4.0, 4.1)",
+    "reference": "OWASP-A06:2021"
+  },
+  {
+    "id": "PIP-REQUESTS-LT-2.32",
+    "pattern": "^\\s*requests\\s*==\\s*2\\.(?:[0-9]|[12]\\d|3[01])\\.\\d+\\b",
+    "globs": ["requirements*.txt", "pyproject.toml", "Pipfile"],
+    "severity_hint": "Medium",
+    "description": "requests below 2.32.0: verify=False cached across sessions (CVE-2024-35195) and older advisories",
+    "reference": "CVE-2024-35195"
+  },
+  {
+    "id": "PIP-PYYAML-LT-5.4",
+    "pattern": "^\\s*[Pp]y[Yy][Aa][Mm][Ll]\\s*==\\s*(?:[0-4]\\.|5\\.[0-3]\\b)",
+    "globs": ["requirements*.txt", "pyproject.toml", "Pipfile"],
+    "severity_hint": "Critical",
+    "description": "PyYAML below 5.4: full_load arbitrary code execution (CVE-2020-14343)",
+    "reference": "CVE-2020-14343"
+  },
+  {
+    "id": "PIP-PILLOW-LT-10.3",
+    "pattern": "^\\s*[Pp]illow\\s*==\\s*(?:[0-9]\\.|10\\.[0-2]\\b)",
+    "globs": ["requirements*.txt", "pyproject.toml", "Pipfile"],
+    "severity_hint": "High",
+    "description": "Pillow below 10.3.0: buffer overflow in _imagingcms (CVE-2024-28219) and earlier advisories",
+    "reference": "CVE-2024-28219"
+  },
+  {
+    "id": "PIP-CRYPTOGRAPHY-LT-42",
+    "pattern": "^\\s*cryptography\\s*==\\s*(?:[0-9]|[1-3]\\d|4[01])\\.",
+    "globs": ["requirements*.txt", "pyproject.toml", "Pipfile"],
+    "severity_hint": "Medium",
+    "description": "cryptography below 42.0: NULL-pointer / PKCS12 advisories (CVE-2023-49083, CVE-2024-26130)",
+    "reference": "CVE-2023-49083"
+  },
+  {
+    "id": "PIP-UNPINNED-REQUIREMENT",
+    "pattern": "^\\s*[A-Za-z0-9][A-Za-z0-9_.\\-]*(?:\\[[^\\]]*\\])?\\s*(?:#.*)?$",
+    "globs": ["requirements.txt", "requirements-prod.txt", "requirements/base.txt", "requirements/production.txt"],
+    "severity_hint": "Low",
+    "description": "Requirement without a version pin: deployments are not reproducible and pick up whatever is newest",
+    "reference": "CWE-1104"
+  },
+  {
+    "id": "PIP-GIT-OR-URL-REQUIREMENT",
+    "pattern": "^\\s*(?:-e\\s+)?(?:git\\+|https?://|hg\\+|svn\\+)",
+    "globs": ["requirements*.txt", "Pipfile"],
+    "severity_hint": "Medium",
+    "description": "Requirement installed from a VCS/URL: not covered by pip-audit and mutable unless pinned to a commit hash",
+    "reference": "CWE-829"
+  },
+  {
+    "id": "PIP-INSECURE-INDEX",
+    "pattern": "^\\s*(?:--index-url|--extra-index-url|-i)\\s+http://|--trusted-host",
+    "globs": ["requirements*.txt", "pip.conf", "pip.ini", "Pipfile"],
+    "severity_hint": "High",
+    "description": "Package index over plain HTTP or --trusted-host: packages can be substituted in transit",
+    "reference": "CWE-494"
+  }
+]

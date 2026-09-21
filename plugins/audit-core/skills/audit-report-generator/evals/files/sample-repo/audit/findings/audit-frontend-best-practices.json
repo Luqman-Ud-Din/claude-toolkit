@@ -1,0 +1,37 @@
+{
+  "skill": "audit-frontend-best-practices",
+  "generated_at": "2026-09-10T11:00:00Z",
+  "target": {"root": ".", "commit": "3f2a1c9"},
+  "stack": {"primary_backend": "dotnet", "primary_frontend": "angular"},
+  "scope": {
+    "checked": ["angular.json build configurations", "all components under web/src/app"],
+    "not_checked": [{"item": "Capacitor native shells", "reason": "android/ios folders excluded from this review"}]
+  },
+  "findings": [
+    {
+      "id": "FEBP-001",
+      "title": "Production build ships source maps",
+      "severity": "Info",
+      "confidence": "confirmed",
+      "location": {"file": "web/angular.json", "line": 88},
+      "evidence": "\"production\": { \"sourceMap\": true, \"optimization\": true }",
+      "impact": "Readable source is served to every visitor, which makes reverse engineering easier. Info: no secret is exposed because environment files hold only public keys.",
+      "remediation": "Set sourceMap to false (or hidden: true with a private upload to the error tracker) in the production configuration.",
+      "references": ["ASVS-14.3.2"],
+      "tags": ["build"]
+    },
+    {
+      "id": "FEBP-002",
+      "title": "localStorage used for the selected theme",
+      "severity": "Low",
+      "confidence": "false-positive",
+      "location": {"file": "web/src/app/core/services/theme.service.ts", "line": 12},
+      "evidence": "localStorage.setItem('theme', name);",
+      "impact": "Grep hit only: the value is a UI preference, not sensitive data. Kept for transparency.",
+      "remediation": "None required.",
+      "references": [],
+      "tags": ["non-security"]
+    }
+  ],
+  "summary": {"Critical": 0, "High": 0, "Medium": 0, "Low": 0, "Info": 1}
+}

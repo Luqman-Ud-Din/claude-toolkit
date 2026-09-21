@@ -1,0 +1,82 @@
+[
+  {
+    "id": "SOC2-BRANCH-PROTECTION-OFF",
+    "pattern": "protection\\s*:\\s*(?:null|~|false)|required_pull_request_reviews\\s*:\\s*(?:null|~)|required_status_checks\\s*:\\s*(?:null|~)|enforce_admins\\s*:\\s*false|Branch not protected",
+    "globs": ["*.yml", "*.yaml", "*.json"],
+    "severity_hint": "High",
+    "description": "Branch protection disabled or reviews/status checks not required",
+    "reference": "SOC2-CC8.1"
+  },
+  {
+    "id": "SOC2-CI-SCAN-STEP",
+    "pattern": "npm audit|pnpm audit|yarn audit|github/codeql-action|trivy|grype|snyk|semgrep|gitleaks|trufflehog|sonar|dependency-review-action|osv-scanner",
+    "globs": ["*.yml", "*.yaml", "Jenkinsfile", "package.json"],
+    "severity_hint": "Info",
+    "description": "Security scan in CI. ZERO hits means no CI security scan - write the CC7.1 finding",
+    "reference": "SOC2-CC7.1"
+  },
+  {
+    "id": "SOC2-RBAC-MARKER",
+    "pattern": "@Roles\\(|RolesGuard|requireRole\\(|checkRole\\(|hasPermission\\(|casl|accesscontrol|authorize\\(\\s*\\[",
+    "globs": ["*.js", "*.ts"],
+    "severity_hint": "Info",
+    "description": "Role/permission enforcement (CC6.1/CC6.3)",
+    "reference": "SOC2-CC6.1"
+  },
+  {
+    "id": "SOC2-MFA-SSO-MARKER",
+    "pattern": "openid-client|passport-saml|passport-azure-ad|@node-saml|auth0|okta|keycloak|speakeasy|otplib|webauthn|simplewebauthn",
+    "globs": ["*.js", "*.ts", "package.json"],
+    "severity_hint": "Info",
+    "description": "SSO / MFA marker. ZERO hits means MFA needs IdP evidence",
+    "reference": "SOC2-CC6.1"
+  },
+  {
+    "id": "SOC2-AUDIT-TRAIL-MARKER",
+    "pattern": "auditLog|AuditLog|audit_log|EntitySubscriberInterface|\\$use\\(|\\$extends\\(|mongoose-history|activityLog",
+    "globs": ["*.js", "*.ts"],
+    "severity_hint": "Info",
+    "description": "Audit trail marker. ZERO hits means no data-change audit trail evidence",
+    "reference": "SOC2-CC7.2"
+  },
+  {
+    "id": "SOC2-HEALTH-ENDPOINT",
+    "pattern": "['\"]/(?:health|healthz|readyz|livez)['\"]|@nestjs/terminus|lightship",
+    "globs": ["*.js", "*.ts"],
+    "severity_hint": "Info",
+    "description": "Health endpoint for uptime monitoring (A1.1)",
+    "reference": "SOC2-A1.1"
+  },
+  {
+    "id": "SOC2-CONSOLE-ONLY-LOGGING",
+    "pattern": "transports\\.Console\\(\\)|console\\.(?:log|error)\\(",
+    "globs": ["*.js", "*.ts"],
+    "severity_hint": "Medium",
+    "description": "Console-only logging - prove shipping, retention and tamper-evidence (CC7.2)",
+    "reference": "SOC2-CC7.2"
+  },
+  {
+    "id": "SOC2-BACKUP-JOB",
+    "pattern": "pg_dump|mysqldump|mongodump|aws_backup_plan|backup_retention_period|velero",
+    "globs": ["*.sh", "*.tf", "*.yml", "*.yaml", "*.md", "*.js", "*.ts"],
+    "severity_hint": "Info",
+    "description": "Backup configuration - pair with a restore test record",
+    "reference": "SOC2-A1.2"
+  },
+  {
+    "id": "SOC2-RESTORE-TEST-RECORD",
+    "pattern": "restore[ _-]?(?:test|drill|exercise|verified)|test[ _-]?restore|restored on|last restore|\\bRTO\\b|\\bRPO\\b",
+    "globs": ["*.md", "*.txt"],
+    "severity_hint": "Info",
+    "description": "Restore test record. ZERO hits while backups exist means no documented restore test",
+    "reference": "SOC2-A1.2"
+  },
+  {
+    "id": "SOC2-SECRET-LITERAL",
+    "pattern": "(?:password|secret|apiKey|api_key|token)\\s*[:=]\\s*['\"][A-Za-z0-9+/_\\-]{12,}['\"]",
+    "globs": ["*.js", "*.ts", "*.json"],
+    "severity_hint": "High",
+    "description": "Credential-looking literal - confirm with audit-secrets-and-config",
+    "reference": "SOC2-C1.1"
+  }
+]

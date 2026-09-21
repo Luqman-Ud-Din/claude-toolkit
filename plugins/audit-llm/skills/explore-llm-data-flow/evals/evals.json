@@ -1,0 +1,17 @@
+{
+  "skill_name": "explore-llm-data-flow",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Trace what data goes into our RAG agent's context and what leaves our infrastructure to the model provider.",
+      "expected_output": "Maps inbound retrieval/tool/memory sources with trust tiers and outbound provider calls with payload contents, flags any untrusted content spliced without delimiting, and writes explore-llm-data-flow.json.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "We're multi-tenant - can you check whether one customer's retrieved documents could ever end up in another customer's context?",
+      "expected_output": "Specifically checks whether retrieval/memory is scoped by tenant at query time vs. only at ingestion time, flags the weaker pattern precisely with file/line, and notes it as input for audit-llm-data-privacy-and-isolation.",
+      "files": []
+    }
+  ]
+}

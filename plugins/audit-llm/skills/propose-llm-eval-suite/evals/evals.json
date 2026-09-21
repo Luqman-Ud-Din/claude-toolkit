@@ -1,0 +1,17 @@
+{
+  "skill_name": "propose-llm-eval-suite",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Now that we've fixed LLM-EA-003 with a propose/confirm refund split, write a test that proves it stays fixed.",
+      "expected_output": "Writes a fail-before/pass-after eval case reproducing the original scenario, with an automatable tool_call_check assertion (confirm_refund never called directly by the agent) rather than a vague 'looks right' assertion.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "We fixed the honest-limitation issue from LLM-IG-005 - can you write a test, even though 'did it disclose the limitation clearly' is kind of subjective?",
+      "expected_output": "Uses an explicit llm_as_judge assertion type for the subjective check, states that clearly rather than pretending it's automatable, and recommends validating the judge per audit-llm-evals-and-red-teaming before trusting it at scale.",
+      "files": []
+    }
+  ]
+}

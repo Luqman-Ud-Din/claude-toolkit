@@ -1,0 +1,58 @@
+[
+  {
+    "id": "FE-RETRY-ON-MUTATION",
+    "pattern": "mutations:\\s*\\{[^}]*retry:\\s*[1-9]|useMutation\\([^)]*retry:\\s*[1-9]|axiosRetry\\(|retries:\\s*[1-9]",
+    "globs": ["*.ts", "*.tsx", "*.js", "*.jsx"],
+    "severity_hint": "Medium",
+    "description": "Retry configured for mutations or all axios calls; each retry replays a POST",
+    "reference": "CWE-362"
+  },
+  {
+    "id": "FE-MUTATION-IN-EFFECT",
+    "pattern": "useEffect\\([\\s\\S]{0,120}(mutate\\(|\\.post\\(|create\\w*\\(|submit\\w*\\(|pay\\w*\\()",
+    "globs": ["*.tsx", "*.jsx", "*.ts", "*.js"],
+    "severity_hint": "Medium",
+    "description": "Mutation fired from an effect; re-renders and Strict Mode double-invoke it",
+    "reference": "CWE-362"
+  },
+  {
+    "id": "FE-BUTTON-NO-DISABLE",
+    "pattern": "<(button|Button)[^>]*onClick=\\{[^}]*(pay|checkout|submit|placeOrder|confirm|save)[^}]*\\}(?![^>]*disabled)",
+    "globs": ["*.tsx", "*.jsx"],
+    "severity_hint": "Low",
+    "description": "Submit button without a disabled prop; a double click sends two requests",
+    "reference": "CWE-362"
+  },
+  {
+    "id": "FE-PARALLEL-MUTATIONS",
+    "pattern": "Promise\\.all\\(\\s*\\[[^\\]]*(mutate|\\.post\\(|create|save)",
+    "globs": ["*.ts", "*.tsx", "*.js", "*.jsx"],
+    "severity_hint": "Low",
+    "description": "Parallel dependent mutations; ordering and partial failure are undefined",
+    "reference": "CWE-362"
+  },
+  {
+    "id": "FE-OPTIMISTIC-NO-ROLLBACK",
+    "pattern": "onMutate:\\s*(async\\s*)?\\(",
+    "globs": ["*.ts", "*.tsx", "*.js", "*.jsx"],
+    "severity_hint": "Info",
+    "description": "Optimistic update; confirm onError rolls back and onSettled invalidates",
+    "reference": "CWE-362"
+  },
+  {
+    "id": "FE-IDEMPOTENCY-KEY",
+    "pattern": "Idempotency-Key|idempotencyKey|randomUUID\\(\\)",
+    "globs": ["*.ts", "*.tsx", "*.js", "*.jsx"],
+    "severity_hint": "Info",
+    "description": "Client-generated idempotency key present; record as client mitigation",
+    "reference": "CWE-362"
+  },
+  {
+    "id": "FE-SERVER-MODULE-STATE",
+    "pattern": "^\\s*(export\\s+)?(const|let)\\s+\\w*(cache|store|sessions|map|counter|locks|pending)\\w*\\s*(:\\s*[^=]+)?=\\s*(new\\s+Map\\(|\\{\\s*\\}|\\[\\s*\\]|0\\b)|globalThis\\.\\w+\\s*=",
+    "globs": ["route.ts", "route.js", "*.server.ts", "*.action.ts"],
+    "severity_hint": "Medium",
+    "description": "Module-level mutable state in a Next.js route handler / server action; shared across requests in one instance",
+    "reference": "CWE-662"
+  }
+]

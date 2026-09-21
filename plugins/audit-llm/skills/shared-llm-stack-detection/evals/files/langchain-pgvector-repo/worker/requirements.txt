@@ -1,0 +1,5 @@
+langchain==0.2.11
+langchain-core==0.2.20
+anthropic>=0.30.0
+pgvector==0.2.5
+psycopg2-binary==2.9.9

@@ -1,0 +1,17 @@
+{
+  "skill_name": "shared-llm-owasp-mapping",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "We found an excessive-agency issue with an unguarded refund tool - what OWASP ids should go in the References field?",
+      "expected_output": "Cites OWASP LLM06:2025 / ASI02:2026 (and optionally ASI03), notes the best-effort caveat on the 2026 Agentic id, and offers a MITRE ATLAS technique (AML.T0053) only because it genuinely matches the mechanism.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Is there an official OWASP LLM Top 10 category for 'the app has no eval suite for its prompts'?",
+      "expected_output": "Says no direct OWASP LLM/Agentic anchor exists for that Area (Evals & Red-Teaming) and cites the NIST AI RMF Measure function instead, rather than forcing a mapping to an unrelated OWASP id.",
+      "files": []
+    }
+  ]
+}

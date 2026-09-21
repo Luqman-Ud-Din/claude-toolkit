@@ -1,0 +1,58 @@
+[
+  {
+    "id": "IGNORE-QUERY-FILTERS",
+    "pattern": "IgnoreQueryFilters\\(\\)",
+    "globs": ["*.cs"],
+    "severity_hint": "High",
+    "description": "Global tenant query filter disabled - the query returns every tenant's rows unless a manual TenantId predicate is added",
+    "reference": "CWE-284"
+  },
+  {
+    "id": "RAW-SQL",
+    "pattern": "FromSqlRaw\\(|ExecuteSqlRaw\\(|FromSqlInterpolated\\(",
+    "globs": ["*.cs"],
+    "severity_hint": "High",
+    "description": "Raw SQL bypasses HasQueryFilter - confirm the SQL itself filters by TenantId/CompanyId",
+    "reference": "CWE-284"
+  },
+  {
+    "id": "TENANT-FROM-BODY",
+    "pattern": "(dto|request|model|input)\\.(TenantId|CompanyId|OrgId|OrganizationId|AccountId)\\b",
+    "globs": ["*.cs"],
+    "severity_hint": "High",
+    "description": "Tenant id read from a request shape - it must come from the token claim/context, never from input",
+    "reference": "CWE-639"
+  },
+  {
+    "id": "DTO-TENANT-FIELD",
+    "pattern": "public\\s+\\w+\\s+(TenantId|CompanyId|OrgId|OrganizationId|AccountId)\\s*\\{\\s*get",
+    "globs": ["*Dto.cs", "*Request.cs", "*Model.cs"],
+    "severity_hint": "Medium",
+    "description": "Tenant id exposed on a bound request DTO - client can set another tenant's id",
+    "reference": "CWE-639"
+  },
+  {
+    "id": "CACHE-KEY",
+    "pattern": "(GetStringAsync|SetStringAsync|SetString|GetOrCreate|_cache\\.Set|_cache\\.Get)\\(",
+    "globs": ["*.cs"],
+    "severity_hint": "Medium",
+    "description": "Cache access - confirm the key includes the tenant id, else one tenant is served another's cached value",
+    "reference": "CWE-524"
+  },
+  {
+    "id": "BLOB-PATH",
+    "pattern": "(PhysicalFile\\(|blobstore|GetBlobClient\\(|/documents/|/uploads/|new FileStream\\()",
+    "globs": ["*.cs"],
+    "severity_hint": "Medium",
+    "description": "File/blob path - confirm the path contains a tenant segment so paths are not guessable across tenants",
+    "reference": "CWE-639"
+  },
+  {
+    "id": "BACKGROUND-JOB",
+    "pattern": "class\\s+\\w*(Job|Worker|Service)\\b|RecurringJob\\.|BackgroundService|IHostedService",
+    "globs": ["*.cs"],
+    "severity_hint": "Medium",
+    "description": "Background job - it has no HttpContext, so the tenant filter has no context; confirm it sets/loops tenant explicitly",
+    "reference": "CWE-284"
+  }
+]

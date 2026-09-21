@@ -1,0 +1,58 @@
+[
+  {
+    "id": "DJANGO-RUNSERVER",
+    "pattern": "manage\\.py['\"]?,?\\s*['\"]?runserver",
+    "globs": ["Dockerfile*", "*.dockerfile", "*.yml", "*.yaml", "*.sh"],
+    "severity_hint": "High",
+    "description": "Django development server used in a container/deployment definition",
+    "reference": "CWE-489"
+  },
+  {
+    "id": "PY-DEV-SERVER",
+    "pattern": "flask['\"]?,?\\s*['\"]?run\\b|uvicorn\\b.*--reload",
+    "globs": ["Dockerfile*", "*.dockerfile", "*.yml", "*.yaml", "*.sh"],
+    "severity_hint": "High",
+    "description": "Flask dev server or uvicorn --reload in a container/deployment definition",
+    "reference": "CWE-489"
+  },
+  {
+    "id": "PY-DEBUG-TRUE-ENV",
+    "pattern": "\\b(DJANGO_)?DEBUG['\"]?\\s*[=:]\\s*['\"]?(true|1)\\b",
+    "globs": ["Dockerfile*", "*.dockerfile", "*.yml", "*.yaml", "*.env"],
+    "severity_hint": "High",
+    "description": "DEBUG enabled via environment in an image or manifest",
+    "reference": "CWE-489; OWASP-A05:2021"
+  },
+  {
+    "id": "PIP-CACHE-IN-IMAGE",
+    "pattern": "^\\s*RUN\\s+.*\\bpip3?\\s+install\\b(?!.*--no-cache-dir)",
+    "globs": ["Dockerfile*", "*.dockerfile"],
+    "severity_hint": "Low",
+    "description": "pip install without --no-cache-dir - larger image",
+    "reference": "hadolint DL3042"
+  },
+  {
+    "id": "MIGRATE-ON-START",
+    "pattern": "manage\\.py['\"]?,?\\s*['\"]?migrate\\b",
+    "globs": ["*.sh", "Dockerfile*", "*.dockerfile", "*.yml", "*.yaml"],
+    "severity_hint": "Medium",
+    "description": "Migrations run from the entrypoint/command - every replica migrates; confirm a single Job/hook instead",
+    "reference": "Rollback readiness"
+  },
+  {
+    "id": "SSL-REDIRECT-PROXY",
+    "pattern": "SECURE_SSL_REDIRECT\\s*=\\s*True",
+    "globs": ["*.py"],
+    "severity_hint": "Info",
+    "description": "Confirm SECURE_PROXY_SSL_HEADER is set when TLS terminates upstream",
+    "reference": "CWE-319"
+  },
+  {
+    "id": "PYTHON-FULL-IMAGE",
+    "pattern": "^\\s*FROM\\s+(--platform=\\S+\\s+)?python:[\\d.]+\\s*(AS\\s+\\w+)?\\s*$",
+    "globs": ["Dockerfile*", "*.dockerfile"],
+    "severity_hint": "Low",
+    "description": "Full python image - prefer -slim for the runtime stage",
+    "reference": "CIS-Docker-4.3"
+  }
+]

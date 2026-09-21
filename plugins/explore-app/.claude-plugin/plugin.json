@@ -1,0 +1,5 @@
+{
+  "name": "explore-app",
+  "version": "0.1.0",
+  "description": "Read-only documentation of a conventional application (architecture, schema, Business-Logic Document) and proposals cross-checked against it."
+}

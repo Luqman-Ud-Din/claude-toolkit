@@ -1,0 +1,17 @@
+{
+  "skill_name": "audit-llm-intent-grounding-and-adaptability",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "If I ask our inventory agent to 'restock the low items', does it check with me before spending money on purchase orders, or just do it?",
+      "expected_output": "Designs an app-specific ambiguity probe distinguishing 'create purchase orders' vs 'flag for review', sends it via shared-llm-probe-runner, and flags a silent irreversible choice as a finding, cross-referencing audit-llm-excessive-agency.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "A user asked our agent to 'cancel my plan' but our system actually calls it 'downgrade to Free tier' - does the agent handle that kind of mismatch well?",
+      "expected_output": "Checks vocabulary mapping specifically, verifies the agent maps casual phrasing to the correct real capability rather than silently doing something adjacent-but-wrong, and writes an LLM-IG-NNN finding if it fails.",
+      "files": []
+    }
+  ]
+}

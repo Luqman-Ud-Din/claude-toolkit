@@ -1,0 +1,4 @@
+{
+  "tenant_a": {"token": "<JWT for a user in tenant A>", "ids": {"document": 5001, "invoice": 7001}},
+  "tenant_b": {"token": "<JWT for a user in tenant B>", "ids": {"document": 5002, "invoice": 7002}}
+}

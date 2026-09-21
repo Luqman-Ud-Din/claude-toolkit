@@ -1,0 +1,17 @@
+{
+  "skill_name": "explore-llm-prompts",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Find every system prompt in this repo and tell me what variables get spliced into them.",
+      "expected_output": "Locates each prompt construction site, lists injected variables with their source and trust tier, flags any untrusted/semi-trusted variable spliced in without clear delimiting, and writes explore-llm-prompts.json.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Our prompts are actually stored in a database table our ops team edits directly, not in the repo - can you still inventory them?",
+      "expected_output": "Records the prompts with version_controlled: false, cites the storage location (table/admin path) instead of a file, and notes this as an operational gap worth flagging to audit-llm-prompt-and-context-engineering.",
+      "files": []
+    }
+  ]
+}

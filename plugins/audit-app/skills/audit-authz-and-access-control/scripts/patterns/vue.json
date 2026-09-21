@@ -1,0 +1,18 @@
+[
+  {
+    "id": "ROUTER-GUARD",
+    "pattern": "beforeEach|beforeEnter|meta:\\s*\\{[^}]*requiresAuth",
+    "globs": ["*.js", "*.ts"],
+    "severity_hint": "Info",
+    "description": "Vue Router navigation guard - UX only; the server must enforce the same authorization",
+    "reference": "CWE-602"
+  },
+  {
+    "id": "ROLE-V-IF",
+    "pattern": "v-if=\"[^\"]*(isAdmin|role|hasRole|permission)",
+    "globs": ["*.vue"],
+    "severity_hint": "Info",
+    "description": "Element hidden by role - cosmetic; confirm the API rejects unauthorized calls",
+    "reference": "CWE-602"
+  }
+]

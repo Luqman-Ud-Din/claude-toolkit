@@ -1,0 +1,46 @@
+{
+  "skill_name": "audit-frontend-memory-leak",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Our Angular dashboard gets slower the longer the shift runs and the tab eventually crashes. Audit evals/files/sample-repo for memory leaks and give me findings with exact lines. Read-only please.",
+      "expected_output": "Findings with FELEAK- ids: bare subscribe on sales.totals$ and on interval(5000) in sales-chart.component.ts ngOnInit (High), window resize listener added in ngAfterViewInit and never removed (Medium), Chart instance created and never destroyed (Medium), SalesService.register pushes callbacks with no unregister (High, singleton grows per component). stock-widget.component.ts is not flagged. The report includes the DevTools heap-snapshot procedure (navigate 10x, snapshot, compare) and a Not checked list stating the snapshot procedure was not executed.",
+      "files": ["evals/files/sample-repo/package.json", "evals/files/sample-repo/src/app/dashboard/sales-chart.component.ts", "evals/files/sample-repo/src/app/dashboard/sales.service.ts", "evals/files/sample-repo/src/app/dashboard/stock-widget.component.ts"],
+      "expectations": [
+        "A finding cites sales-chart.component.ts with the line of the bare subscribe",
+        "A finding cites the addEventListener('resize') line with no removeEventListener",
+        "A finding cites the new Chart( line as never destroyed",
+        "A finding cites sales.service.ts listeners.push with no unregister path",
+        "stock-widget.component.ts is not the subject of any finding",
+        "Finding ids start with FELEAK-",
+        "Report contains a heap-snapshot procedure mentioning navigating 10 times and comparing snapshots",
+        "Report contains a Not checked section",
+        "No file outside audit/ is modified"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "is there a subscription leak in evals/files/sample-repo/src/app/dashboard/sales-chart.component.ts? just tell me what to fix",
+      "expected_output": "Yes: two subscriptions in ngOnInit (totals$ and interval(5000)) with no teardown; remediation with takeUntilDestroyed(this.destroyRef) or async pipe, plus the resize listener and chart.destroy() in a DestroyRef.onDestroy callback. Mentions the heap-snapshot procedure as the way to confirm.",
+      "files": ["evals/files/sample-repo/src/app/dashboard/sales-chart.component.ts"],
+      "expectations": [
+        "Identifies both subscribe calls in ngOnInit with line numbers",
+        "Remediation uses takeUntilDestroyed or the async pipe",
+        "Also mentions the resize listener and chart destroy",
+        "Does not modify the component file"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Check the React component in evals/files/react-sample/src/components/LivePrice.tsx for cleanup problems.",
+      "expected_output": "LivePrice's useEffect returns no cleanup: setInterval never cleared, resize listener never removed, Chart never destroyed - one finding per resource or one grouped finding with three locations; remediation shows a returned cleanup function. Clock is reported as correct / not flagged.",
+      "files": ["evals/files/react-sample/package.json", "evals/files/react-sample/src/components/LivePrice.tsx"],
+      "expectations": [
+        "Flags the useEffect in LivePrice as missing a cleanup with line numbers for setInterval, addEventListener and new Chart",
+        "Clock is not flagged",
+        "Remediation shows a return () => { clearInterval; removeEventListener; chart.destroy } cleanup",
+        "Finding ids start with FELEAK-"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+the GET /api/orders list endpoint has no paging - it just returns the whole table

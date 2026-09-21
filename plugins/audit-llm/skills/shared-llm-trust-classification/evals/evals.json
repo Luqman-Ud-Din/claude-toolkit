@@ -1,0 +1,17 @@
+{
+  "skill_name": "shared-llm-trust-classification",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Our RAG index is built entirely from our own internal product docs - is that context source trusted since we control the content?",
+      "expected_output": "Classifies it as untrusted despite internal ownership, explaining trust follows who can write to the source at any point in its lifecycle (support ticket importers, wiki syncs, scraped pages), not current pipeline ownership.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "We splice the user's editable 'bio' field into the system prompt so the assistant can personalize responses - what trust tier is the resulting system prompt?",
+      "expected_output": "Flags the concatenation site specifically: the template portion is trusted but the attacker-writable bio field is semi-trusted/untrusted, so the assembled prompt is only as trusted as its most exposed part, not 'trusted' because most of it came from a template.",
+      "files": []
+    }
+  ]
+}

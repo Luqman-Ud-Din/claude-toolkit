@@ -1,0 +1,82 @@
+[
+  {
+    "id": "GDPR-REACT-CONSENT-CHECKBOX-NO-VERSION",
+    "pattern": "(?:name|id)\\s*=\\s*['\"{]+\\w*(?:consent|optIn|agree|acceptTerms|acceptPrivacy|marketing|newsletter)\\w*['\"}]|register\\s*\\(\\s*['\"]\\w*(?:consent|optIn|agree|marketing|newsletter)\\w*['\"]",
+    "globs": ["*.jsx", "*.tsx"],
+    "severity_hint": "Info",
+    "description": "Consent checkbox in a form - the submitted payload should carry the policy version; the backend must stamp the time",
+    "reference": "GDPR-Art.7(1)"
+  },
+  {
+    "id": "GDPR-REACT-PRECHECKED-CONSENT",
+    "pattern": "(?:defaultChecked|checked)\\s*(?:=\\s*\\{?\\s*true|\\b)[^>]*(?:consent|marketing|newsletter)|(?:consent|marketing|newsletter)[^>]*defaultChecked",
+    "globs": ["*.jsx", "*.tsx"],
+    "severity_hint": "Medium",
+    "description": "Consent control defaults to checked - not an affirmative act",
+    "reference": "GDPR-Art.4(11)"
+  },
+  {
+    "id": "GDPR-REACT-ANALYTICS-PII",
+    "pattern": "\\b(?:gtag|mixpanel|amplitude|posthog|analytics|logEvent|trackEvent|track|identify|setUserProperties|dataLayer\\.push)\\b[^;]*\\b(?:email|phone|mobile|firstName|lastName|fullName|name)\\s*:",
+    "globs": ["*.js", "*.jsx", "*.ts", "*.tsx"],
+    "severity_hint": "High",
+    "description": "Analytics event carrying personal data to the vendor",
+    "reference": "GDPR-Art.5(1)(c)"
+  },
+  {
+    "id": "GDPR-REACT-TAG-WITHOUT-CONSENT-GATE",
+    "pattern": "<(?:script|Script)[^>]*src\\s*=\\s*[{'\"]+https?://(?:www\\.googletagmanager\\.com|www\\.google-analytics\\.com|static\\.hotjar\\.com|connect\\.facebook\\.net|www\\.clarity\\.ms|cdn\\.segment\\.com)",
+    "globs": ["*.html", "*.jsx", "*.tsx"],
+    "severity_hint": "Medium",
+    "description": "Tracking tag loaded unconditionally - no consent gate before it fires",
+    "reference": "GDPR-Art.6(1)(a)"
+  },
+  {
+    "id": "GDPR-REACT-SENTRY-PII",
+    "pattern": "Sentry\\.setUser\\s*\\(|sendDefaultPii\\s*:\\s*true|replaysSessionSampleRate\\s*:\\s*[1-9]|LogRocket\\.identify",
+    "globs": ["*.js", "*.jsx", "*.ts", "*.tsx"],
+    "severity_hint": "Medium",
+    "description": "Error tracker user context / session replay - personal data to the vendor",
+    "reference": "GDPR-Art.28"
+  },
+  {
+    "id": "GDPR-REACT-PERSISTED-PROFILE",
+    "pattern": "whitelist\\s*:\\s*\\[[^\\]]*['\"](?:auth|user|profile|customer)['\"]|persist\\s*\\([^)]*name\\s*:\\s*['\"](?:auth|user|profile)|(?:localStorage|sessionStorage)\\.setItem\\s*\\(\\s*['\"][^'\"]*(?:user|profile|customer|email)",
+    "globs": ["*.js", "*.jsx", "*.ts", "*.tsx"],
+    "severity_hint": "Low",
+    "description": "Profile persisted in browser storage - a storage location for the inventory and the erasure path",
+    "reference": "GDPR-Art.17"
+  },
+  {
+    "id": "GDPR-REACT-SELF-SERVICE-PRIVACY-UI",
+    "pattern": "(?:delete[_-]?account|deleteAccount|download[_-]?(?:my[_-]?)?data|exportData|privacy[_-]?settings|manage[_-]?consent|withdraw)\\w*",
+    "globs": ["*.jsx", "*.tsx", "*.ts", "*.js"],
+    "severity_hint": "Info",
+    "description": "Self-service privacy UI - evidence for the rights matrix; find the backend endpoint it calls",
+    "reference": "GDPR-Art.12"
+  },
+  {
+    "id": "GDPR-REACT-SERVER-VENDOR-CALL",
+    "pattern": "\\b(?:fetch|axios)\\s*(?:\\.(?:post|put|patch))?\\s*\\(\\s*[`'\"]https?://(?:api\\.hubapi\\.com|api\\.mailchimp|api\\.segment\\.io|api\\.mixpanel\\.com|api\\.intercom\\.io|api\\.sendgrid\\.com)",
+    "globs": ["route.ts", "route.js", "actions.ts", "*.server.ts", "*.ts", "*.tsx"],
+    "severity_hint": "Medium",
+    "description": "Server-side call to a known processor - list it and check consent gating",
+    "reference": "GDPR-Art.28"
+  },
+  {
+    "id": "GDPR-REACT-PII-IN-QUERY",
+    "pattern": "[?&](?:email|phone|mobile|ssn)=\\$\\{|searchParams\\.(?:set|append)\\s*\\(\\s*['\"](?:email|phone|mobile)['\"]",
+    "globs": ["*.js", "*.jsx", "*.ts", "*.tsx"],
+    "severity_hint": "Medium",
+    "description": "Personal data sent as a query parameter",
+    "reference": "GDPR-Art.5(1)(c)"
+  },
+  {
+    "id": "GDPR-REACT-CONSOLE-PII",
+    "pattern": "console\\.(?:log|info|debug|warn|error)\\s*\\([^;]*\\b(?:email|phone|mobile|user|profile|customer)\\b",
+    "globs": ["*.js", "*.jsx", "*.ts", "*.tsx"],
+    "severity_hint": "Low",
+    "description": "console output with user data - captured by session replay and error trackers",
+    "reference": "GDPR-Art.5(1)(c)"
+  }
+]

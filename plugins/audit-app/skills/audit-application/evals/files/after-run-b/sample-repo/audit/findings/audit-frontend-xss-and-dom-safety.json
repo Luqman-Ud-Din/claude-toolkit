@@ -1,0 +1,38 @@
+{
+  "skill": "audit-frontend-xss-and-dom-safety",
+  "generated_at": "2026-09-11T12:23:28.686310+00:00",
+  "target": {
+    "root": ".",
+    "commit": null
+  },
+  "stack": {
+    "primary_backend": "dotnet",
+    "primary_frontend": "angular"
+  },
+  "scope": {
+    "checked": [
+      "web/src/app templates"
+    ],
+    "not_checked": []
+  },
+  "findings": [
+    {
+      "id": "XSS-001",
+      "title": "Inline template in AppComponent flagged as innerHTML-like",
+      "severity": "Info",
+      "confidence": "false-positive",
+      "location": {
+        "file": "web/src/app/app.component.ts",
+        "line": 9
+      },
+      "evidence": "web/src/app/app.component.ts:9",
+      "impact": "Static template, no user data; not exploitable.",
+      "remediation": "None.",
+      "references": [
+        "CWE-79"
+      ],
+      "tags": []
+    }
+  ],
+  "summary": {}
+}

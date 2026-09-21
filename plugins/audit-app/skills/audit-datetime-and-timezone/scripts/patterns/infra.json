@@ -1,0 +1,82 @@
+[
+  {
+    "id": "K8S-CRON-NO-ZONE",
+    "pattern": "^\\s*schedule:\\s*['\"]?[\\d*/,-]+\\s+[\\d*/,-]+\\s+[\\d*/,-]+\\s+[\\d*/,-]+\\s+[\\d*/,-]+['\"]?\\s*$",
+    "globs": ["*.yaml", "*.yml"],
+    "severity_hint": "Low",
+    "description": "Kubernetes CronJob schedule; confirm a sibling spec.timeZone exists (absent = controller zone, usually UTC)",
+    "reference": "CWE-682"
+  },
+  {
+    "id": "K8S-CRON-ZONE",
+    "pattern": "^\\s*timeZone:\\s*['\"]?[A-Za-z]+/[A-Za-z_]+",
+    "globs": ["*.yaml", "*.yml"],
+    "severity_hint": "Info",
+    "description": "Kubernetes CronJob zone present; record in the Environment table and pair with the schedule above",
+    "reference": "CWE-682"
+  },
+  {
+    "id": "CRONTAB-LINE",
+    "pattern": "^\\s*[\\d*/,-]+\\s+[\\d*/,-]+\\s+[\\d*/,-]+\\s+[\\d*/,-]+\\s+[\\d*/,-]+\\s+\\S+",
+    "globs": ["crontab", "*.cron", "*.crontab", "cron.d", "*.cronfile"],
+    "severity_hint": "Low",
+    "description": "crontab entry; confirm CRON_TZ is set above it or the host zone is intended",
+    "reference": "CWE-682"
+  },
+  {
+    "id": "CRON-TZ-VAR",
+    "pattern": "\\bCRON_TZ\\s*=|\\bTZ\\s*=\\s*['\"]?[A-Za-z]+/[A-Za-z_]+|ENV\\s+TZ\\b|JAVA_TOOL_OPTIONS.*user\\.timezone|WEBSITE_TIME_ZONE",
+    "globs": ["*", "Dockerfile", "*.yaml", "*.yml", "*.env", "*.sh", "*.ps1", "*.tf", "*.json"],
+    "severity_hint": "Info",
+    "description": "Process/host zone configured explicitly; record its value (non-UTC values are worth a Low finding if code assumes UTC)",
+    "reference": "CWE-682"
+  },
+  {
+    "id": "GH-ACTIONS-CRON",
+    "pattern": "^\\s*-\\s*cron:\\s*['\"]",
+    "globs": ["*.yml", "*.yaml"],
+    "severity_hint": "Info",
+    "description": "GitHub Actions schedule (always UTC); fine unless the workflow performs a local-time business task",
+    "reference": "CWE-682"
+  },
+  {
+    "id": "SQL-COLUMN-NO-TZ",
+    "pattern": "\\b\\w+\\s+(timestamp|TIMESTAMP)(\\(\\d+\\))?\\s*(?!with\\s+time\\s+zone|WITH\\s+TIME\\s+ZONE)(NOT NULL|NULL|DEFAULT|,|\\))|\\b\\w+\\s+(datetime2?|DATETIME2?|smalldatetime|SMALLDATETIME)(\\(\\d+\\))?\\b",
+    "globs": ["*.sql", "*.xml", "*.prisma"],
+    "severity_hint": "Medium",
+    "description": "Zone-less timestamp column in a migration/schema; needs a documented UTC convention or a zone-aware type",
+    "reference": "CWE-704"
+  },
+  {
+    "id": "SQL-LOCAL-DEFAULT",
+    "pattern": "DEFAULT\\s+(GETDATE\\(\\)|SYSDATETIME\\(\\)|NOW\\(\\)|CURRENT_TIMESTAMP|LOCALTIMESTAMP|SYSDATE)",
+    "globs": ["*.sql", "*.xml", "*.prisma", "*.py", "*.cs", "*.java"],
+    "severity_hint": "Medium",
+    "description": "Column default uses server/session-local time; prefer GETUTCDATE()/SYSUTCDATETIME()/UTC_TIMESTAMP() or a zone-aware type",
+    "reference": "CWE-682"
+  },
+  {
+    "id": "SQL-DAY-GROUP-NO-TZ",
+    "pattern": "\\bCAST\\(\\s*\\w+\\s+AS\\s+DATE\\s*\\)|\\bDATE\\(\\s*\\w+\\s*\\)|date_trunc\\(\\s*'(day|month|week)'\\s*,\\s*\\w+\\s*\\)|CONVERT\\(\\s*date\\s*,",
+    "globs": ["*.sql", "*.cs", "*.java", "*.py", "*.ts", "*.js"],
+    "severity_hint": "Medium",
+    "description": "Day/month grouping on a timestamp with no AT TIME ZONE / CONVERT_TZ; groups by the column's raw zone",
+    "reference": "CWE-682"
+  },
+  {
+    "id": "DOCKER-NO-TZDATA",
+    "pattern": "^FROM\\s+\\S+(alpine|slim|distroless)",
+    "globs": ["Dockerfile", "*.dockerfile"],
+    "severity_hint": "Info",
+    "description": "Minimal base image; confirm tzdata is installed if the app resolves IANA zones (FindSystemTimeZoneById / ZoneId.of / zoneinfo)",
+    "reference": "CWE-682"
+  },
+  {
+    "id": "CI-TZ-PINNED-UTC",
+    "pattern": "TZ\\s*[:=]\\s*['\"]?UTC['\"]?",
+    "globs": ["*.yml", "*.yaml", "package.json", "*.toml", "*.cfg"],
+    "severity_hint": "Info",
+    "description": "Tests pinned to UTC; zone bugs stay hidden. Add one non-UTC run",
+    "reference": "CWE-682"
+  }
+]

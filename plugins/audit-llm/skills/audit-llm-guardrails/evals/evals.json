@@ -1,0 +1,17 @@
+{
+  "skill_name": "audit-llm-guardrails",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Our refund tool's prompt says 'never refund more than the order total' - is that actually enforced?",
+      "expected_output": "Checks whether the tool implementation itself validates amount against order total server-side, classifies the rule as prompt-only if not, and rates it as a critical finding since it's safety/business-critical with no code backstop.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "We render the AI's response as HTML directly in our chat widget - is that a problem?",
+      "expected_output": "Flags this as improper output handling if there's no sanitization, cross-references audit-frontend-xss-and-dom-safety for the rendering-side fix rather than duplicating that audit, and writes an LLM-GR-NNN finding.",
+      "files": []
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "skill_name": "audit-findings-rollup",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "The audits on evals/files/rollup-repo are done. Pull everything together and give me the go/no-go as of 11 September 2026. Product signed some risk acceptances, they're in audit/evidence/audit-production-readiness-checklist/accepted.json.",
+      "expected_output": "findings_rollup.py rollup is run with --accepted pointing at the acceptance file and --as-of 2026-09-11. rollup.json and rollup.md are written under audit/evidence/audit-findings-rollup/ and nothing is added to audit/findings/. The verdict is NO-GO because AUTHZ-001 (Critical), AUTHZ-002 (High, merged with TENANT-001), PERF-001 (High) and PERF-002 (High, acceptance expired 2026-08-31) are open. TENANT-002 is listed as risk-accepted and not a blocker. The AUTHZ-001 acceptance is reported invalid for missing accepted_by. AUTHZ-003 is excluded as a false positive. Caveats name the failed secrets audit, the skipped db-schema audit and the limited-access tenant audit.",
+      "files": [
+        "evals/files/rollup-repo/audit/findings/audit-authz-and-access-control.json",
+        "evals/files/rollup-repo/audit/findings/audit-multi-tenant-isolation.json",
+        "evals/files/rollup-repo/audit/findings/audit-performance-and-scalability.json",
+        "evals/files/rollup-repo/audit/status/audit-authz-and-access-control.json",
+        "evals/files/rollup-repo/audit/status/audit-multi-tenant-isolation.json",
+        "evals/files/rollup-repo/audit/status/audit-performance-and-scalability.json",
+        "evals/files/rollup-repo/audit/status/audit-secrets-and-config.json",
+        "evals/files/rollup-repo/audit/status/audit-db-schema.json",
+        "evals/files/rollup-repo/audit/evidence/audit-production-readiness-checklist/accepted.json"
+      ],
+      "expectations": [
+        "The verdict word is exactly NO-GO",
+        "PERF-001 is listed as a blocker even though it comes from the performance skill",
+        "PERF-002 is a blocker and the reply says its acceptance expired on 2026-08-31",
+        "TENANT-002 is listed as risk-accepted and is not in the blocker list",
+        "AUTHZ-002 and TENANT-001 are shown as one merged finding with severity High",
+        "The AUTHZ-001 acceptance is reported as invalid because accepted_by is missing",
+        "AUTHZ-003 does not appear in any count and is listed as an excluded false positive",
+        "Caveats name audit-secrets-and-config as failed, audit-db-schema as skipped and audit-multi-tenant-isolation as limited access",
+        "audit/evidence/audit-findings-rollup/rollup.json and rollup.md exist and no new file appears in audit/findings/"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I just wrote up the ORM findings in evals/files/single-skill-dupes.json and I think two of them are the same problem. Can you de-dupe that file?",
+      "expected_output": "findings_rollup.py dedupe is run on the file, first without --write to show that ORM-001 and ORM-003 merge on sale-manager:lazy-lines, then with --write. ORM-003 (High) becomes the surviving finding, carrying merged_ids [ORM-003, ORM-001], both locations and both evidence blocks, and the union of references and tags. ORM-004 shares the key but is a false positive, so it is left untouched. The summary is recomputed to High 1, Low 1.",
+      "files": [
+        "evals/files/single-skill-dupes.json"
+      ],
+      "expectations": [
+        "The dedupe subcommand is used, not a hand edit of the JSON",
+        "The surviving merged finding has id ORM-003 and severity High",
+        "extra.merged_ids lists ORM-003 and ORM-001 and extra.locations has both file locations",
+        "The merged references contain CWE-1073 and CWE-400",
+        "ORM-004 remains a separate false-positive finding and is not merged",
+        "The written summary is Critical 0, High 1, Medium 0, Low 1, Info 0"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "quick one - for evals/files/rollup-repo how many criticals and highs are actually open, and why is the perf stuff blocking now? readiness used to only block on security highs",
+      "expected_output": "The verdict or counts subcommand is run with the acceptance file and --as-of 2026-09-11. The reply says 1 Critical and 3 High are open after de-duplication and acceptance, and 4 High before acceptance. It explains that the go/no-go rule blocks on any open Critical or High from any skill, whatever its id prefix. It notes PERF-002's acceptance expired and repeats the failed, skipped and limited-access caveats.",
+      "files": [
+        "evals/files/rollup-repo/audit/findings/audit-performance-and-scalability.json",
+        "evals/files/rollup-repo/audit/status/audit-secrets-and-config.json",
+        "evals/files/rollup-repo/audit/evidence/audit-production-readiness-checklist/accepted.json"
+      ],
+      "expectations": [
+        "The reply states 1 open Critical and 3 open High",
+        "The reply explains that any open High from any skill blocks, whatever its id prefix",
+        "The reply mentions that PERF-002's acceptance has expired",
+        "The reply mentions that the secrets audit failed, so the verdict does not cover that area",
+        "No file is written, because only counts or the verdict were asked for"
+      ]
+    }
+  ]
+}

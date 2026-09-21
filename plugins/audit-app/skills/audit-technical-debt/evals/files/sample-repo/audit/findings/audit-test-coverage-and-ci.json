@@ -1,0 +1,26 @@
+{
+  "skill": "audit-test-coverage-and-ci",
+  "generated_at": "2026-09-10T09:00:00Z",
+  "target": {"root": ".", "commit": null},
+  "stack": {"primary_backend": "dotnet", "primary_frontend": null},
+  "scope": {
+    "checked": ["test projects and test files", "CI pipeline files"],
+    "not_checked": [{"item": "branch protection", "reason": "no repository API access"}]
+  },
+  "findings": [
+    {
+      "id": "TEST-001",
+      "title": "Solution has no test project; order import and pricing paths are untested",
+      "severity": "High",
+      "confidence": "confirmed",
+      "location": {"file": "OrderService.sln"},
+      "evidence": "test_inventory.py: 0 test projects, 0 test files; untested critical units: OrderImportService (data-mutation), PricingService (payment), QuoteService (payment)",
+      "impact": "A change to import validation, discounts or tax can reach production without any automated check, so pricing errors are found by customers.",
+      "remediation": "Add OrderService.Api.Tests (xUnit) with characterization tests around OrderImportService.ImportOrders and PricingService totals, and run dotnet test in CI on pull requests.",
+      "references": ["CWE-1120"],
+      "tags": ["no-tests", "effort:M"],
+      "root_cause_key": "tests:missing-test-project"
+    }
+  ],
+  "summary": {"Critical": 0, "High": 1, "Medium": 0, "Low": 0, "Info": 0}
+}

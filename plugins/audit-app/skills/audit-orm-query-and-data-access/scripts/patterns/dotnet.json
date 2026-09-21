@@ -1,0 +1,213 @@
+[
+  {
+    "id": "NPLUS1-QUERY-IN-LOOP",
+    "pattern": "^\\s*(foreach|for|while)\\s*\\(.*\\)\\s*\\{?\\s*$",
+    "globs": [
+      "*.cs"
+    ],
+    "severity_hint": "Info",
+    "description": "Loop header - inspect the body for _db/_manager/repository calls (N+1 candidate)",
+    "reference": "CWE-1049"
+  },
+  {
+    "id": "NPLUS1-ORM-CALL-INDENTED",
+    "pattern": "^\\s{12,}(var\\s+)?(\\w+\\s*=\\s*)?(await\\s+)?_?\\w*(db|context|manager|repo|repository)\\w*\\.\\w+(\\.\\w+)*\\.(FirstOrDefault|First|Single|SingleOrDefault|Find|Where|Any|Count|ToList|ToListAsync|FirstAsync|FirstOrDefaultAsync|FindAsync|SingleAsync|AnyAsync|CountAsync)\\s*\\(",
+    "globs": [
+      "*.cs"
+    ],
+    "severity_hint": "High",
+    "description": "ORM call at deep indentation - usually inside a loop body; confirm N+1",
+    "reference": "CWE-1049"
+  },
+  {
+    "id": "NPLUS1-LAZY-PROXIES",
+    "pattern": "UseLazyLoadingProxies\\s*\\(",
+    "globs": [
+      "*.cs"
+    ],
+    "severity_hint": "Medium",
+    "description": "Lazy loading proxies enabled - every navigation access in a loop is a query",
+    "reference": "CWE-1049"
+  },
+  {
+    "id": "UNBOUNDED-TOLIST-NO-TAKE",
+    "pattern": "^(?!.*\\bTake\\s*\\()(?!.*\\bSkip\\s*\\().*\\.(ToList|ToListAsync|ToArray|ToArrayAsync)\\s*\\(",
+    "globs": [
+      "*.cs"
+    ],
+    "severity_hint": "Medium",
+    "description": "Materialisation without Skip/Take on the same line - confirm paging earlier in the chain",
+    "reference": "CWE-770"
+  },
+  {
+    "id": "UNBOUNDED-GETALL",
+    "pattern": "\\b(GetAll|FindAll|GetAllAsync|FindAllAsync|GetList|ListAll)\\s*\\(",
+    "globs": [
+      "*.cs"
+    ],
+    "severity_hint": "Medium",
+    "description": "GetAll-style call - confirm the caller pages before materialising",
+    "reference": "CWE-770"
+  },
+  {
+    "id": "UNBOUNDED-IENUMERABLE-RETURN",
+    "pattern": "public\\s+(async\\s+Task<)?(IEnumerable|List|ICollection)<\\w+>>?\\s+(Get|Find|List)\\w*\\s*\\(",
+    "globs": [
+      "*.cs"
+    ],
+    "severity_hint": "Medium",
+    "description": "Repository/manager method returns a materialised collection - callers cannot page",
+    "reference": "CWE-770"
+  },
+  {
+    "id": "UNBOUNDED-PAGE-IN-MEMORY",
+    "pattern": "\\.(ToList|ToListAsync|AsEnumerable)\\s*\\(\\)[^;]*\\.(Skip|Take)\\s*\\(",
+    "globs": [
+      "*.cs"
+    ],
+    "severity_hint": "High",
+    "description": "Paging applied after materialisation - whole table loaded then sliced in memory",
+    "reference": "CWE-770"
+  },
+  {
+    "id": "TRACKING-READ-NO-ASNOTRACKING",
+    "pattern": "^(?!.*AsNoTracking).*_?\\w*(db|context)\\w*\\.\\w+\\s*\\.(Where|OrderBy|Include)\\s*\\(.*\\.(ToList|ToListAsync|FirstOrDefault|FirstOrDefaultAsync)\\s*\\(",
+    "globs": [
+      "*.cs"
+    ],
+    "severity_hint": "Low",
+    "description": "Read query on a DbSet without AsNoTracking on the same line - confirm the result is only read",
+    "reference": "CWE-400"
+  },
+  {
+    "id": "TRACKING-CONTEXT-DEFAULT",
+    "pattern": "UseQueryTrackingBehavior\\s*\\(\\s*QueryTrackingBehavior\\.NoTracking",
+    "globs": [
+      "*.cs"
+    ],
+    "severity_hint": "Info",
+    "description": "Context-wide NoTracking present - downgrades TRACKING hits to false-positive",
+    "reference": "CWE-400"
+  },
+  {
+    "id": "INDEX-CONTAINS-FILTER",
+    "pattern": "\\.Where\\s*\\([^)]*\\.(Contains|EndsWith|ToLower|ToUpper)\\s*\\(",
+    "globs": [
+      "*.cs"
+    ],
+    "severity_hint": "Low",
+    "description": "Non-sargable filter (LIKE '%x%' or function on column) - index cannot be used; cross-check audit-db-schema",
+    "reference": "CWE-400"
+  },
+  {
+    "id": "INDEX-ORDERBY-COLUMN",
+    "pattern": "\\.(OrderBy|OrderByDescending)\\s*\\(\\s*\\w+\\s*=>\\s*\\w+\\.(\\w+)\\s*\\)",
+    "globs": [
+      "*.cs"
+    ],
+    "severity_hint": "Info",
+    "description": "Sort column - add to the index cross-check table",
+    "reference": "CWE-400"
+  },
+  {
+    "id": "INDEX-HASINDEX",
+    "pattern": "HasIndex\\s*\\(|\\[Index\\(",
+    "globs": [
+      "*.cs"
+    ],
+    "severity_hint": "Info",
+    "description": "Index declaration - inventory for the cross-check with audit-db-schema",
+    "reference": "CWE-400"
+  },
+  {
+    "id": "TXN-MULTI-SAVECHANGES",
+    "pattern": "SaveChanges(Async)?\\s*\\(",
+    "globs": [
+      "*.cs"
+    ],
+    "severity_hint": "Info",
+    "description": "SaveChanges - more than one per method without BeginTransaction is a TXN candidate",
+    "reference": "CWE-662"
+  },
+  {
+    "id": "TXN-BEGIN",
+    "pattern": "BeginTransaction(Async)?\\s*\\(|new\\s+TransactionScope\\s*\\(|ExecutionStrategy|CreateExecutionStrategy",
+    "globs": [
+      "*.cs"
+    ],
+    "severity_hint": "Info",
+    "description": "Transaction boundary - confirm it wraps every table touched",
+    "reference": "CWE-662"
+  },
+  {
+    "id": "TXN-SAVE-IN-LOOP",
+    "pattern": "^\\s{12,}(await\\s+)?_?\\w*\\.SaveChanges(Async)?\\s*\\(",
+    "globs": [
+      "*.cs"
+    ],
+    "severity_hint": "Medium",
+    "description": "SaveChanges at deep indentation - likely per-iteration commit inside a loop",
+    "reference": "CWE-662"
+  },
+  {
+    "id": "INEFFICIENT-COUNT-VS-ANY",
+    "pattern": "\\.Count(Async)?\\s*\\([^)]*\\)\\s*(>\\s*0|>=\\s*1|==\\s*0|!=\\s*0|<\\s*1)",
+    "globs": [
+      "*.cs"
+    ],
+    "severity_hint": "Low",
+    "description": "Count() compared to zero - use Any()",
+    "reference": "CWE-400"
+  },
+  {
+    "id": "INEFFICIENT-CLIENT-EVAL",
+    "pattern": "\\.(ToList|ToListAsync|AsEnumerable|ToArray)\\s*\\(\\)[^;]*\\.(Where|First|FirstOrDefault|Any|OrderBy|Select|Count)\\s*\\(",
+    "globs": [
+      "*.cs"
+    ],
+    "severity_hint": "Medium",
+    "description": "LINQ operator applied after materialisation - filtering in memory",
+    "reference": "CWE-400"
+  },
+  {
+    "id": "INEFFICIENT-ENTITY-FOR-ONE-COLUMN",
+    "pattern": "\\.(FirstOrDefault|First|Single|SingleOrDefault|Find)(Async)?\\s*\\([^;]*\\)\\s*\\)?\\s*(\\?)?\\.\\w+\\s*;",
+    "globs": [
+      "*.cs"
+    ],
+    "severity_hint": "Low",
+    "description": "Whole entity loaded to read one property - project with Select",
+    "reference": "CWE-400"
+  },
+  {
+    "id": "INEFFICIENT-MULTI-COLLECTION-INCLUDE",
+    "pattern": "\\.Include\\s*\\([^)]*\\)[^;]*\\.Include\\s*\\([^)]*\\)(?!.*AsSplitQuery)",
+    "globs": [
+      "*.cs"
+    ],
+    "severity_hint": "Low",
+    "description": "Multiple Includes without AsSplitQuery - possible cartesian explosion",
+    "reference": "CWE-400"
+  },
+  {
+    "id": "INEFFICIENT-RAW-SQL",
+    "pattern": "FromSqlRaw\\s*\\(|ExecuteSqlRaw\\s*\\(|FromSqlInterpolated\\s*\\(",
+    "globs": [
+      "*.cs"
+    ],
+    "severity_hint": "Info",
+    "description": "Raw SQL - paging/index rules apply; safety belongs to audit-injection-vulnerabilities",
+    "reference": "CWE-89"
+  },
+  {
+    "id": "UNBOUNDED-REPO-COLLECTION",
+    "globs": [
+      "*.cs"
+    ],
+    "severity_hint": "Medium",
+    "ignore_case": false,
+    "pattern": "public\\s+(async\\s+)?(Task<)?(IEnumerable|List|ICollection|IList)<\\w+>>?\\s+(Get|Find|List|All)\\w*\\s*\\(",
+    "description": "Repository/manager method returns a materialised collection (confirm no paging)",
+    "reference": "CWE-770"
+  }
+]

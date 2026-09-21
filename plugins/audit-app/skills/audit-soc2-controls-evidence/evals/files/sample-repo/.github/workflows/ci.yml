@@ -1,0 +1,24 @@
+name: ci
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with: { dotnet-version: 8.0.x }
+      - run: dotnet restore Api/Api.csproj
+      - run: dotnet build Api/Api.csproj --no-restore -c Release
+      - run: dotnet test Api/Api.csproj --no-build -c Release
+  deploy:
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: ./infra/deploy.sh production
+        env:
+          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}

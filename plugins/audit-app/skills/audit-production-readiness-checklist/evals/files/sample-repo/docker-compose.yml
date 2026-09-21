@@ -1,0 +1,11 @@
+services:
+  api:
+    build: ./Ledger.Api
+    ports:
+      - "8080:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__Default: ${LEDGER_DB_CONNECTION}
+    # no probe block, no depends_on condition, no stop_grace_period
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest

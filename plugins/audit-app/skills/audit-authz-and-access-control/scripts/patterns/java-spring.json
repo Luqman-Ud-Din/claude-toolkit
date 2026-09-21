@@ -1,0 +1,34 @@
+[
+  {
+    "id": "MAPPING-ANNOTATION",
+    "pattern": "@(Get|Post|Put|Delete|Patch|Request)Mapping",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "Medium",
+    "description": "Request handler - confirm it is covered by @PreAuthorize or an HttpSecurity rule (not permitAll)",
+    "reference": "CWE-306"
+  },
+  {
+    "id": "PERMIT-ALL",
+    "pattern": "permitAll\\(\\)|\\.anonymous\\(\\)",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "Medium",
+    "description": "Anonymous access rule - confirm it only covers public endpoints",
+    "reference": "CWE-306"
+  },
+  {
+    "id": "REPO-FIND-BY-ID",
+    "pattern": "\\.(findById|getById|getOne|findOne)\\(",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "High",
+    "description": "Load by id - check ownership/tenant is also enforced before returning the entity",
+    "reference": "CWE-639"
+  },
+  {
+    "id": "DTO-ROLE-FIELD",
+    "pattern": "(private|public)\\s+\\w+\\s+(role|roles|isAdmin|authorities|permissions)\\b",
+    "globs": ["*.java", "*.kt"],
+    "severity_hint": "High",
+    "description": "Role/authority field on a request body class - mass-assignment / privilege-escalation candidate",
+    "reference": "CWE-915"
+  }
+]

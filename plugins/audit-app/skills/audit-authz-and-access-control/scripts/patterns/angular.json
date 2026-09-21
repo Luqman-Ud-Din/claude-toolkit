@@ -1,0 +1,18 @@
+[
+  {
+    "id": "ROUTE-GUARD",
+    "pattern": "canActivate|canMatch|CanActivateFn|AuthGuard",
+    "globs": ["*.ts"],
+    "severity_hint": "Info",
+    "description": "Client route guard - UX only; verify the same rule is enforced server-side (guards are cosmetic)",
+    "reference": "CWE-602"
+  },
+  {
+    "id": "ROLE-IN-TEMPLATE",
+    "pattern": "\\*ngIf=\"[^\"]*(isAdmin|role|hasRole|permission)",
+    "globs": ["*.html"],
+    "severity_hint": "Info",
+    "description": "UI hidden by role - hiding a button is not access control; the API must reject the call",
+    "reference": "CWE-602"
+  }
+]

@@ -1,0 +1,10 @@
+{
+  "metrics": {
+    "http_req_duration": { "avg": 412.3, "med": 310.5, "p(90)": 780.2, "p(95)": 1240.7, "p(99)": 2650.1, "max": 5102.4 },
+    "http_req_duration{name:GET /api/products}": { "avg": 690.1, "med": 520.0, "p(90)": 1300.4, "p(95)": 1810.2, "p(99)": 3200.8 },
+    "http_req_duration{name:POST /api/orders}": { "avg": 820.4, "med": 760.3, "p(90)": 990.0, "p(95)": 1120.5, "p(99)": 1900.2 },
+    "http_req_duration{name:GET /api/products/summary}": { "avg": 45.1, "med": 38.0, "p(90)": 70.2, "p(95)": 88.9, "p(99)": 140.3 },
+    "http_req_failed": { "value": 0.024, "passes": 720, "fails": 29280 },
+    "http_reqs": { "count": 30000, "rate": 49.8 }
+  }
+}

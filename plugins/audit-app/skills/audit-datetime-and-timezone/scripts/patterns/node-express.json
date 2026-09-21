@@ -1,0 +1,82 @@
+[
+  {
+    "id": "LOCAL-NOW",
+    "pattern": "new Date\\(\\)\\.(setHours|getDate|getMonth|getFullYear|getDay|toLocale)|\\bmoment\\(\\)(?!\\.utc)|\\bdayjs\\(\\)(?!\\.utc)|\\.setHours\\(\\s*0\\s*,\\s*0|startOf\\(\\s*['\"]day['\"]\\s*\\)|endOf\\(\\s*['\"]day['\"]\\s*\\)",
+    "globs": ["*.js", "*.ts", "*.mjs", "*.cjs"],
+    "severity_hint": "Medium",
+    "description": "Local-zone day boundary or local component read in server code; confirm the decision and zone",
+    "reference": "CWE-682"
+  },
+  {
+    "id": "NAIVE-PARSE",
+    "pattern": "new Date\\(\\s*(req\\.(query|body|params)|\\w+\\.(query|body|params))\\.\\w+\\s*\\)|new Date\\(\\s*['\"]\\d{4}-\\d{2}-\\d{2}['\"]\\s*\\)|new Date\\(\\s*\\d{4}\\s*,\\s*\\d|Date\\.parse\\(",
+    "globs": ["*.js", "*.ts", "*.mjs", "*.cjs"],
+    "severity_hint": "Medium",
+    "description": "Date built from a client string or date-only literal; zone depends on string shape and process TZ",
+    "reference": "CWE-704"
+  },
+  {
+    "id": "NON-ISO-FORMAT",
+    "pattern": "\\.format\\(\\s*['\"](DD|MM|D)[/.-](MM|DD|M)[/.-]Y{2,4}|\\.format\\(\\s*['\"]YYYY-MM-DD HH:mm(:ss)?['\"]\\s*\\)|toLocaleDateString\\(|toLocaleString\\(|\\.toString\\(\\)\\s*[,;)]\\s*//.*date",
+    "globs": ["*.js", "*.ts", "*.mjs", "*.cjs"],
+    "severity_hint": "Medium",
+    "description": "Non-ISO or offset-less formatting; check whether it reaches an API, DB, or file that is later parsed",
+    "reference": "CWE-20"
+  },
+  {
+    "id": "CRON-NO-ZONE",
+    "pattern": "cron\\.schedule\\((?![^)]*timezone)|new CronJob\\((?![^;]*['\"][A-Z][a-z]+/[A-Za-z_]+['\"])|@Cron\\((?![^)]*timeZone)|repeat:\\s*\\{(?![^}]*tz)",
+    "globs": ["*.js", "*.ts", "*.mjs", "*.cjs"],
+    "severity_hint": "Low",
+    "description": "Cron/repeat schedule without an explicit zone (process TZ or UTC applies)",
+    "reference": "CWE-682"
+  },
+  {
+    "id": "DAY-MATH",
+    "pattern": "24\\s*\\*\\s*60\\s*\\*\\s*60\\s*\\*\\s*1000|86400000|\\.add\\(\\s*1\\s*,\\s*['\"](day|month)s?['\"]\\s*\\)|addDays\\(\\s*\\w+\\s*,\\s*1\\s*\\)",
+    "globs": ["*.js", "*.ts", "*.mjs", "*.cjs"],
+    "severity_hint": "Low",
+    "description": "Calendar arithmetic via fixed milliseconds or add(1, day); verify DST and zone behaviour",
+    "reference": "CWE-682"
+  },
+  {
+    "id": "COLUMN-NO-TZ",
+    "pattern": "type:\\s*['\"](timestamp|datetime)['\"]|DataTypes\\.DATE\\b|\\bDateTime\\b(?![^\\n]*@db\\.(Timestamptz|Date))[^\\n]*(@default|@updatedAt|\\?|$)|table\\.(timestamp|dateTime)\\(\\s*['\"]\\w+['\"]\\s*\\)",
+    "globs": ["*.ts", "*.js", "*.prisma"],
+    "severity_hint": "Medium",
+    "description": "Zone-less timestamp column mapping (TypeORM timestamp, Prisma DateTime without @db.Timestamptz, Knex timestamp without useTz)",
+    "reference": "CWE-704"
+  },
+  {
+    "id": "SQL-LOCAL-NOW",
+    "pattern": "\\bNOW\\(\\)|\\bCURRENT_TIMESTAMP\\b|\\bGETDATE\\(\\)|\\bDATE\\(\\s*\\w+\\s*\\)|date_trunc\\(\\s*['\"]day['\"]",
+    "globs": ["*.sql", "*.js", "*.ts"],
+    "severity_hint": "Medium",
+    "description": "Session-local SQL time function or day grouping without AT TIME ZONE",
+    "reference": "CWE-682"
+  },
+  {
+    "id": "TZ-GUESS",
+    "pattern": "resolvedOptions\\(\\)\\.timeZone|process\\.env\\.TZ\\s*=",
+    "globs": ["*.js", "*.ts", "*.mjs", "*.cjs"],
+    "severity_hint": "Low",
+    "description": "Zone inferred from the runtime or set at runtime; user/branch zone should be stored",
+    "reference": "CWE-682"
+  },
+  {
+    "id": "STRING-SORT",
+    "pattern": "localeCompare\\([^)]*\\)\\s*\\)?\\s*;?\\s*//.*date|sort\\(\\s*\\(\\s*a\\s*,\\s*b\\s*\\)\\s*=>\\s*a\\.\\w*(date|Date|At)\\w*\\.localeCompare",
+    "globs": ["*.js", "*.ts", "*.mjs", "*.cjs"],
+    "severity_hint": "Low",
+    "description": "Sorting on a formatted date string",
+    "reference": "CWE-682"
+  },
+  {
+    "id": "TEST-REAL-TIME",
+    "pattern": "new Date\\(\\)|Date\\.now\\(\\)|setTimeout\\(\\s*resolve",
+    "globs": ["*.spec.ts", "*.spec.js", "*.test.ts", "*.test.js"],
+    "severity_hint": "Low",
+    "description": "Test uses real time; use jest/vi fake timers with setSystemTime",
+    "reference": "CWE-682"
+  }
+]

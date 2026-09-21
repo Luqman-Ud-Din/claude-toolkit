@@ -1,0 +1,1793 @@
+{
+  "_comment": "Mapping data for map_findings.py. Rules are scored: +3 for a CWE match on existing references, +2 for a tag match, +1 per keyword match (max 2). Highest score wins; ties go to the earlier rule. Levels follow ASVS 4.0.3. Top 10 categories follow the official OWASP 2021 CWE mapping; the 'hsts' rule is deliberately A05 (misconfiguration) while raw CWE-319 is A02.",
+  "top10": {
+    "A01": "Broken Access Control",
+    "A02": "Cryptographic Failures",
+    "A03": "Injection",
+    "A04": "Insecure Design",
+    "A05": "Security Misconfiguration",
+    "A06": "Vulnerable and Outdated Components",
+    "A07": "Identification and Authentication Failures",
+    "A08": "Software and Data Integrity Failures",
+    "A09": "Security Logging and Monitoring Failures",
+    "A10": "Server-Side Request Forgery"
+  },
+  "top10_sections": {
+    "A01": [
+      "V4.1",
+      "V4.2",
+      "V4.3",
+      "V1.4"
+    ],
+    "A02": [
+      "V6.2",
+      "V6.3",
+      "V6.4",
+      "V2.4",
+      "V9.1",
+      "V9.2",
+      "V8.2"
+    ],
+    "A03": [
+      "V5.1",
+      "V5.2",
+      "V5.3"
+    ],
+    "A04": [
+      "V11.1",
+      "V1.11",
+      "V12.1",
+      "V12.2"
+    ],
+    "A05": [
+      "V14.3",
+      "V14.4",
+      "V14.5",
+      "V3.4",
+      "V5.5"
+    ],
+    "A06": [
+      "V14.2"
+    ],
+    "A07": [
+      "V2.1",
+      "V2.2",
+      "V2.10",
+      "V3.2",
+      "V3.3",
+      "V3.5"
+    ],
+    "A08": [
+      "V10.3",
+      "V5.5",
+      "V14.2"
+    ],
+    "A09": [
+      "V7.1",
+      "V7.2",
+      "V7.3"
+    ],
+    "A10": [
+      "V12.6"
+    ]
+  },
+  "asvs_sections": {
+    "V1.1": "Secure Software Development Lifecycle",
+    "V1.2": "Authentication Architecture",
+    "V1.4": "Access Control Architecture",
+    "V1.5": "Input and Output Architecture",
+    "V1.6": "Cryptographic Architecture",
+    "V1.7": "Errors, Logging and Auditing Architecture",
+    "V1.8": "Data Protection and Privacy Architecture",
+    "V1.9": "Communications Architecture",
+    "V1.10": "Malicious Software Architecture",
+    "V1.11": "Business Logic Architecture",
+    "V1.12": "Secure File Upload Architecture",
+    "V1.14": "Configuration Architecture",
+    "V2.1": "Password Security",
+    "V2.2": "General Authenticator Security",
+    "V2.3": "Authenticator Lifecycle",
+    "V2.4": "Credential Storage",
+    "V2.5": "Credential Recovery",
+    "V2.6": "Look-up Secret Verifier",
+    "V2.7": "Out of Band Verifier",
+    "V2.8": "One Time Verifier",
+    "V2.9": "Cryptographic Verifier",
+    "V2.10": "Service Authentication",
+    "V3.1": "Fundamental Session Management Security",
+    "V3.2": "Session Binding",
+    "V3.3": "Session Termination",
+    "V3.4": "Cookie-based Session Management",
+    "V3.5": "Token-based Session Management",
+    "V3.6": "Federated Re-authentication",
+    "V3.7": "Defenses Against Session Management Exploits",
+    "V4.1": "General Access Control Design",
+    "V4.2": "Operation Level Access Control",
+    "V4.3": "Other Access Control Considerations",
+    "V5.1": "Input Validation",
+    "V5.2": "Sanitization and Sandboxing",
+    "V5.3": "Output Encoding and Injection Prevention",
+    "V5.4": "Memory, String, and Unmanaged Code",
+    "V5.5": "Deserialization Prevention",
+    "V6.1": "Data Classification",
+    "V6.2": "Algorithms",
+    "V6.3": "Random Values",
+    "V6.4": "Secret Management",
+    "V7.1": "Log Content",
+    "V7.2": "Log Processing",
+    "V7.3": "Log Protection",
+    "V7.4": "Error Handling",
+    "V8.1": "General Data Protection",
+    "V8.2": "Client-side Data Protection",
+    "V8.3": "Sensitive Private Data",
+    "V9.1": "Client Communication Security",
+    "V9.2": "Server Communication Security",
+    "V10.1": "Code Integrity",
+    "V10.2": "Malicious Code Search",
+    "V10.3": "Application Integrity",
+    "V11.1": "Business Logic Security",
+    "V12.1": "File Upload",
+    "V12.2": "File Integrity",
+    "V12.3": "File Execution",
+    "V12.4": "File Storage",
+    "V12.5": "File Download",
+    "V12.6": "SSRF Protection",
+    "V13.1": "Generic Web Service Security",
+    "V13.2": "RESTful Web Service",
+    "V13.3": "SOAP Web Service",
+    "V13.4": "GraphQL",
+    "V14.1": "Build and Deploy",
+    "V14.2": "Dependency",
+    "V14.3": "Unintended Security Disclosure",
+    "V14.4": "HTTP Security Headers",
+    "V14.5": "HTTP Request Header Validation"
+  },
+  "controls": {
+    "2.1.1": {
+      "level": 1,
+      "name": "Passwords are at least 12 characters"
+    },
+    "2.2.1": {
+      "level": 1,
+      "name": "Anti-automation controls against credential stuffing and brute force"
+    },
+    "2.4.1": {
+      "level": 1,
+      "name": "Passwords stored with an approved one-way key derivation function"
+    },
+    "2.10.4": {
+      "level": 2,
+      "name": "Secrets, keys and integration credentials not stored in source code"
+    },
+    "3.2.1": {
+      "level": 1,
+      "name": "New session token generated on authentication"
+    },
+    "3.2.3": {
+      "level": 1,
+      "name": "Session tokens stored in the browser using secure methods"
+    },
+    "3.3.1": {
+      "level": 1,
+      "name": "Logout and expiration invalidate the session token"
+    },
+    "3.3.2": {
+      "level": 1,
+      "name": "Re-authentication or idle timeout enforced"
+    },
+    "3.4.1": {
+      "level": 1,
+      "name": "Cookie-based session tokens have the Secure attribute"
+    },
+    "3.4.2": {
+      "level": 1,
+      "name": "Cookie-based session tokens have the HttpOnly attribute"
+    },
+    "3.4.3": {
+      "level": 1,
+      "name": "Cookie-based session tokens use SameSite"
+    },
+    "3.5.2": {
+      "level": 2,
+      "name": "Stateless tokens used only where suitable, with revocation"
+    },
+    "3.5.3": {
+      "level": 2,
+      "name": "Stateless session tokens are signed and integrity-protected"
+    },
+    "4.1.1": {
+      "level": 1,
+      "name": "Access control rules enforced on a trusted service layer"
+    },
+    "4.1.2": {
+      "level": 1,
+      "name": "Attributes used by access control cannot be manipulated by end users"
+    },
+    "4.1.3": {
+      "level": 1,
+      "name": "Principle of least privilege"
+    },
+    "4.1.5": {
+      "level": 1,
+      "name": "Access controls fail securely"
+    },
+    "4.2.1": {
+      "level": 1,
+      "name": "Sensitive data and APIs protected against Insecure Direct Object Reference"
+    },
+    "4.2.2": {
+      "level": 1,
+      "name": "Application enforces strong anti-CSRF mechanism"
+    },
+    "4.3.1": {
+      "level": 1,
+      "name": "Administrative interfaces use appropriate multi-factor authentication"
+    },
+    "5.1.2": {
+      "level": 1,
+      "name": "Frameworks protect against mass parameter assignment"
+    },
+    "5.1.3": {
+      "level": 1,
+      "name": "All input is validated using positive validation"
+    },
+    "5.1.5": {
+      "level": 1,
+      "name": "URL redirects and forwards only allow allow-listed destinations"
+    },
+    "5.2.4": {
+      "level": 1,
+      "name": "Dynamic code execution (eval) is avoided"
+    },
+    "5.2.5": {
+      "level": 1,
+      "name": "Template injection attacks are prevented"
+    },
+    "5.2.6": {
+      "level": 1,
+      "name": "SSRF prevented by validating untrusted data"
+    },
+    "5.3.1": {
+      "level": 1,
+      "name": "Output encoding is relevant for the interpreter and context"
+    },
+    "5.3.3": {
+      "level": 1,
+      "name": "Context-aware output escaping protects against XSS"
+    },
+    "5.3.4": {
+      "level": 1,
+      "name": "Data selection or database queries use parameterized queries"
+    },
+    "5.3.5": {
+      "level": 1,
+      "name": "Where parameterization is not possible, interpreter-specific escaping is used"
+    },
+    "5.3.8": {
+      "level": 1,
+      "name": "Application protects against OS command injection"
+    },
+    "5.3.9": {
+      "level": 1,
+      "name": "Application protects against local/remote file inclusion"
+    },
+    "5.3.10": {
+      "level": 1,
+      "name": "Application protects against XPath and XML injection"
+    },
+    "5.5.1": {
+      "level": 1,
+      "name": "Serialized objects use integrity checks or are encrypted"
+    },
+    "5.5.2": {
+      "level": 1,
+      "name": "XML parsers configured to prevent XXE"
+    },
+    "5.5.3": {
+      "level": 1,
+      "name": "Deserialization of untrusted data is avoided or protected"
+    },
+    "6.2.2": {
+      "level": 2,
+      "name": "Industry-proven or government-approved cryptographic algorithms"
+    },
+    "6.3.1": {
+      "level": 2,
+      "name": "Random values generated with an approved CSPRNG"
+    },
+    "6.4.1": {
+      "level": 2,
+      "name": "Secrets management solution (vault) used to protect secrets"
+    },
+    "7.1.1": {
+      "level": 1,
+      "name": "Application does not log credentials or payment details"
+    },
+    "7.1.2": {
+      "level": 1,
+      "name": "Application does not log other sensitive data"
+    },
+    "7.2.1": {
+      "level": 2,
+      "name": "All authentication decisions are logged"
+    },
+    "7.2.2": {
+      "level": 2,
+      "name": "All access control decisions can be logged"
+    },
+    "7.4.1": {
+      "level": 1,
+      "name": "Generic message shown on unexpected error"
+    },
+    "7.4.2": {
+      "level": 2,
+      "name": "Exception handling used across the codebase"
+    },
+    "8.2.2": {
+      "level": 1,
+      "name": "Data stored in browser storage does not contain sensitive data"
+    },
+    "8.3.1": {
+      "level": 1,
+      "name": "Sensitive data sent in HTTP body or headers, not query string"
+    },
+    "8.3.2": {
+      "level": 1,
+      "name": "Users can remove or export their personal data"
+    },
+    "8.3.4": {
+      "level": 1,
+      "name": "Sensitive data identified, classified and protected"
+    },
+    "9.1.1": {
+      "level": 1,
+      "name": "TLS used for all client connectivity"
+    },
+    "9.2.1": {
+      "level": 2,
+      "name": "TLS used for server-to-server connections"
+    },
+    "10.3.2": {
+      "level": 1,
+      "name": "Application uses integrity protections such as code signing or SRI"
+    },
+    "11.1.1": {
+      "level": 1,
+      "name": "Business logic flows processed only in sequential step order"
+    },
+    "11.1.2": {
+      "level": 1,
+      "name": "Business logic flows require realistic human timing"
+    },
+    "11.1.4": {
+      "level": 1,
+      "name": "Anti-automation controls protect business logic"
+    },
+    "11.1.6": {
+      "level": 2,
+      "name": "Sensitive operations are thread safe and TOCTOU-resistant"
+    },
+    "12.1.1": {
+      "level": 1,
+      "name": "Large file uploads are rejected"
+    },
+    "12.2.1": {
+      "level": 1,
+      "name": "Uploaded files match their expected type"
+    },
+    "12.3.1": {
+      "level": 1,
+      "name": "User-submitted file metadata cannot be used for path traversal"
+    },
+    "12.6.1": {
+      "level": 1,
+      "name": "Web or application server has an allow list for outbound connections (SSRF)"
+    },
+    "13.2.3": {
+      "level": 1,
+      "name": "RESTful web services that use cookies are protected from CSRF"
+    },
+    "14.2.1": {
+      "level": 1,
+      "name": "All components are up to date"
+    },
+    "14.2.3": {
+      "level": 1,
+      "name": "Externally hosted assets use Subresource Integrity"
+    },
+    "14.3.2": {
+      "level": 1,
+      "name": "Debug modes disabled in production"
+    },
+    "14.3.3": {
+      "level": 1,
+      "name": "HTTP headers or responses do not expose component versions"
+    },
+    "14.4.3": {
+      "level": 1,
+      "name": "Content-Security-Policy header set"
+    },
+    "14.4.4": {
+      "level": 1,
+      "name": "X-Content-Type-Options: nosniff set"
+    },
+    "14.4.5": {
+      "level": 1,
+      "name": "Strict-Transport-Security header set on all responses"
+    },
+    "14.4.6": {
+      "level": 1,
+      "name": "Referrer-Policy header set"
+    },
+    "14.4.7": {
+      "level": 1,
+      "name": "X-Frame-Options or CSP frame-ancestors set"
+    },
+    "14.5.3": {
+      "level": 1,
+      "name": "CORS Access-Control-Allow-Origin uses a strict allow list"
+    }
+  },
+  "rules": [
+    {
+      "id": "cross-tenant",
+      "cwe": [
+        "CWE-284",
+        "CWE-285",
+        "CWE-863"
+      ],
+      "tags": [
+        "tenant",
+        "cross-tenant",
+        "multi-tenant"
+      ],
+      "keywords": [
+        "cross-tenant",
+        "another tenant",
+        "other tenants",
+        "tenant filter",
+        "tenantid from"
+      ],
+      "top10": "A01",
+      "asvs": [
+        "4.1.3",
+        "4.2.1",
+        "4.1.2"
+      ],
+      "canonical_cwe": "CWE-284"
+    },
+    {
+      "id": "idor",
+      "cwe": [
+        "CWE-639",
+        "CWE-862"
+      ],
+      "tags": [
+        "idor",
+        "bola",
+        "ownership"
+      ],
+      "keywords": [
+        "ownership check",
+        "insecure direct object",
+        "idor",
+        "other customers'",
+        "other users'",
+        "another user's",
+        "another customer's",
+        "changing the id"
+      ],
+      "top10": "A01",
+      "asvs": [
+        "4.2.1",
+        "4.1.3"
+      ],
+      "canonical_cwe": "CWE-639"
+    },
+    {
+      "id": "client-side-enforcement",
+      "cwe": [
+        "CWE-602"
+      ],
+      "tags": [
+        "client-side-check",
+        "cosmetic-guard"
+      ],
+      "keywords": [
+        "guard only",
+        "client-side only",
+        "enforced only in the browser",
+        "frontend guard",
+        "hidden in the ui"
+      ],
+      "top10": "A01",
+      "asvs": [
+        "4.1.1"
+      ],
+      "canonical_cwe": "CWE-602"
+    },
+    {
+      "id": "privilege-escalation",
+      "cwe": [
+        "CWE-269",
+        "CWE-266",
+        "CWE-250"
+      ],
+      "tags": [
+        "privilege-escalation",
+        "role",
+        "rbac"
+      ],
+      "keywords": [
+        "privilege escalation",
+        "escalate",
+        "own role",
+        "become admin",
+        "superadmin",
+        "role check"
+      ],
+      "top10": "A01",
+      "asvs": [
+        "4.1.3",
+        "4.1.2"
+      ],
+      "canonical_cwe": "CWE-269"
+    },
+    {
+      "id": "missing-authentication",
+      "cwe": [
+        "CWE-306",
+        "CWE-287"
+      ],
+      "tags": [
+        "unauthenticated",
+        "anonymous",
+        "missing-auth"
+      ],
+      "keywords": [
+        "without authentication",
+        "unauthenticated",
+        "allowanonymous",
+        "no [authorize]",
+        "no authentication",
+        "permitall"
+      ],
+      "top10": "A07",
+      "asvs": [
+        "4.1.1",
+        "2.2.1"
+      ],
+      "canonical_cwe": "CWE-306"
+    },
+    {
+      "id": "mass-assignment",
+      "cwe": [
+        "CWE-915"
+      ],
+      "tags": [
+        "mass-assignment",
+        "overposting"
+      ],
+      "keywords": [
+        "mass assignment",
+        "overposting",
+        "binds the entity",
+        "hidden field",
+        "extra properties"
+      ],
+      "top10": "A04",
+      "asvs": [
+        "5.1.2",
+        "4.1.2"
+      ],
+      "canonical_cwe": "CWE-915"
+    },
+    {
+      "id": "csrf",
+      "cwe": [
+        "CWE-352"
+      ],
+      "tags": [
+        "csrf"
+      ],
+      "keywords": [
+        "csrf",
+        "cross-site request forgery",
+        "antiforgery",
+        "anti-forgery"
+      ],
+      "top10": "A01",
+      "asvs": [
+        "4.2.2",
+        "13.2.3"
+      ],
+      "canonical_cwe": "CWE-352"
+    },
+    {
+      "id": "cors",
+      "cwe": [
+        "CWE-942"
+      ],
+      "tags": [
+        "cors"
+      ],
+      "keywords": [
+        "cors",
+        "allow-origin",
+        "allowanyorigin",
+        "access-control-allow"
+      ],
+      "top10": "A05",
+      "asvs": [
+        "14.5.3"
+      ],
+      "canonical_cwe": "CWE-942"
+    },
+    {
+      "id": "open-redirect",
+      "cwe": [
+        "CWE-601"
+      ],
+      "tags": [
+        "open-redirect"
+      ],
+      "keywords": [
+        "open redirect",
+        "returnurl",
+        "redirect_uri",
+        "unvalidated redirect"
+      ],
+      "top10": "A01",
+      "asvs": [
+        "5.1.5"
+      ],
+      "canonical_cwe": "CWE-601"
+    },
+    {
+      "id": "sql-injection",
+      "cwe": [
+        "CWE-89",
+        "CWE-564"
+      ],
+      "tags": [
+        "sqli",
+        "sql-injection"
+      ],
+      "keywords": [
+        "sql injection",
+        "fromsqlraw",
+        "raw sql",
+        "executesqlraw",
+        "string-built query",
+        "concatenated into the query",
+        "sqli"
+      ],
+      "top10": "A03",
+      "asvs": [
+        "5.3.4",
+        "5.3.5"
+      ],
+      "canonical_cwe": "CWE-89"
+    },
+    {
+      "id": "nosql-ldap-xpath-injection",
+      "cwe": [
+        "CWE-943",
+        "CWE-90",
+        "CWE-643",
+        "CWE-91"
+      ],
+      "tags": [
+        "nosql-injection",
+        "ldap-injection",
+        "xpath-injection"
+      ],
+      "keywords": [
+        "nosql injection",
+        "ldap injection",
+        "xpath injection",
+        "$where",
+        "mongo query built"
+      ],
+      "top10": "A03",
+      "asvs": [
+        "5.3.4",
+        "5.3.10"
+      ],
+      "canonical_cwe": "CWE-943"
+    },
+    {
+      "id": "os-command-injection",
+      "cwe": [
+        "CWE-78",
+        "CWE-77"
+      ],
+      "tags": [
+        "command-injection",
+        "rce"
+      ],
+      "keywords": [
+        "command injection",
+        "shell command",
+        "process.start",
+        "child_process",
+        "os.system",
+        "subprocess",
+        "runtime.exec"
+      ],
+      "top10": "A03",
+      "asvs": [
+        "5.3.8"
+      ],
+      "canonical_cwe": "CWE-78"
+    },
+    {
+      "id": "code-injection",
+      "cwe": [
+        "CWE-94",
+        "CWE-95",
+        "CWE-1336"
+      ],
+      "tags": [
+        "code-injection",
+        "template-injection",
+        "eval"
+      ],
+      "keywords": [
+        "eval(",
+        "new function(",
+        "template injection",
+        "dynamic code",
+        "code injection"
+      ],
+      "top10": "A03",
+      "asvs": [
+        "5.2.4",
+        "5.2.5"
+      ],
+      "canonical_cwe": "CWE-94"
+    },
+    {
+      "id": "path-traversal",
+      "cwe": [
+        "CWE-22",
+        "CWE-23",
+        "CWE-98"
+      ],
+      "tags": [
+        "path-traversal",
+        "lfi",
+        "file-inclusion"
+      ],
+      "keywords": [
+        "path traversal",
+        "directory traversal",
+        "../",
+        "file inclusion",
+        "arbitrary file read"
+      ],
+      "top10": "A01",
+      "asvs": [
+        "12.3.1",
+        "5.3.9"
+      ],
+      "canonical_cwe": "CWE-22"
+    },
+    {
+      "id": "xss",
+      "cwe": [
+        "CWE-79",
+        "CWE-80",
+        "CWE-116"
+      ],
+      "tags": [
+        "xss",
+        "dom-xss",
+        "stored-xss",
+        "reflected-xss"
+      ],
+      "keywords": [
+        "xss",
+        "cross-site scripting",
+        "innerhtml",
+        "dangerouslysetinnerhtml",
+        "bypasssecuritytrust",
+        "v-html",
+        "unescaped",
+        "unsanitized html",
+        "script injection",
+        "document.write"
+      ],
+      "top10": "A03",
+      "asvs": [
+        "5.3.3",
+        "5.3.1"
+      ],
+      "canonical_cwe": "CWE-79"
+    },
+    {
+      "id": "ssrf",
+      "cwe": [
+        "CWE-918"
+      ],
+      "tags": [
+        "ssrf"
+      ],
+      "keywords": [
+        "ssrf",
+        "server-side request forgery",
+        "fetches a user-supplied url",
+        "user-controlled url"
+      ],
+      "top10": "A10",
+      "asvs": [
+        "12.6.1",
+        "5.2.6"
+      ],
+      "canonical_cwe": "CWE-918"
+    },
+    {
+      "id": "deserialization",
+      "cwe": [
+        "CWE-502"
+      ],
+      "tags": [
+        "deserialization"
+      ],
+      "keywords": [
+        "deserializ",
+        "binaryformatter",
+        "typenamehandling",
+        "pickle.load",
+        "objectinputstream",
+        "yaml.load("
+      ],
+      "top10": "A08",
+      "asvs": [
+        "5.5.3",
+        "5.5.1"
+      ],
+      "canonical_cwe": "CWE-502"
+    },
+    {
+      "id": "xxe",
+      "cwe": [
+        "CWE-611",
+        "CWE-776"
+      ],
+      "tags": [
+        "xxe"
+      ],
+      "keywords": [
+        "xxe",
+        "external entity",
+        "dtdprocessing",
+        "xml external"
+      ],
+      "top10": "A05",
+      "asvs": [
+        "5.5.2"
+      ],
+      "canonical_cwe": "CWE-611"
+    },
+    {
+      "id": "hardcoded-key",
+      "cwe": [
+        "CWE-321"
+      ],
+      "tags": [
+        "hardcoded-key",
+        "signing-key",
+        "crypto-key"
+      ],
+      "keywords": [
+        "signing key",
+        "jwt key",
+        "jwtkey",
+        "encryption key",
+        "crypto key",
+        "secret key committed",
+        "private key"
+      ],
+      "top10": "A02",
+      "asvs": [
+        "2.10.4",
+        "6.4.1"
+      ],
+      "canonical_cwe": "CWE-321"
+    },
+    {
+      "id": "hardcoded-credential",
+      "cwe": [
+        "CWE-798",
+        "CWE-259",
+        "CWE-540"
+      ],
+      "tags": [
+        "secret",
+        "secrets",
+        "hardcoded-credential",
+        "credential"
+      ],
+      "keywords": [
+        "hard-coded",
+        "hardcoded",
+        "committed",
+        "api key",
+        "connection string",
+        "password in",
+        "credentials in",
+        "sk_live",
+        "appsettings.production"
+      ],
+      "top10": "A07",
+      "asvs": [
+        "2.10.4",
+        "6.4.1"
+      ],
+      "canonical_cwe": "CWE-798"
+    },
+    {
+      "id": "password-storage",
+      "cwe": [
+        "CWE-916",
+        "CWE-256",
+        "CWE-257"
+      ],
+      "tags": [
+        "password-storage",
+        "password-hash"
+      ],
+      "keywords": [
+        "password hash",
+        "plaintext password",
+        "passwords stored",
+        "unsalted",
+        "reversible"
+      ],
+      "top10": "A02",
+      "asvs": [
+        "2.4.1"
+      ],
+      "canonical_cwe": "CWE-916"
+    },
+    {
+      "id": "weak-crypto",
+      "cwe": [
+        "CWE-327",
+        "CWE-328",
+        "CWE-326",
+        "CWE-780"
+      ],
+      "tags": [
+        "weak-crypto",
+        "crypto"
+      ],
+      "keywords": [
+        "md5",
+        "sha1",
+        "sha-1",
+        "3des",
+        "ecb mode",
+        "weak hash",
+        "weak cipher",
+        "rc4"
+      ],
+      "top10": "A02",
+      "asvs": [
+        "6.2.2"
+      ],
+      "canonical_cwe": "CWE-327"
+    },
+    {
+      "id": "insecure-randomness",
+      "cwe": [
+        "CWE-330",
+        "CWE-338",
+        "CWE-331"
+      ],
+      "tags": [
+        "randomness",
+        "prng"
+      ],
+      "keywords": [
+        "math.random",
+        "system.random",
+        "new random(",
+        "predictable token",
+        "random.random",
+        "not cryptographically"
+      ],
+      "top10": "A02",
+      "asvs": [
+        "6.3.1"
+      ],
+      "canonical_cwe": "CWE-338"
+    },
+    {
+      "id": "hsts",
+      "cwe": [],
+      "tags": [
+        "hsts",
+        "strict-transport-security"
+      ],
+      "keywords": [
+        "hsts",
+        "strict-transport-security",
+        "strict transport security"
+      ],
+      "top10": "A05",
+      "asvs": [
+        "14.4.5"
+      ],
+      "canonical_cwe": "CWE-319"
+    },
+    {
+      "id": "cleartext-transmission",
+      "cwe": [
+        "CWE-319",
+        "CWE-311",
+        "CWE-295"
+      ],
+      "tags": [
+        "tls",
+        "https",
+        "cleartext"
+      ],
+      "keywords": [
+        "cleartext",
+        "clear text",
+        "plain http",
+        "unencrypted",
+        "certificate validation",
+        "servercertificatevalidationcallback",
+        "rejectunauthorized: false",
+        "tls 1.0"
+      ],
+      "top10": "A02",
+      "asvs": [
+        "9.1.1",
+        "9.2.1"
+      ],
+      "canonical_cwe": "CWE-319"
+    },
+    {
+      "id": "csp",
+      "cwe": [],
+      "tags": [
+        "csp",
+        "content-security-policy"
+      ],
+      "keywords": [
+        "content-security-policy",
+        "content security policy",
+        "csp header",
+        "unsafe-inline",
+        "unsafe-eval"
+      ],
+      "top10": "A05",
+      "asvs": [
+        "14.4.3"
+      ],
+      "canonical_cwe": "CWE-693"
+    },
+    {
+      "id": "clickjacking",
+      "cwe": [
+        "CWE-1021"
+      ],
+      "tags": [
+        "clickjacking",
+        "x-frame-options"
+      ],
+      "keywords": [
+        "clickjacking",
+        "x-frame-options",
+        "frame-ancestors",
+        "framed"
+      ],
+      "top10": "A05",
+      "asvs": [
+        "14.4.7"
+      ],
+      "canonical_cwe": "CWE-1021"
+    },
+    {
+      "id": "security-headers",
+      "cwe": [
+        "CWE-693",
+        "CWE-16"
+      ],
+      "tags": [
+        "headers",
+        "security-headers",
+        "nosniff",
+        "referrer-policy"
+      ],
+      "keywords": [
+        "x-content-type-options",
+        "nosniff",
+        "referrer-policy",
+        "security header",
+        "permissions-policy",
+        "x-xss-protection"
+      ],
+      "top10": "A05",
+      "asvs": [
+        "14.4.4",
+        "14.4.6"
+      ],
+      "canonical_cwe": "CWE-693"
+    },
+    {
+      "id": "cookie-flags",
+      "cwe": [
+        "CWE-614",
+        "CWE-1004",
+        "CWE-1275"
+      ],
+      "tags": [
+        "cookie",
+        "cookies"
+      ],
+      "keywords": [
+        "httponly",
+        "secure flag",
+        "samesite",
+        "cookie without",
+        "cookie flag"
+      ],
+      "top10": "A05",
+      "asvs": [
+        "3.4.1",
+        "3.4.2",
+        "3.4.3"
+      ],
+      "canonical_cwe": "CWE-614"
+    },
+    {
+      "id": "client-storage",
+      "cwe": [
+        "CWE-922",
+        "CWE-312",
+        "CWE-315"
+      ],
+      "tags": [
+        "localstorage",
+        "client-storage",
+        "browser-storage"
+      ],
+      "keywords": [
+        "localstorage",
+        "sessionstorage",
+        "stored in the browser",
+        "indexeddb",
+        "token in storage"
+      ],
+      "top10": "A02",
+      "asvs": [
+        "3.2.3",
+        "8.2.2"
+      ],
+      "canonical_cwe": "CWE-922"
+    },
+    {
+      "id": "jwt-validation",
+      "cwe": [
+        "CWE-347",
+        "CWE-345"
+      ],
+      "tags": [
+        "jwt",
+        "token-validation"
+      ],
+      "keywords": [
+        "jwt",
+        "alg none",
+        "signature not verified",
+        "validateissuer",
+        "validateaudience",
+        "validatelifetime",
+        "token not validated"
+      ],
+      "top10": "A02",
+      "asvs": [
+        "3.5.3",
+        "3.5.2"
+      ],
+      "canonical_cwe": "CWE-347"
+    },
+    {
+      "id": "session-management",
+      "cwe": [
+        "CWE-613",
+        "CWE-384",
+        "CWE-1018"
+      ],
+      "tags": [
+        "session",
+        "logout",
+        "token-lifetime"
+      ],
+      "keywords": [
+        "session fixation",
+        "session timeout",
+        "never expires",
+        "logout does not",
+        "not invalidated",
+        "long-lived token",
+        "refresh token"
+      ],
+      "top10": "A07",
+      "asvs": [
+        "3.3.1",
+        "3.3.2",
+        "3.2.1"
+      ],
+      "canonical_cwe": "CWE-613"
+    },
+    {
+      "id": "brute-force",
+      "cwe": [
+        "CWE-307",
+        "CWE-521",
+        "CWE-1391"
+      ],
+      "tags": [
+        "brute-force",
+        "rate-limit-auth",
+        "password-policy",
+        "lockout"
+      ],
+      "keywords": [
+        "brute force",
+        "brute-force",
+        "credential stuffing",
+        "lockout",
+        "password length",
+        "password policy",
+        "login rate"
+      ],
+      "top10": "A07",
+      "asvs": [
+        "2.2.1",
+        "2.1.1"
+      ],
+      "canonical_cwe": "CWE-307"
+    },
+    {
+      "id": "missing-mfa-admin",
+      "cwe": [
+        "CWE-308"
+      ],
+      "tags": [
+        "mfa",
+        "2fa"
+      ],
+      "keywords": [
+        "multi-factor",
+        "mfa",
+        "two-factor",
+        "2fa"
+      ],
+      "top10": "A07",
+      "asvs": [
+        "4.3.1"
+      ],
+      "canonical_cwe": "CWE-308"
+    },
+    {
+      "id": "vulnerable-dependency",
+      "cwe": [
+        "CWE-1104",
+        "CWE-1395",
+        "CWE-937"
+      ],
+      "tags": [
+        "dependency",
+        "cve",
+        "outdated",
+        "vulnerable-component"
+      ],
+      "keywords": [
+        "cve-",
+        "vulnerable version",
+        "known vulnerabilit",
+        "outdated package",
+        "npm audit",
+        "end of life",
+        "unsupported version",
+        "dotnet list package --vulnerable"
+      ],
+      "top10": "A06",
+      "asvs": [
+        "14.2.1"
+      ],
+      "canonical_cwe": "CWE-1104"
+    },
+    {
+      "id": "integrity",
+      "cwe": [
+        "CWE-353",
+        "CWE-494",
+        "CWE-829",
+        "CWE-830"
+      ],
+      "tags": [
+        "sri",
+        "supply-chain",
+        "ci-integrity",
+        "unsigned"
+      ],
+      "keywords": [
+        "subresource integrity",
+        "integrity attribute",
+        "unsigned",
+        "untrusted cdn",
+        "pipeline can be modified",
+        "unpinned action",
+        "auto-update"
+      ],
+      "top10": "A08",
+      "asvs": [
+        "14.2.3",
+        "10.3.2"
+      ],
+      "canonical_cwe": "CWE-829"
+    },
+    {
+      "id": "verbose-errors",
+      "cwe": [
+        "CWE-209",
+        "CWE-215",
+        "CWE-550",
+        "CWE-497"
+      ],
+      "tags": [
+        "error-handling",
+        "stack-trace",
+        "verbose-error",
+        "debug"
+      ],
+      "keywords": [
+        "stack trace",
+        "developer exception page",
+        "verbose error",
+        "debug=true",
+        "debug mode",
+        "developerexceptionpage",
+        "server header",
+        "x-powered-by",
+        "swagger exposed"
+      ],
+      "top10": "A05",
+      "asvs": [
+        "14.3.2",
+        "7.4.1",
+        "14.3.3"
+      ],
+      "canonical_cwe": "CWE-209"
+    },
+    {
+      "id": "information-disclosure",
+      "cwe": [
+        "CWE-200",
+        "CWE-201",
+        "CWE-538"
+      ],
+      "tags": [
+        "info-disclosure",
+        "information-disclosure"
+      ],
+      "keywords": [
+        "information disclosure",
+        "exposes internal",
+        "over-fetching",
+        "returns the password hash",
+        "returns all fields"
+      ],
+      "top10": "A01",
+      "asvs": [
+        "8.3.4",
+        "4.1.3"
+      ],
+      "canonical_cwe": "CWE-200"
+    },
+    {
+      "id": "sensitive-data-in-logs",
+      "cwe": [
+        "CWE-532"
+      ],
+      "tags": [
+        "pii-in-logs",
+        "secrets-in-logs",
+        "logging-sensitive"
+      ],
+      "keywords": [
+        "logs the password",
+        "token in log",
+        "logged in plain",
+        "pii in log",
+        "logs the request body",
+        "logs the full",
+        "serialize(request)"
+      ],
+      "top10": "A09",
+      "asvs": [
+        "7.1.1",
+        "7.1.2"
+      ],
+      "canonical_cwe": "CWE-532"
+    },
+    {
+      "id": "insufficient-logging",
+      "cwe": [
+        "CWE-778",
+        "CWE-223"
+      ],
+      "tags": [
+        "audit-log",
+        "monitoring",
+        "observability",
+        "logging"
+      ],
+      "keywords": [
+        "no audit log",
+        "not logged",
+        "no logging",
+        "no alert",
+        "no monitoring",
+        "audit trail",
+        "failed logins are not",
+        "no correlation id"
+      ],
+      "top10": "A09",
+      "asvs": [
+        "7.2.1",
+        "7.2.2"
+      ],
+      "canonical_cwe": "CWE-778"
+    },
+    {
+      "id": "unhandled-exception",
+      "cwe": [
+        "CWE-755",
+        "CWE-248",
+        "CWE-390"
+      ],
+      "tags": [
+        "exception-handling",
+        "swallowed-exception"
+      ],
+      "keywords": [
+        "unhandled exception",
+        "swallow",
+        "empty catch",
+        "crashes the process",
+        "no global exception handler"
+      ],
+      "top10": "A05",
+      "asvs": [
+        "7.4.2",
+        "7.4.1"
+      ],
+      "canonical_cwe": "CWE-755"
+    },
+    {
+      "id": "input-validation",
+      "cwe": [
+        "CWE-20",
+        "CWE-1284",
+        "CWE-129"
+      ],
+      "tags": [
+        "validation",
+        "input-validation"
+      ],
+      "keywords": [
+        "no validation",
+        "not validated",
+        "no length limit",
+        "unvalidated input",
+        "accepts any value",
+        "negative quantity",
+        "negative amount"
+      ],
+      "top10": "A03",
+      "asvs": [
+        "5.1.3"
+      ],
+      "canonical_cwe": "CWE-20"
+    },
+    {
+      "id": "file-upload",
+      "cwe": [
+        "CWE-434",
+        "CWE-646"
+      ],
+      "tags": [
+        "upload",
+        "file-upload"
+      ],
+      "keywords": [
+        "upload",
+        "file type check",
+        "content-type check",
+        "executable file",
+        "webshell"
+      ],
+      "top10": "A04",
+      "asvs": [
+        "12.2.1",
+        "12.1.1"
+      ],
+      "canonical_cwe": "CWE-434"
+    },
+    {
+      "id": "resource-exhaustion",
+      "cwe": [
+        "CWE-400",
+        "CWE-770",
+        "CWE-405",
+        "CWE-409",
+        "CWE-1050"
+      ],
+      "tags": [
+        "dos",
+        "pagination",
+        "resource-exhaustion",
+        "rate-limit"
+      ],
+      "keywords": [
+        "no paging",
+        "unbounded",
+        "entire table",
+        "rate limit",
+        "denial of service",
+        "zip bomb",
+        "upload size",
+        "no timeout",
+        "regex backtracking",
+        "redos"
+      ],
+      "top10": "A04",
+      "asvs": [
+        "12.1.1",
+        "11.1.4"
+      ],
+      "canonical_cwe": "CWE-770"
+    },
+    {
+      "id": "race-condition",
+      "cwe": [
+        "CWE-362",
+        "CWE-367",
+        "CWE-366"
+      ],
+      "tags": [
+        "race",
+        "race-condition",
+        "toctou",
+        "concurrency"
+      ],
+      "keywords": [
+        "race condition",
+        "concurrent requests",
+        "double spend",
+        "double-spend",
+        "toctou",
+        "check-then-act",
+        "lost update",
+        "not atomic"
+      ],
+      "top10": "A04",
+      "asvs": [
+        "11.1.6"
+      ],
+      "canonical_cwe": "CWE-362"
+    },
+    {
+      "id": "business-logic",
+      "cwe": [
+        "CWE-840",
+        "CWE-841",
+        "CWE-799"
+      ],
+      "tags": [
+        "business-logic",
+        "workflow",
+        "logic-flaw"
+      ],
+      "keywords": [
+        "workflow bypass",
+        "step can be skipped",
+        "out of order",
+        "limit bypass",
+        "coupon reuse",
+        "negative total",
+        "price from the client",
+        "automation"
+      ],
+      "top10": "A04",
+      "asvs": [
+        "11.1.1",
+        "11.1.2",
+        "11.1.4"
+      ],
+      "canonical_cwe": "CWE-840"
+    },
+    {
+      "id": "privacy",
+      "cwe": [
+        "CWE-359",
+        "CWE-212"
+      ],
+      "tags": [
+        "gdpr",
+        "pii",
+        "privacy",
+        "retention",
+        "consent"
+      ],
+      "keywords": [
+        "personal data",
+        "consent",
+        "retention",
+        "data subject",
+        "right to erasure",
+        "export their data"
+      ],
+      "top10": null,
+      "asvs": [
+        "8.3.2",
+        "8.3.4",
+        "8.3.1"
+      ],
+      "canonical_cwe": "CWE-359"
+    },
+    {
+      "id": "misconfiguration",
+      "cwe": [
+        "CWE-1188",
+        "CWE-276",
+        "CWE-732"
+      ],
+      "tags": [
+        "config",
+        "misconfiguration",
+        "default-config"
+      ],
+      "keywords": [
+        "default credential",
+        "misconfig",
+        "allowedhosts",
+        "insecure default",
+        "world-readable",
+        "wildcard"
+      ],
+      "top10": "A05",
+      "asvs": [
+        "14.3.2"
+      ],
+      "canonical_cwe": "CWE-1188"
+    },
+    {
+      "id": "resource-leak",
+      "cwe": [
+        "CWE-401",
+        "CWE-772",
+        "CWE-404",
+        "CWE-459"
+      ],
+      "tags": [
+        "leak",
+        "memory-leak",
+        "resource-leak",
+        "disposal"
+      ],
+      "keywords": [
+        "not disposed",
+        "never disposed",
+        "memory leak",
+        "connection leak",
+        "not unsubscribed",
+        "subscription leak",
+        "handle leak"
+      ],
+      "top10": null,
+      "asvs": [],
+      "canonical_cwe": "CWE-772"
+    }
+  ],
+  "skill_coverage": {
+    "audit-authz-and-access-control": [
+      "V4.1",
+      "V4.2",
+      "V4.3",
+      "V1.4"
+    ],
+    "audit-injection-vulnerabilities": [
+      "V5.1",
+      "V5.2",
+      "V5.3",
+      "V5.5",
+      "V12.6"
+    ],
+    "audit-secrets-and-config": [
+      "V2.10",
+      "V6.4",
+      "V14.1",
+      "V14.3"
+    ],
+    "audit-security-headers-and-middleware": [
+      "V14.4",
+      "V14.5",
+      "V3.4",
+      "V9.1",
+      "V13.2"
+    ],
+    "audit-frontend-xss-and-dom-safety": [
+      "V5.3",
+      "V14.4"
+    ],
+    "audit-client-auth-and-storage": [
+      "V3.2",
+      "V3.3",
+      "V3.5",
+      "V8.2"
+    ],
+    "audit-dependency-vulnerabilities": [
+      "V14.2",
+      "V10.3"
+    ],
+    "audit-multi-tenant-isolation": [
+      "V4.1",
+      "V4.2"
+    ],
+    "audit-logging-and-observability": [
+      "V7.1",
+      "V7.2",
+      "V7.3",
+      "V7.4"
+    ],
+    "audit-business-logic": [
+      "V11.1"
+    ],
+    "audit-concurrency-and-race-condition": [
+      "V11.1"
+    ],
+    "audit-api-contract": [
+      "V13.1",
+      "V13.2",
+      "V5.1"
+    ],
+    "audit-infra-and-deployment": [
+      "V14.1",
+      "V9.2",
+      "V10.3"
+    ],
+    "audit-gdpr-data-protection": [
+      "V8.1",
+      "V8.3",
+      "V1.8"
+    ],
+    "audit-privacy-data-flow-mapper": [
+      "V8.3",
+      "V1.8"
+    ],
+    "audit-orm-query-and-data-access": [
+      "V5.3"
+    ],
+    "audit-test-coverage-and-ci": [
+      "V1.1",
+      "V14.1"
+    ],
+    "audit-production-readiness-checklist": [
+      "V14.1",
+      "V14.3"
+    ],
+    "audit-licensing-and-compliance": [
+      "V14.2"
+    ]
+  }
+}

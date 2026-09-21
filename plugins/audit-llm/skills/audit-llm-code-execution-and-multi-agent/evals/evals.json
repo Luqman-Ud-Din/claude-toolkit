@@ -1,0 +1,17 @@
+{
+  "skill_name": "audit-llm-code-execution-and-multi-agent",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Is it safe that our data-analysis agent can write and run Python code to answer questions?",
+      "expected_output": "Confirms applicability (code execution present), checks whether execution is actually sandboxed vs. same-process, reviews network/filesystem escape surface and resource limits, and rates a same-process eval as Critical.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "We just have one single chatbot, no multi-agent setup and no code execution - can you still run this audit for completeness?",
+      "expected_output": "Checks applicability first, finds neither code execution nor multi-agent coordination present, and reports this as a clean not-applicable result rather than forcing findings.",
+      "files": []
+    }
+  ]
+}

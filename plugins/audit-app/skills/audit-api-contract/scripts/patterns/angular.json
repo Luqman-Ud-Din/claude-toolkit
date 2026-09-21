@@ -1,0 +1,42 @@
+[
+  {
+    "id": "FE-ERROR-SHAPES",
+    "pattern": "err(or)?\\.error\\??\\.(message|error|detail|errors|title|msg|Message|Error)\\b",
+    "globs": ["*.ts"],
+    "severity_hint": "Info",
+    "description": "Client parses a server error field; each distinct field name is a distinct server error shape - count them for the consistency finding",
+    "reference": "ASVS-13.2"
+  },
+  {
+    "id": "FE-SENSITIVE-MODEL-FIELD",
+    "pattern": "\\b(passwordHash|PasswordHash|salt|Salt|securityStamp|refreshToken|apiKey|isDeleted|IsDeleted|costPrice|CostPrice)\\s*[?:]",
+    "globs": ["*.model.ts", "*.interface.ts", "*.dto.ts", "*.ts"],
+    "severity_hint": "Medium",
+    "description": "Client model declares a field the server should not expose; cite as evidence for the backend over-exposure finding",
+    "reference": "CWE-200"
+  },
+  {
+    "id": "FE-CLIENT-SIDE-PAGING",
+    "pattern": "\\.slice\\(\\s*(this\\.)?(page|pageIndex|start)\\w*\\s*\\*|\\.slice\\(\\s*\\w+\\s*\\*\\s*\\w*(size|pageSize)",
+    "globs": ["*.ts"],
+    "severity_hint": "Medium",
+    "description": "Array sliced client-side for paging; the list endpoint probably returns everything",
+    "reference": "CWE-770"
+  },
+  {
+    "id": "FE-UNVERSIONED-URL",
+    "pattern": "['\"`]/?api/(?!v\\d)\\w+",
+    "globs": ["*.ts"],
+    "severity_hint": "Info",
+    "description": "Unversioned API path in the client; compare with versioned calls elsewhere",
+    "reference": "ASVS-13.1"
+  },
+  {
+    "id": "FE-NON-ISO-DATE-POSTED",
+    "pattern": "formatDate\\([^)]*['\"](dd|MM)/(MM|dd)/yyyy|\\.format\\(\\s*['\"](DD|MM)[/.-](MM|DD)[/.-]YYYY|toLocaleDateString\\(",
+    "globs": ["*.ts"],
+    "severity_hint": "Low",
+    "description": "Non-ISO date string built in the client; if posted to the API it is a contract drift (hand the rest to audit-datetime-and-timezone)",
+    "reference": "ASVS-13.1"
+  }
+]

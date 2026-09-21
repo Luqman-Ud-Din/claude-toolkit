@@ -1,0 +1,74 @@
+[
+  {
+    "id": "LOG-REQUEST-BODY",
+    "pattern": "\\b(?:logger|logging|log|self\\.logger|structlog\\.get_logger\\(\\))\\.(?:info|debug|warning|warn|error|exception|critical)\\(.*\\brequest\\.(?:body|data|POST|headers|META|json)\\b",
+    "globs": ["*.py"],
+    "severity_hint": "High",
+    "description": "Whole request body/headers/META logged - passwords, tokens and cookies included",
+    "reference": "CWE-532"
+  },
+  {
+    "id": "LOG-SENSITIVE-FIELD",
+    "pattern": "\\b(?:logger|logging|log|self\\.logger)\\.(?:info|debug|warning|warn|error|exception|critical)\\(.*\\b\\w*(?:password|passwd|secret|token|api_key|apikey|authorization|cookie|card_number|cvv|ssn|iban)\\b(?!\\s*(?:reset|policy|expir|hash))",
+    "globs": ["*.py"],
+    "severity_hint": "Critical",
+    "description": "Log call names a credential/token/card field - confirm a value is logged",
+    "reference": "CWE-532"
+  },
+  {
+    "id": "LOG-CATCH-DEBUG",
+    "pattern": "\\b(?:logger|logging|log|self\\.logger)\\.debug\\(.*(?:exc_info\\s*=\\s*True|[,(]\\s*(?:e|ex|exc|err|error)\\s*\\))|except[^:]*:\\s*(?:logger|logging|log)\\.(?:debug|info)\\(",
+    "globs": ["*.py"],
+    "severity_hint": "High",
+    "description": "Exception logged at DEBUG - dropped at the production level (multi-line except blocks: log_scan.py)",
+    "reference": "CWE-778"
+  },
+  {
+    "id": "LOG-CONCAT-MESSAGE",
+    "pattern": "\\b(?:logger|logging|log|self\\.logger)\\.(?:info|debug|warning|warn|error|exception|critical)\\(\\s*(?:f[\"']|[\"'][^\"']*[\"']\\s*(?:%|\\+)|[\"'][^\"']*[\"']\\.format\\()",
+    "globs": ["*.py"],
+    "severity_hint": "Low",
+    "description": "f-string / % / + / .format message - formatted eagerly, unstructured (ruff G001-G004)",
+    "reference": "CWE-117"
+  },
+  {
+    "id": "LOG-CORRELATION-MARKER",
+    "pattern": "asgi_correlation_id|asgi-correlation-id|django_guid|django-guid|CorrelationIdMiddleware|correlation_id|request_id|bind_contextvars|X-Request-ID|X-Correlation-ID|opentelemetry|traceparent",
+    "globs": ["*.py", "requirements*.txt", "pyproject.toml"],
+    "severity_hint": "Info",
+    "description": "Correlation-id middleware / trace-context marker. ZERO hits across the repo means no correlation-id middleware - write that finding",
+    "reference": "CWE-778"
+  },
+  {
+    "id": "LOG-PRINT",
+    "pattern": "^\\s*print\\(",
+    "globs": ["*.py"],
+    "severity_hint": "Low",
+    "description": "print() in application code - no level, no structure (ignore manage.py commands and scripts)",
+    "reference": "CWE-778"
+  },
+  {
+    "id": "LOG-SWALLOWED-ERROR",
+    "pattern": "except[^:]*:\\s*(?:pass|continue)\\s*$",
+    "globs": ["*.py"],
+    "severity_hint": "Medium",
+    "description": "Exception swallowed with no log",
+    "reference": "CWE-390"
+  },
+  {
+    "id": "LOG-SENTRY-PII",
+    "pattern": "send_default_pii\\s*=\\s*True",
+    "globs": ["*.py"],
+    "severity_hint": "Medium",
+    "description": "Sentry sends cookies, headers, user IP and request bodies",
+    "reference": "CWE-532"
+  },
+  {
+    "id": "LOG-SQL-DEBUG",
+    "pattern": "['\"]django\\.db\\.backends['\"]\\s*:\\s*\\{[^}]*['\"]level['\"]\\s*:\\s*['\"]DEBUG",
+    "globs": ["*.py"],
+    "severity_hint": "Medium",
+    "description": "SQL query logging with parameters at DEBUG - check it is not enabled in production settings",
+    "reference": "CWE-532"
+  }
+]

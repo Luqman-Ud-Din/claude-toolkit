@@ -1,0 +1,47 @@
+{
+  "skill_name": "audit-git-history",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Before we open-source the shop repo I need to know if any secrets were ever committed and then deleted. Build the test repo with evals/files/build_sample_repo.py into a temp folder and check its full history: which files held credentials, when were they added and removed, and are they still reachable from any branch?",
+      "expected_output": "Builds the repo, runs githist.py info to confirm it is a full (not shallow) git repo, runs added-lines across all refs (optionally with --match for key/password shapes) and info --path config/.env (or :(glob)**/.env) plus --contains on the adding commit. Reports: config/.env line 1 (a Stripe-shaped live key) added in 'Add deploy settings' on 2023-06-14 and deleted in 'Remove committed secrets (SEC-7)' on 2023-06-20, state deleted; config/appsettings.Production.json line 3 carried a connection-string password in the same 2023-06-14 commit, replaced by a ${DB_PASSWORD} placeholder on 2023-06-20; the adding commit is contained in main, feature/export, feature/spike and tag v1.0, so the values remain in history. States these are candidate lines for the secrets audit to confirm, not rated findings.",
+      "files": ["evals/files/build_sample_repo.py"],
+      "expectations": [
+        "Runs build_sample_repo.py into a temporary folder, not inside the skill directory",
+        "Runs githist.py info and states the repo is a git work tree and not shallow",
+        "Uses added-lines over all refs rather than only the current tree",
+        "Reports config/.env as added in the 2023-06-14 commit and deleted in the 2023-06-20 commit (state deleted)",
+        "Reports the connection-string password line in config/appsettings.Production.json from the 2023-06-14 commit",
+        "Reports that the adding commit is contained in main (and the other branches or tag v1.0)",
+        "Does not assign a severity or call the lines confirmed findings"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "No .git in this export, history is in evals/files/synthetic-history.json. For src/OrderService.cs: how many commits touched it, how old is the TODO on line 6, and which commits on main have no ticket reference in the message?",
+      "expected_output": "Runs githist.py churn, blame --lines 6-6 and tickets with --history evals/files/synthetic-history.json. Answers: src/OrderService.cs changed in 2 commits (c01 PROJ-101 Initial import, c05 AB#1234 Order totals rounding); line 6 blames to c01 by imran on 2023-02-10, 1293 days old as of the history head date 2026-08-27; commits without a ticket reference are c06 'fix typo' and c02 'Add deploy settings'. Mentions the source is synthetic and the as-of date used.",
+      "files": ["evals/files/synthetic-history.json"],
+      "expectations": [
+        "Passes --history evals/files/synthetic-history.json instead of failing for lack of .git",
+        "States src/OrderService.cs was touched by 2 commits",
+        "States line 6 was last changed on 2023-02-10 by imran (about 1293 days before 2026-08-27)",
+        "Lists 'fix typo' and 'Add deploy settings' as the commits without a ticket reference",
+        "Does not list the unmerged 'Spike: GraphQL endpoint' commit among main's commits",
+        "Names the as-of date the ages were computed against"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Our CI job audits a checkout that might be a shallow clone. Using evals/files/build_sample_repo.py with --shallow-copy, tell me whether the shallow copy's churn and blame numbers can be trusted, and which branches contain the 'Spike: GraphQL endpoint' commit in the full repo.",
+      "expected_output": "Builds both repos, runs githist.py info on the shallow copy (history.shallow true, not_checked lists full git history with the shallow-clone reason) and explains churn, blame ages and added-line scans are truncated and must be reported as not checked; shows blame on the shallow copy attributing lines to a boundary commit. On the full repo runs info --contains feature/spike (or the commit hash) and reports only the feature/spike branch contains it and it is not reachable from HEAD.",
+      "files": ["evals/files/build_sample_repo.py"],
+      "expectations": [
+        "Runs githist.py info on the shallow copy and reports shallow = true",
+        "States churn and blame ages from the shallow copy must be reported as not checked or truncated",
+        "Mentions boundary commits in blame output or explains that ages are lower bounds",
+        "Reports that only feature/spike contains the spike commit",
+        "Reports that the spike commit is not reachable from HEAD (main)"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "skill": "audit-authz-and-access-control",
+  "generated_at": "2026-09-10T09:00:00Z",
+  "target": {"root": ".", "commit": "a1b2c3d"},
+  "stack": {"primary_backend": "dotnet", "primary_frontend": "angular"},
+  "scope": {"checked": ["all controllers under Product.MicroAPI"], "not_checked": []},
+  "findings": [
+    {
+      "id": "AUTHZ-001",
+      "title": "Company admin endpoints allow anonymous callers",
+      "severity": "Critical",
+      "confidence": "confirmed",
+      "location": {"file": "Master.MicroAPI/Controllers/CompanyController.cs", "line": 22, "symbol": "CompanyController"},
+      "evidence": "[AllowAnonymous]\npublic class CompanyController : ControllerBase",
+      "impact": "Anyone on the internet can create, edit or delete companies.",
+      "remediation": "Remove [AllowAnonymous] and require the SuperAdmin role.",
+      "references": ["CWE-306", "OWASP-A01:2021"],
+      "tags": ["unauthenticated"]
+    },
+    {
+      "id": "AUTHZ-002",
+      "title": "Order lookup is not filtered by BranchId",
+      "severity": "High",
+      "confidence": "confirmed",
+      "location": {"file": "Product.Managers/OrderManager.cs", "line": 41, "symbol": "GetById"},
+      "evidence": "return _context.Orders.FirstOrDefault(o => o.Id == id);",
+      "impact": "A user of one branch can read another branch's orders by changing the id.",
+      "remediation": "Filter by CompanyId and BranchId in RepositoryBaseManager.",
+      "references": ["CWE-639"],
+      "tags": ["idor"],
+      "root_cause_key": "base-repository:missing-branch-filter"
+    },
+    {
+      "id": "AUTHZ-003",
+      "title": "Health endpoint is anonymous",
+      "severity": "Medium",
+      "confidence": "false-positive",
+      "location": {"file": "WebHost/Program.cs", "line": 30},
+      "evidence": "app.MapHealthChecks(\"/health\").AllowAnonymous();",
+      "impact": "Intentional: the load balancer probe must reach it and it returns no data.",
+      "remediation": "None.",
+      "references": [],
+      "tags": ["not-security"]
+    }
+  ],
+  "summary": {"Critical": 1, "High": 1, "Medium": 0, "Low": 0, "Info": 0}
+}

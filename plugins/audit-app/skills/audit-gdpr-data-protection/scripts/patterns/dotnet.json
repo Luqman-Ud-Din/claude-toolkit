@@ -1,0 +1,98 @@
+[
+  {
+    "id": "GDPR-DOTNET-CONSENT-BOOL-ONLY",
+    "pattern": "public\\s+bool\\??\\s+\\w*(?:Consent|OptIn|Agreed|AcceptedTerms|AcceptedPrivacy|MarketingAllowed|Newsletter)\\w*\\s*\\{\\s*get;",
+    "globs": ["*.cs"],
+    "severity_hint": "Medium",
+    "description": "Consent stored as a bool property; look for a sibling DateTime (ConsentGivenAt) and version (ConsentVersion) - a bare flag cannot prove when and to what the user agreed",
+    "reference": "GDPR-Art.7(1)"
+  },
+  {
+    "id": "GDPR-DOTNET-LOG-PII",
+    "pattern": "_?logger\\.Log(?:Information|Debug|Warning|Error|Critical|Trace)\\s*\\([^;]*\\b(?:Email|Phone|Mobile|FirstName|LastName|FullName|Address|Cnic|Ssn|Iban|DateOfBirth|Dob)\\b",
+    "globs": ["*.cs"],
+    "severity_hint": "High",
+    "description": "Personal data in an ILogger call (data minimisation / storage limitation)",
+    "reference": "GDPR-Art.5(1)(c)"
+  },
+  {
+    "id": "GDPR-DOTNET-LOG-WHOLE-OBJECT",
+    "pattern": "Log(?:Information|Debug|Warning|Error)\\s*\\([^;]*(?:\\{@\\w+\\}|JsonConvert\\.SerializeObject|JsonSerializer\\.Serialize)",
+    "globs": ["*.cs"],
+    "severity_hint": "High",
+    "description": "Whole object destructured/serialised into a log line",
+    "reference": "GDPR-Art.5(1)(c)"
+  },
+  {
+    "id": "GDPR-DOTNET-TELEMETRY-PII",
+    "pattern": "(?:TrackEvent|TrackTrace|TrackException|SentrySdk\\.ConfigureScope|scope\\.User|SetUser)\\s*\\([^;]*\\b(?:Email|Phone|Name|UserName)\\b",
+    "globs": ["*.cs"],
+    "severity_hint": "Medium",
+    "description": "Personal data sent to Application Insights / Sentry (third-party processor, minimisation)",
+    "reference": "GDPR-Art.5(1)(c)"
+  },
+  {
+    "id": "GDPR-DOTNET-SUBJECT-DELETE-ENDPOINT",
+    "pattern": "\\[HttpDelete[^\\]]*\\]|(?:Anonymi[sz]e|Erase|Forget|DeleteAccount|DeleteCustomer|DeleteUser|PurgeUser)\\w*\\s*\\(",
+    "globs": ["*Controller.cs", "*Manager.cs", "*Service.cs"],
+    "severity_hint": "Info",
+    "description": "Deletion/anonymisation entry point - evidence for the erasure row; confirm it covers child rows, files, cache and vendors",
+    "reference": "GDPR-Art.17"
+  },
+  {
+    "id": "GDPR-DOTNET-EXPORT-ENDPOINT",
+    "pattern": "(?:Export|Download|MyData|PersonalData|DataPortability)\\w*\\s*\\(|\\[HttpGet\\s*\\(\\s*\"[^\"]*(?:export|download|me|profile)",
+    "globs": ["*Controller.cs"],
+    "severity_hint": "Info",
+    "description": "Export / self-service data endpoint - evidence for access and portability rows",
+    "reference": "GDPR-Art.15"
+  },
+  {
+    "id": "GDPR-DOTNET-RETENTION-JOB",
+    "pattern": "RecurringJob\\.AddOrUpdate|BackgroundService|IHostedService|PeriodicTimer",
+    "globs": ["*.cs"],
+    "severity_hint": "Info",
+    "description": "Scheduled job registration - check whether any job purges or anonymises personal data past its retention period",
+    "reference": "GDPR-Art.5(1)(e)"
+  },
+  {
+    "id": "GDPR-DOTNET-SOFT-DELETE-ONLY",
+    "pattern": "IsDeleted\\s*=\\s*true",
+    "globs": ["*.cs"],
+    "severity_hint": "Medium",
+    "description": "Soft delete flag set - personal data remains in the table after an erasure request unless a purge job follows",
+    "reference": "GDPR-Art.17"
+  },
+  {
+    "id": "GDPR-DOTNET-CONNECTION-UNENCRYPTED",
+    "pattern": "Encrypt\\s*=\\s*False|TrustServerCertificate\\s*=\\s*True",
+    "globs": ["appsettings*.json", "*.config", "*.cs"],
+    "severity_hint": "Medium",
+    "description": "SQL connection without TLS or without certificate validation",
+    "reference": "GDPR-Art.32"
+  },
+  {
+    "id": "GDPR-DOTNET-NO-HTTPS-REDIRECT",
+    "pattern": "app\\.UseHttpsRedirection|app\\.UseHsts",
+    "globs": ["Program.cs", "Startup.cs"],
+    "severity_hint": "Info",
+    "description": "HTTPS redirection / HSTS present - evidence for encryption in transit (absence in Program.cs is the finding)",
+    "reference": "GDPR-Art.32"
+  },
+  {
+    "id": "GDPR-DOTNET-AUDIT-TRAIL",
+    "pattern": "\\b(?:AuditLog|AuditEntry|IsTemporal|ToTable\\s*\\([^)]*t\\.IsTemporal|ChangeTracker\\.Entries|Audit\\.EntityFramework)\\b",
+    "globs": ["*.cs"],
+    "severity_hint": "Info",
+    "description": "Audit trail mechanism - evidence for access logging of personal data",
+    "reference": "GDPR-Art.30"
+  },
+  {
+    "id": "GDPR-DOTNET-PII-IN-QUERYSTRING",
+    "pattern": "\\[FromQuery\\][^,)]*\\b(?:email|phone|mobile|cnic|ssn)\\b|\\[HttpGet\\s*\\(\\s*\"[^\"]*\\{(?:email|phone|mobile|cnic)\\}",
+    "globs": ["*.cs"],
+    "severity_hint": "Medium",
+    "description": "Personal data in URL - ends in access logs, proxies, browser history",
+    "reference": "GDPR-Art.5(1)(c)"
+  }
+]

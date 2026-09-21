@@ -1,0 +1,22 @@
+{
+  "skill": "audit-authz-and-access-control",
+  "generated_at": "2026-09-10T09:00:00Z",
+  "target": {"root": ".", "commit": "abc123"},
+  "stack": {"primary_backend": "dotnet", "primary_frontend": "angular"},
+  "scope": {"checked": ["all controllers under Api/Controllers"], "not_checked": []},
+  "findings": [
+    {
+      "id": "AUTHZ-001",
+      "title": "Order lookup has no ownership check",
+      "severity": "High",
+      "confidence": "confirmed",
+      "location": {"file": "Api/Controllers/OrdersController.cs", "line": 41, "symbol": "GetOrder"},
+      "evidence": "var order = await _db.Orders.FindAsync(id); // id from route, no CompanyId/UserId filter",
+      "impact": "Any authenticated customer can read every other customer's orders by changing the id in the URL.",
+      "remediation": "Filter by the caller's identity and return 404 when the pair does not match.",
+      "references": [],
+      "tags": ["idor"]
+    }
+  ],
+  "summary": {"Critical": 0, "High": 1, "Medium": 0, "Low": 0, "Info": 0}
+}

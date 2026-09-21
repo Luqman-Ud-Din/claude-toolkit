@@ -1,0 +1,106 @@
+[
+  {
+    "id": "SPEC-EXPOSED",
+    "pattern": "SpectacularSwaggerView|SpectacularAPIView|SpectacularRedocView|get_schema_view\\(|docs_url\\s*=\\s*['\"]|openapi_url\\s*=\\s*['\"]|Swagger\\(app|flasgger",
+    "globs": ["*.py"],
+    "severity_hint": "Medium",
+    "description": "Spec/docs view registered; confirm SERVE_PERMISSIONS / docs_url=None in the production settings",
+    "reference": "OWASP-API8:2023"
+  },
+  {
+    "id": "ENTITY-RETURNED",
+    "pattern": "fields\\s*=\\s*['\"]__all__['\"]|depth\\s*=\\s*[1-9]|model_to_dict\\(|serializers\\.serialize\\(|jsonify\\(\\s*\\w+\\.__dict__|def\\s+\\w+\\([^)]*\\)\\s*(->\\s*\\w+)?\\s*:\\s*$(?![\\s\\S]{0,40}response_model)",
+    "globs": ["serializers.py", "views.py", "api.py", "routers.py", "*_views.py", "*_api.py"],
+    "severity_hint": "High",
+    "description": "Serializer exposes all model fields / relations, or a raw model is serialised; check for password, is_staff, api_key, tenant fields",
+    "reference": "CWE-200"
+  },
+  {
+    "id": "SENSITIVE-FIELD-SERIALISABLE",
+    "pattern": "(password|password_hash|salt|refresh_token|access_token|api_key|secret_key|otp|pin)\\s*=\\s*(models\\.|serializers\\.|Column\\()",
+    "globs": ["*.py"],
+    "severity_hint": "High",
+    "description": "Credential-like field; confirm write_only=True / exclude / response_model keeps it out of responses",
+    "reference": "CWE-200"
+  },
+  {
+    "id": "UNPAGINATED-LIST",
+    "pattern": "pagination_class\\s*=\\s*None|Response\\(\\s*\\w+Serializer\\(\\s*\\w+\\.objects\\.(all|filter)\\([^)]*\\)\\s*,\\s*many\\s*=\\s*True|return\\s+\\w+\\.objects\\.all\\(\\)|limit:\\s*int\\s*=\\s*\\d+\\s*[,)]",
+    "globs": ["*.py"],
+    "severity_hint": "Medium",
+    "description": "List without pagination or an uncapped limit; confirm DEFAULT_PAGINATION_CLASS / max_page_size / Query(le=...)",
+    "reference": "CWE-770"
+  },
+  {
+    "id": "PAGINATION-PRESENT",
+    "pattern": "DEFAULT_PAGINATION_CLASS|PageNumberPagination|LimitOffsetPagination|CursorPagination|max_page_size|paginate_queryset|Query\\([^)]*le\\s*=",
+    "globs": ["*.py"],
+    "severity_hint": "Info",
+    "description": "Pagination marker present; record in the endpoint table",
+    "reference": "CWE-770"
+  },
+  {
+    "id": "ADHOC-ERROR-SHAPE",
+    "pattern": "Response\\(\\s*\\{\\s*['\"](error|message|msg|success|err)['\"]|return\\s+\\{\\s*['\"](error|message|msg)['\"][^}]*\\}\\s*,\\s*[45]\\d\\d|jsonify\\(\\s*\\{\\s*['\"](error|message|msg)['\"]|HTTPException\\([^)]*detail\\s*=\\s*\\{",
+    "globs": ["*.py"],
+    "severity_hint": "Low",
+    "description": "Ad-hoc error body; collect shapes per view module and compare with EXCEPTION_HANDLER / exception_handler output",
+    "reference": "CWE-209"
+  },
+  {
+    "id": "GLOBAL-ERROR-HANDLER",
+    "pattern": "EXCEPTION_HANDLER|@app\\.exception_handler\\(|@errorhandler\\(|problem\\+json",
+    "globs": ["*.py"],
+    "severity_hint": "Info",
+    "description": "Global error handler marker present; record as the expected shape",
+    "reference": "CWE-209"
+  },
+  {
+    "id": "DEBUG-TRUE",
+    "pattern": "^\\s*DEBUG\\s*=\\s*True|debug\\s*=\\s*True",
+    "globs": ["settings*.py", "*.py"],
+    "severity_hint": "Medium",
+    "description": "DEBUG on; tracebacks in error responses if this reaches production",
+    "reference": "CWE-209"
+  },
+  {
+    "id": "UNVALIDATED-BODY",
+    "pattern": "request\\.data\\[|request\\.data\\.get\\(|request\\.POST\\[|request\\.get_json\\(\\)|is_valid\\(\\)\\s*$",
+    "globs": ["*.py"],
+    "severity_hint": "Medium",
+    "description": "Body read directly or is_valid() without raise_exception; confirm a serializer/Pydantic model validates it",
+    "reference": "CWE-20"
+  },
+  {
+    "id": "VALIDATION-PRESENT",
+    "pattern": "is_valid\\(\\s*raise_exception\\s*=\\s*True|serializers\\.\\w+Field\\([^)]*(max_length|min_value|max_value|required)|Field\\([^)]*(ge|le|gt|lt|max_length|min_length)\\s*=|extra\\s*=\\s*['\"]forbid['\"]|read_only_fields",
+    "globs": ["*.py"],
+    "severity_hint": "Info",
+    "description": "Validation marker present; record in the endpoint table",
+    "reference": "CWE-20"
+  },
+  {
+    "id": "CREATE-RETURNS-200",
+    "pattern": "def\\s+(create|post)\\([\\s\\S]{0,300}Response\\([^)]*\\)\\s*$(?![^\\n]*status)",
+    "globs": ["views.py", "*_views.py", "api.py"],
+    "severity_hint": "Info",
+    "description": "create/post returning Response without status=201; line-based, confirm by opening the view",
+    "reference": "ASVS-13.2"
+  },
+  {
+    "id": "NON-ISO-DATE-OUT",
+    "pattern": "DATETIME_FORMAT\\s*=\\s*['\"](?!iso-8601)|DATE_FORMAT\\s*=\\s*['\"](?!iso-8601)|strftime\\(\\s*['\"]%(d|m)[/.-]",
+    "globs": ["*.py"],
+    "severity_hint": "Low",
+    "description": "Non-ISO date serialisation; hand the zone question to audit-datetime-and-timezone",
+    "reference": "ASVS-13.1"
+  },
+  {
+    "id": "UNVERSIONED-ROUTE",
+    "pattern": "path\\(\\s*['\"]api/(?!v\\d)|APIRouter\\(\\s*prefix\\s*=\\s*['\"]/api(?!/v\\d)|url_prefix\\s*=\\s*['\"]/api(?!/v\\d)",
+    "globs": ["*.py"],
+    "severity_hint": "Low",
+    "description": "Route mounted without a version segment; compare with DEFAULT_VERSIONING_CLASS / other mounts",
+    "reference": "ASVS-13.1"
+  }
+]

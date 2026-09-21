@@ -1,0 +1,48 @@
+{
+  "skill_name": "audit-db-schema",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Review the database schema of the repo in evals/files/sample-repo before we go live. We use EF Core on SQL Server plus a few hand-written SQL scripts under db/. Tell me what is wrong with the tables and indexes and whether our migrations can be rolled back.",
+      "expected_output": "A report with a table-by-table checklist covering Products, Orders, OrderLines, Users, Customers, Payments, AuditLogs and shipments; findings (DB- prefix) for: AuditLogs has no primary key (High), Payments.Amount and OrderLine.UnitPrice/LineTotal use float/double for money (Critical), Payments.OrderId and OrderLine.ProductId are unindexed FK/FK-like columns (High, one finding with both locations or two findings), migration AddCustomerNotes has an empty Down() (High), plus lower findings for nvarchar(max)/naive DateTime and the hard Remove() in OrderManager despite IsDeleted. Products, Users, Customers and AddDiscount are not flagged. Recommended-index table cites OrderManager.LinesForProduct for OrderLines.ProductId and the FK join for Payments.OrderId. Migration report lists InitialCreate (initial), AddCustomerNotes (no), AddDiscount (yes), knex 20260301_create_shipments (no).",
+      "files": ["evals/files/sample-repo"],
+      "expectations": [
+        "Output contains a finding about AuditLogs lacking a primary key",
+        "Output contains a Critical finding about money stored as float/double naming Payments.Amount or OrderLine.UnitPrice",
+        "Output contains a finding about an unindexed foreign key naming Payments.OrderId or OrderLine.ProductId",
+        "Output contains a finding that migration AddCustomerNotes has an empty Down() / cannot be rolled back",
+        "Output does not flag Products, Users, Customers, or the AddDiscount migration as defects",
+        "Report includes a table-by-table checklist, a recommended indexes table with justifying queries, and a migration reversibility table",
+        "Finding ids start with DB- and findings.json validates with ../audit-finding-writer/scripts/findings.py validate",
+        "Report lists what was not checked (for example live index usage statistics)"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Our sales list page is slow and someone said it's a missing index. Can you look at the schema in evals/files/sample-repo and tell me which indexes we should add and why?",
+      "expected_output": "Runs schema_checklist.py, produces a recommended-index list: OrderLines (ProductId) or (CompanyId, ProductId) justified by OrderManager.LinesForProduct; Payments (OrderId) justified by the FK join; notes that Orders already has (CompanyId, BranchId, CreatedAt) covering GetPaginationList so the slowness may be elsewhere; delegates query-plan measurement to audit-performance-and-scalability; still records the other schema defects it noticed as findings or as items for the full audit.",
+      "files": ["evals/files/sample-repo"],
+      "expectations": [
+        "Recommends an index on OrderLines.ProductId citing OrderManager.LinesForProduct",
+        "Recommends an index on Payments.OrderId citing the foreign key join",
+        "States that Orders (CompanyId, BranchId, CreatedAt) already covers GetPaginationList",
+        "Mentions measuring with an execution plan or delegating to audit-performance-and-scalability",
+        "Does not recommend an index on a soft-delete flag alone"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Check whether the migrations in evals/files/sample-repo are reversible and whether any would lose data.",
+      "expected_output": "Migration reversibility report: InitialCreate reversible (initial), AddCustomerNotes irreversible (empty Down, contains raw SQL), AddDiscount reversible, knex create_shipments irreversible (no down). No data-loss steps beyond the Down() of InitialCreate/AddDiscount, which is expected. Seed.sql contains no real PII. One High finding for AddCustomerNotes and one for the Knex migration (or one finding with two locations), with remediation showing the Down()/down body to add.",
+      "files": ["evals/files/sample-repo"],
+      "expectations": [
+        "Report table lists all four migrations with a reversible yes/no column",
+        "AddCustomerNotes is marked irreversible and noted as containing raw SQL",
+        "The Knex shipments migration is marked irreversible because down() is missing",
+        "AddDiscount and InitialCreate are not reported as defects",
+        "seed.sql is not flagged for PII",
+        "Remediation includes the concrete Down() body (DropColumn Notes) for AddCustomerNotes"
+      ]
+    }
+  ]
+}
