@@ -82,7 +82,7 @@ Materialize fixtures with `python scripts/materialize_fixtures.py plugins/audit-
 
 Pre-production audit of a conventional application: audit-application orchestrator plus 30 topic audits (security, correctness, performance, frontend, readiness, compliance).
 
-Version: `0.1.0` Â· Skills: 31
+Version: `0.1.0` · Skills: 31
 
 | Skill | Description |
 |---|---|
@@ -122,7 +122,7 @@ Version: `0.1.0` Â· Skills: 31
 
 Shared audit contract: finding schema and severity rubric (findings.py), rollup and go/no-go verdict, stack detection, repo walker and grep runner, sensitive-data catalog, git-history helper, endpoint inventory, OWASP/ASVS mapper, report generator. Required by audit-app and audit-llm.
 
-Version: `0.1.0` Â· Skills: 9
+Version: `0.1.0` · Skills: 9
 
 | Skill | Description |
 |---|---|
@@ -140,7 +140,7 @@ Version: `0.1.0` Â· Skills: 9
 
 Explore, audit and propose phases for LLM/agentic applications, with the shared LLM building blocks (stack detection, payload library, probe runner, trust classification, finding areas).
 
-Version: `0.1.0` Â· Skills: 32
+Version: `0.1.0` · Skills: 32
 
 | Skill | Description |
 |---|---|
@@ -181,7 +181,7 @@ Version: `0.1.0` Â· Skills: 32
 
 Read-only documentation of a conventional application (architecture, schema, Business-Logic Document) and proposals cross-checked against it.
 
-Version: `0.1.0` Â· Skills: 7
+Version: `0.1.0` · Skills: 7
 
 | Skill | Description |
 |---|---|

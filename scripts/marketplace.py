@@ -114,7 +114,7 @@ def readme(plugins, root):
     ]
     for folder, manifest, skills in sorted(plugins, key=lambda row: row[1]["name"]):
         name = manifest["name"]
-        lines.extend([f"### {name}", "", manifest.get("description", ""), "", f"Version: `{manifest.get('version', '')}` Â· Skills: {len(skills)}", "", "| Skill | Description |", "|---|---|"])
+        lines.extend([f"### {name}", "", manifest.get("description", ""), "", f"Version: `{manifest.get('version', '')}` · Skills: {len(skills)}", "", "| Skill | Description |", "|---|---|"])
         for path, fields in skills:
             desc = fields["description"].replace("|", "&#124;").replace("\n", " ")
             rel = path.relative_to(root).as_posix()
