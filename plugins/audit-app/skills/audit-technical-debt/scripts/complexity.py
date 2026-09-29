@@ -377,9 +377,6 @@ def analyze_repo(root, excludes=()):
     return [r for r in (analyze_file(full, rel) for full, rel in iter_code_files(root, excludes)) if r]
 
 
-def function_index(files):
-    return {f["file"]: f["functions"] for f in files}
-
 
 def function_at(index, rel, line):
     """Innermost function in index[rel] containing line, or None."""

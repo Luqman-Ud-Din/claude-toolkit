@@ -39,7 +39,6 @@ confirm before writing it up. Read-only: nothing in the audited repo is
 modified; output goes only where --out/--md/--evidence-dir point.
 """
 import argparse
-import fnmatch
 import json
 import os
 import re

@@ -24,7 +24,6 @@ Output: JSON with `checks` (raw facts, each with file/line) and `scorecard`
 candidate for the manual pass, not a final verdict.
 """
 import argparse
-import glob
 import importlib.util
 import json
 import os
@@ -130,13 +129,6 @@ def check_tsconfigs(root, checks):
 
 
 # ---------- angular.json / project.json ----------
-def parse_size(s):
-    m = re.match(r"^\s*([\d.]+)\s*(kb|mb|b)?\s*$", str(s), re.I)
-    if not m:
-        return None
-    n = float(m.group(1)); u = (m.group(2) or "b").lower()
-    return n * {"b": 1, "kb": 1000, "mb": 1_000_000}[u]
-
 
 def check_angular(root, checks):
     out = []

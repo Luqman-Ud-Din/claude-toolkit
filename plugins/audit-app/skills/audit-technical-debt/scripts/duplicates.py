@@ -22,7 +22,6 @@ Test files are included (duplicated test setup is debt too) but flagged. Generat
 vendored paths are skipped as in complexity.py. Read-only against the audited repo.
 """
 import argparse
-import fnmatch
 import json
 import os
 import re

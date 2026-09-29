@@ -29,7 +29,6 @@ and sets stale_table=true when it is older than --stale-table-days relative to t
 date. Refresh it from endoflife.date and vendor lifecycle pages at least quarterly.
 """
 import argparse
-import glob
 import importlib.util
 import json
 import os
