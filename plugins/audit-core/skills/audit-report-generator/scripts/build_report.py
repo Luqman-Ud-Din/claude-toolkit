@@ -69,8 +69,7 @@ except (FileNotFoundError, AttributeError, ImportError):
     sys.exit("audit-findings-rollup must be reachable from this skill (audit-core plugin or sibling layout; expected " + _ROLLUP + ")")
 
 SKILL = "audit-report-generator"
-SEVERITIES = ["Critical", "High", "Medium", "Low", "Info"]
-ORDER = {s: i for i, s in enumerate(SEVERITIES)}
+SEVERITIES = fr.SEVERITIES
 WORDS_PER_PAGE = 450
 MAPPER = "audit-owasp-asvs-mapper"
 GDPR = "audit-gdpr-data-protection"
