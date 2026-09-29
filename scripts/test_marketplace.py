@@ -21,7 +21,8 @@ class PackagingTests(unittest.TestCase):
         self.assertEqual(readme(plugins, ROOT), readme(plugins, ROOT))
 
     def test_rejections(self):
-        for defect in ('missing-skill', 'wrong-name', 'no-description', 'duplicate', 'missing-plugin'):
+        for defect in ('missing-skill', 'wrong-name', 'no-description', 'duplicate', 'missing-plugin',
+                       'version-mismatch', 'version-missing'):
             with self.subTest(defect=defect), tempfile.TemporaryDirectory() as tmp:
                 root = Path(tmp)
                 (root / '.claude-plugin').mkdir()
@@ -29,11 +30,11 @@ class PackagingTests(unittest.TestCase):
                 for name in ('one', 'two'):
                     folder = root / 'plugins' / name
                     (folder / '.claude-plugin').mkdir(parents=True)
-                    (folder / '.claude-plugin/plugin.json').write_text(json.dumps({'name': name}))
+                    (folder / '.claude-plugin/plugin.json').write_text(json.dumps({'name': name, 'version': '1.0.0'}))
                     skill = folder / 'skills' / name
                     skill.mkdir(parents=True)
                     (skill / 'SKILL.md').write_text(f'---\nname: {name}\ndescription: Use when testing.\n---\n')
-                    entries.append({'name': name, 'source': './plugins/' + name})
+                    entries.append({'name': name, 'source': './plugins/' + name, 'version': '1.0.0'})
                 path = root / 'plugins/one/skills/one/SKILL.md'
                 if defect == 'missing-skill': path.unlink()
                 if defect == 'wrong-name': path.write_text('---\nname: wrong\ndescription: Fine\n---\n')
@@ -43,6 +44,8 @@ class PackagingTests(unittest.TestCase):
                     other.rename(other.with_name('one'))
                     (other.with_name('one') / 'SKILL.md').write_text('---\nname: one\ndescription: Fine\n---\n')
                 if defect == 'missing-plugin': entries.append({'name': 'absent', 'source': './plugins/absent'})
+                if defect == 'version-mismatch': entries[0]['version'] = '2.0.0'
+                if defect == 'version-missing': del entries[0]['version']
                 (root / '.claude-plugin/marketplace.json').write_text(json.dumps({'plugins': entries}))
                 self.assertTrue(inventory(root)[1])
                 result = subprocess.run([sys.executable, str(ROOT / 'scripts/marketplace.py'), 'validate', '--root', str(root)], capture_output=True)

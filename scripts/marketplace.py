@@ -53,6 +53,13 @@ def inventory(root):
             manifest = json.loads((folder / ".claude-plugin/plugin.json").read_text(encoding="utf-8"))
             if manifest.get("name") != name:
                 errors.append("plugin name mismatch: " + source)
+            # The marketplace listing and the plugin manifest both carry a version;
+            # a bump in one and not the other publishes a stale version silently.
+            listed_version, manifest_version = entry.get("version"), manifest.get("version")
+            if not listed_version or not manifest_version:
+                errors.append("plugin missing version in marketplace.json or plugin.json: " + name)
+            elif listed_version != manifest_version:
+                errors.append("plugin version mismatch between marketplace.json and plugin.json: " + name)
             plugins.append((folder, manifest, []))
         except (OSError, ValueError, KeyError, TypeError) as exc:
             errors.append("plugin entry: " + str(exc))
