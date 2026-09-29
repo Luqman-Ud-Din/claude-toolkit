@@ -66,7 +66,7 @@ except (FileNotFoundError, AttributeError, ImportError):
 
 SKILL = "audit-owasp-asvs-mapper"
 PREFIX = "MAP"
-SEVERITIES = ["Critical", "High", "Medium", "Low", "Info"]
+SEVERITIES = fr.SEVERITIES
 ASVS_RE = re.compile(r"ASVS-?\s*(\d+\.\d+(?:\.\d+)?)", re.IGNORECASE)
 CWE_RE = re.compile(r"CWE-?\s*(\d+)", re.IGNORECASE)
 OWASP_RE = re.compile(r"OWASP-?\s*(A\d{2})", re.IGNORECASE)

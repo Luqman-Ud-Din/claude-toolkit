@@ -157,6 +157,11 @@ ADVISORY = [
     (r"if:\s*always\(\)", "step runs with if: always()"),
 ]
 
+# Compiled once: these run against every line of every CI file, so recompiling per file
+# (129 patterns) dominated the scan.
+GATES_RX = {gate: [(pat, re.compile(pat, re.I | re.M)) for pat in pats] for gate, pats in GATES.items()}
+ADVISORY_RX = [(re.compile(pat, re.I), label) for pat, label in ADVISORY]
+
 TRIGGERS = [
     ("pull_request", r"\bpull_request(_target)?\b|^\s*pr\s*:|changeRequest\s*\(|pull-requests\s*:"),
     ("merge_request", r"merge_request_event|\bmerge_requests?\b"),
@@ -211,10 +216,9 @@ def analyse_file(system, rel, text):
             steps.append({"line": n, "text": "uses: " + m.group(1)})
     gates = {}
     commented_out = []
-    for gate, pats in GATES.items():
+    for gate, pats in GATES_RX.items():
         hits = []
-        for pat in pats:
-            rx = re.compile(pat, re.I | re.M)
+        for pat, rx in pats:
             for n, line in enumerate(lines, 1):
                 if not rx.search(line):
                     continue
@@ -226,8 +230,7 @@ def analyse_file(system, rel, text):
                 break
         gates[gate] = {"present": bool(hits), "hits": hits[:8]}
     advisory = []
-    for pat, label in ADVISORY:
-        rx = re.compile(pat, re.I)
+    for rx, label in ADVISORY_RX:
         for n, line in enumerate(lines, 1):
             if rx.search(line) and not is_comment(line):
                 advisory.append({"line": n, "issue": label, "snippet": line.strip()[:200]})

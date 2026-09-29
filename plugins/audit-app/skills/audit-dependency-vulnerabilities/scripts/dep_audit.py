@@ -40,7 +40,6 @@ keep going; look at "tools" and "not_checked" in the JSON for what actually ran.
 """
 import argparse
 import datetime as dt
-import glob
 import importlib.util
 import json
 import os

@@ -15,7 +15,6 @@ Usage (module):
 Records only; a client guard is recorded as a client guard, and a job's identity
 context is recorded as seen or not seen. Read-only.
 """
-import os
 import re
 
 import ep_common as c
@@ -318,7 +317,3 @@ def scan_jobs(ctx, stacks, out):
             out.append(_job_record(ctx, "containers", "k8s-cronjob", rel, text, m.start(), nm.group(1) if nm else None, "kind: CronJob",
                                    sm.group(1).strip() if sm else None, None, None, None, None, 1))
 
-
-def job_window_note():
-    return os.linesep.join(["Job identity context is searched in the resolved target method body, or in the text window",
-                            "after the registration when the target cannot be resolved."])

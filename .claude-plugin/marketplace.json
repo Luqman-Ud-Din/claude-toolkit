@@ -9,14 +9,14 @@
       "name": "audit-core",
       "source": "./plugins/audit-core",
       "description": "Shared audit contract every audit plugin depends on: finding schema and severity rubric (findings.py), cross-skill rollup and go/no-go verdict, stack detection, repo walker and grep runner, sensitive-data catalog, git-history helper, endpoint inventory, OWASP/ASVS mapper and the final report generator.",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "category": "audit"
     },
     {
       "name": "audit-app",
       "source": "./plugins/audit-app",
       "description": "Pre-production audit of a conventional web/service application: the audit-application orchestrator plus 30 topic audits covering security, correctness, performance, frontend, readiness and compliance.",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "category": "audit",
       "dependencies": ["audit-core"]
     },
@@ -24,7 +24,7 @@
       "name": "audit-llm",
       "source": "./plugins/audit-llm",
       "description": "Explore, audit and propose phases for LLM/agentic applications: prompt injection, jailbreaks, guardrails, excessive agency, resource limits, data isolation, supply chain, output quality, evals and observability, with the shared LLM building blocks (stack detection, payloads, probe runner, trust classification).",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "category": "audit",
       "dependencies": ["audit-core"]
     },

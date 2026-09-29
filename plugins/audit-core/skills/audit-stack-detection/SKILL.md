@@ -5,8 +5,8 @@ description: Detects which technology stacks a repository uses - .NET/C#, Java/S
 
 ## Plugin invocation
 
-When invoking a skill from this bundle, use `audit-core:<skill-name>`. Shared audit
-utilities use `audit-core:<skill-name>`. Keep bare skill IDs in JSON, status files,
+When invoking a skill from this bundle, use `audit-core:<skill-name>`. This bundle
+holds the shared audit utilities. Keep bare skill IDs in JSON, status files,
 and output paths. Resolve `scripts/` and `references/` relative to this SKILL.md,
 not the audited repository; quote script paths when running commands.
 

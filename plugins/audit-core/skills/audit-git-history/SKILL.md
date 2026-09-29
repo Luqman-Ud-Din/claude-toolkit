@@ -5,8 +5,8 @@ description: Answers factual questions about a repository's git history for audi
 
 ## Plugin invocation
 
-When invoking a skill from this bundle, use `audit-core:<skill-name>`. Shared audit
-utilities use `audit-core:<skill-name>`. Keep bare skill IDs in JSON, status files,
+When invoking a skill from this bundle, use `audit-core:<skill-name>`. This bundle
+holds the shared audit utilities. Keep bare skill IDs in JSON, status files,
 and output paths. Resolve `scripts/` and `references/` relative to this SKILL.md,
 not the audited repository; quote script paths when running commands.
 

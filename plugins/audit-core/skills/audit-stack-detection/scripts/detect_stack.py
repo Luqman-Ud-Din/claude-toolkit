@@ -33,8 +33,11 @@ import re
 import sys
 from datetime import datetime, timezone
 
+# Kept in step with audit-code-scan's repo_walk.SKIP_DIRS, so the stack is detected from the
+# same files the audits will actually read; "packages" is extra here (NuGet restore output).
 SKIP_DIRS = {".git", "node_modules", "bin", "obj", "dist", "build", "target", ".venv", "venv",
-             "__pycache__", ".idea", ".vs", "packages", "coverage", ".angular", ".next", "audit"}
+             "__pycache__", ".idea", ".vs", "packages", "coverage", ".angular", ".next",
+             ".nuxt", ".output", ".gradle", ".tox", ".terraform", "audit"}
 
 BACKEND_IDS = {"dotnet", "java-spring", "node-express", "python-django"}
 FRONTEND_IDS = {"angular", "react", "vue"}
