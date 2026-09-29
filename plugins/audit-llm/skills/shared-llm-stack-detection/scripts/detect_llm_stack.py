@@ -11,13 +11,20 @@ manifests don't capture (e.g. Python `import` lines, C# `using` lines).
 """
 import json
 import os
-import re
 import sys
 from datetime import datetime, timezone
 
 MANIFEST_NAMES = {
     "package.json", "requirements.txt", "pyproject.toml", "Pipfile",
-    "*.csproj", "pom.xml", "build.gradle", "build.gradle.kts", "go.mod",
+    "pom.xml", "build.gradle", "build.gradle.kts", "go.mod",
+}
+
+# Kept in step with audit-code-scan's repo_walk.SKIP_DIRS: without "target"/"audit" this
+# scanned build output and the audit workspace's own results.
+SKIP_DIRS = {
+    ".git", "node_modules", "bin", "obj", "dist", "build", "target", ".venv", "venv",
+    "__pycache__", ".idea", ".vs", "coverage", ".angular", ".next",
+    ".nuxt", ".output", ".gradle", ".tox", ".terraform", "audit",
 }
 
 # category -> id -> list of marker substrings to look for in manifest text
@@ -68,12 +75,9 @@ AGENTIC_HINTS = {"langgraph", "autogen", "crewai", "openai-agents", "langchain4j
 
 def iter_manifest_files(root):
     for dirpath, dirnames, filenames in os.walk(root):
-        dirnames[:] = [d for d in dirnames if d not in {
-            "node_modules", ".git", "bin", "obj", "dist", "build", "__pycache__", ".venv", "venv",
-        }]
+        dirnames[:] = [d for d in dirnames if d not in SKIP_DIRS]
         for name in filenames:
-            if name in {"package.json", "requirements.txt", "pyproject.toml", "Pipfile",
-                        "pom.xml", "build.gradle", "build.gradle.kts", "go.mod"} or name.endswith(".csproj"):
+            if name in MANIFEST_NAMES or name.endswith(".csproj"):
                 yield os.path.join(dirpath, name)
 
 
