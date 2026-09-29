@@ -61,6 +61,19 @@ class PackagingTests(unittest.TestCase):
                     result = subprocess.run([sys.executable, str(path), '--help'], env=env, capture_output=True, timeout=30)
                     self.assertEqual(result.returncode, 0, result.stderr.decode(errors='replace'))
 
+    def test_expected_skills_matches_profiles(self):
+        """aggregate_findings' roster decides which audits are reported as 'did not run',
+        so a skill added to profiles.json but not there silently drops a go/no-go caveat."""
+        profiles = json.loads((ROOT / 'plugins/audit-app/skills/audit-application/references/profiles.json').read_text(encoding='utf-8'))
+        owner = 'audit-production-readiness-checklist'
+        derived = {n for n, m in profiles['skills'].items() if n != owner and not m.get('findings_optional')}
+        source = (ROOT / f'plugins/audit-app/skills/{owner}/scripts/aggregate_findings.py').read_text(encoding='utf-8')
+        tree = ast.parse(source)
+        listed = next(set(ast.literal_eval(n.value)) for n in tree.body
+                      if isinstance(n, ast.Assign)
+                      and any(getattr(t, 'id', None) == 'EXPECTED_SKILLS' for t in n.targets))
+        self.assertEqual(listed, derived)
+
     def test_isolated_hook_and_loader(self):
         bash = shutil.which('bash')
         self.assertIsNotNone(bash)
