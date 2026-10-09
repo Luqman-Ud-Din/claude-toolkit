@@ -1,0 +1,2 @@
+- Bidding as: solo freelancer, 6 years Shopify/analytics work
+- Deadline: post closes end of this week

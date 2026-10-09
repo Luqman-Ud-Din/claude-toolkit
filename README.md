@@ -13,9 +13,10 @@ Requires a current Claude Code version with plugin dependencies and exec-form ho
 /plugin install audit-app@claude-toolkit --scope project
 /plugin install audit-llm@claude-toolkit --scope project
 /plugin install explore-app@claude-toolkit --scope project
+/plugin install evaluator-kit@claude-toolkit --scope project
 ```
 
-Choose only the install lines you need. `audit-app` and `audit-llm` depend on `audit-core`, which Claude Code installs automatically. `explore-app` is independent. For a full-stack LLM app, install both audit bundles.
+Choose only the install lines you need. `audit-app` and `audit-llm` depend on `audit-core`, which Claude Code installs automatically. `explore-app` and `evaluator-kit` are independent. For a full-stack LLM app, install both audit bundles.
 
 Restart Claude Code after installing or updating so audit-core's SessionStart hook exports `AUDIT_CORE_ROOT` for subsequent **Bash** commands. Hooks must be enabled; review them in `/hooks`. No manual environment setup is needed for normal Claude Code Bash use. PowerShell or standalone terminal invocations must set `AUDIT_CORE_ROOT` to the installed core plugin directory explicitly. There is no cache search fallback.
 
@@ -23,6 +24,8 @@ Restart Claude Code after installing or updating so audit-core's SessionStart ho
 /audit-app:audit-application
 /audit-llm:audit-llm-application
 /explore-app:explore-application
+/evaluator-kit:expectations-analysis
+/evaluator-kit:submission-audit
 ```
 
 For local development, load both dependency and consumer:
@@ -176,6 +179,17 @@ Version: `0.1.1` · Skills: 32
 | [shared-llm-probe-runner](plugins/audit-llm/skills/shared-llm-probe-runner/SKILL.md) | Safe procedure for sending test inputs to a running LLM/agentic application and recording the responses - confirms authorization and scope before sending anything, keeps requests within an explicit target and rate limit, and captures every request/response pair as evidence. This is a shared building block, not run standalone - explore-llm-behavior, audit-llm-prompt-injection, audit-llm-jailbreak-resistance, audit-llm-guardrails, and audit-llm-intent-grounding-and-adaptability all send test inputs through this procedure instead of hand-rolling their own HTTP calls. Use it whenever a skill is about to send test prompts, payloads, or probe requests to a live application, and refuse to send anything until this skill's authorization gate has been satisfied. |
 | [shared-llm-stack-detection](plugins/audit-llm/skills/shared-llm-stack-detection/SKILL.md) | Detects LLM SDKs (openai, anthropic, google-genai, mistralai, cohere, ollama, bedrock), agent frameworks (langchain, langgraph, llama-index, autogen, crewai, semantic-kernel, pydantic-ai, OpenAI Agents SDK, langchain4j, Spring AI), vector stores (pinecone, weaviate, chroma, qdrant, pgvector, milvus, faiss), and guardrail libraries (NeMo Guardrails, Guardrails AI, LLM Guard, Llama Guard / Prompt Guard) in a codebase, and writes the shared audit/llm-stack.json that every llm-audit-* skill reads so the LLM stack is detected once. This is a shared building block, not run standalone - it backs explore-llm-application, audit-llm-application, audit-llm-supply-chain, and any llm-audit-* skill invoked without prior explore output. Use it whenever another skill needs to know which LLM SDK, agent framework, vector store, or guardrail library a repo uses, or whenever the user asks what LLM stack an app is built on - even when the user does not name this skill. |
 | [shared-llm-trust-classification](plugins/audit-llm/skills/shared-llm-trust-classification/SKILL.md) | Rules for classifying every source that reaches an LLM's context window as trusted, semi-trusted, or untrusted - system/developer instructions, authenticated end-user input, retrieved documents, web pages, tool and API outputs, other agents' messages, memory, and file/image uploads. This is a shared building block, not run standalone - explore-llm-data-flow, audit-llm-prompt-injection, audit-llm-data-privacy-and-isolation, and audit-llm-intent-grounding-and-adaptability all classify sources the same way by calling this skill rather than inventing their own trust tiers. Use it whenever a skill needs to decide how much a piece of context should be allowed to influence model behavior, or whenever the user asks whether some input source is trusted. |
+
+### evaluator-kit
+
+Evaluator-side workflow for any brief, message or chat: expectations-analysis decodes the input into a seven-section Evaluator Lens (requirements with impact and severity, evaluator intent, AI receptiveness, weighted matrix, deal breakers and makers, submission package), and submission-audit grades the submission against it with a ship / fix-first / not-ready verdict.
+
+Version: `0.1.0` · Skills: 2
+
+| Skill | Description |
+|---|---|
+| [expectations-analysis](plugins/evaluator-kit/skills/expectations-analysis/SKILL.md) | Analyze any requirements input — take-home, job post, client brief, PRD, RFP, assignment, hackathon brief, grant call, ticket, interview task, or a message or chat history — from the evaluator's point of view. Produces one Evaluator Lens document with seven sections — description with references, context understanding, evaluator intent, explicit requirements and implicit requirements (each with reference, impact and severity; implicit ones with confidence), the evaluator's receptiveness to AI with a recommended AI-usage disclosure and confidence, and an understanding section (weighted matrix, deal breakers, deal makers, submission package) — saved in docs/evaluator-expectations/ for the submission audit. Use whenever the user shares a brief, spec, assignment, job description, client message or chat thread and wants to know what the evaluator, reviewer, client, grader or stakeholder is really looking for, what they will check, how to approach or prioritize the submission, how much AI use they will accept, or asks "what do they want", "what are they testing", "summarize the requirements" — even without the word "evaluator". Also use before starting work on any such document, and in post-mortem mode when the user shares feedback, a rejection or an outcome on a submission that has a Lens. |
+| [submission-audit](plugins/evaluator-kit/skills/submission-audit/SKILL.md) | Audit a finished or in-progress submission — code repo, document, proposal, spreadsheet, PDF, slide deck, Q&A answers, estimate, transcript, anything — against the Evaluator Lens that expectations-analysis saved in docs/evaluator-expectations/, reading it in the order the real evaluator will and reporting, per criterion, whether the submission proves it. Writes a structured audit to docs/submission-audit/ with a ship / fix-first / not-ready verdict and gaps ranked by rubric weight, each with a concrete fix. Use this whenever the user asks whether their submission, take-home, proposal, application, deliverable or draft is ready, meets the requirements, covers what the evaluator wants, would pass, or what is missing; before they submit anything that had a Lens; at the halfway mark of timeboxed work ("am I on track", "checkpoint"); and after fixes ("re-audit", "check again"). Trigger even when the user does not say "audit" or "review" — "is this good enough to send?" is this skill. |
 
 ### explore-app
 

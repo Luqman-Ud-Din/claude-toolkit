@@ -1,0 +1,5 @@
+{
+  "name": "evaluator-kit",
+  "version": "0.1.0",
+  "description": "Evaluator-side workflow for any brief, message or chat: expectations-analysis decodes the input into a seven-section Evaluator Lens (requirements with impact and severity, evaluator intent, AI receptiveness, weighted matrix, deal breakers and makers, submission package), and submission-audit grades the submission against it with a ship / fix-first / not-ready verdict."
+}
