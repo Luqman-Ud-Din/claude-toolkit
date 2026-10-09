@@ -2,7 +2,7 @@
   "name": "claude-toolkit",
   "owner": { "name": "Luqman-Ud-Din Muhammad" },
   "metadata": {
-    "description": "Personal Claude Code plugin marketplace: audit, explore and propose skills for conventional and LLM/agentic applications, plus reviewer-side requirements analysis and submission audit."
+    "description": "Personal Claude Code plugin marketplace: audit, explore and propose skills for conventional and LLM/agentic applications, plus evaluator-side requirements analysis and submission audit."
   },
   "plugins": [
     {
@@ -36,9 +36,9 @@
       "category": "explore"
     },
     {
-      "name": "reviewer",
-      "source": "./plugins/reviewer",
-      "description": "Reviewer-side analysis of any brief (job post, take-home, PRD, RFP, grant call) into a Reviewer Lens - weighted rubric, veto criterion, evidence plan - and an audit of the submission against it with a ship / fix-first / not-ready verdict. No audit-core dependency.",
+      "name": "evaluator-kit",
+      "source": "./plugins/evaluator-kit",
+      "description": "Evaluator-side analysis of any brief, message or chat (job post, take-home, PRD, RFP, grant call, client thread) into one Evaluator Lens - requirements with impact and severity, evaluator intent, AI receptiveness, weighted matrix, deal breakers and makers, submission package - and an audit of the submission against it with a ship / fix-first / not-ready verdict. No audit-core dependency.",
       "version": "0.1.0",
       "category": "review"
     }

@@ -1,5 +1,0 @@
-{
-  "name": "reviewer",
-  "version": "0.1.0",
-  "description": "Reviewer-side workflow for any brief or submission: reviewer-requirements-analysis decodes the brief into a Reviewer Lens (weighted rubric, veto criterion, evidence plan), and reviewer-submission-audit grades the submission against it with a ship / fix-first / not-ready verdict."
-}

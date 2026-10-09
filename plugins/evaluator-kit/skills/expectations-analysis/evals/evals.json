@@ -1,0 +1,149 @@
+{
+  "skill_name": "expectations-analysis",
+  "evals": [
+    {
+      "id": 1,
+      "name": "take-home-ai-direction-veto",
+      "prompt": "I got this take-home from a company I'm applying to for a backend role. It's attached. Before I start building I want to understand what they're actually going to grade me on — can you analyze it and tell me what the evaluators will be looking for and what I need to make sure shows up in my submission?",
+      "expected_output": "An Evaluator Lens document that identifies 'steering/directing the AI' (pilot vs passenger) as the veto criterion, treats the mandated PROMPTS.md headings ('moments where the AI got something wrong', 'places where you changed direction') as required-to-exist events that must be scheduled, weights visible reasoning and scoping above code quality, notes that code quality/UI polish are never mentioned, lists the delegated decisions the brief leaves open (stacking, case sensitivity, expiry timing, seeding approach, etc.) with recommended calls, flags the planted broken-codebase obstacle, and gives concrete proof moments per criterion.",
+      "files": [
+        "evals/files/sniffspot-promo-codes-brief.txt"
+      ],
+      "expectations": [
+        "Output names AI direction / pushing back on or reshaping the AI (pilot vs passenger) as the single veto criterion",
+        "Output explicitly treats the PROMPTS.md required contents ('moments where the AI got something wrong' and 'places where you changed direction') as events that must actually happen during the work and schedules when they should occur, not just a section to write",
+        "Output states that code quality, tests, or UI polish are not mentioned in the brief and are therefore at most a tiebreaker, and does NOT invent any ungraded criterion (such as tests) as a veto or disqualifier",
+        "Output includes a weighted rubric (percentages) where visible reasoning/decision rationale is weighted higher than functional completeness or code quality",
+        "Output lists at least five delegated decisions as decision→recommended call pairs with a rationale (e.g., stacking, case sensitivity, expiry evaluation point, discount vs tax order, seeding method, refund interaction, per-user limits)",
+        "Output identifies the 'we don't promise everything runs cleanly' line as a planted obstacle requiring notice + proportionate fix + written report",
+        "Output gives at least one concrete, quotable proof moment for the AI-direction criterion (e.g., 'at least N transcript turns rejecting or redirecting the AI with reasons')",
+        "Output identifies the timebox/scoping as graded and notes that going over or not documenting cuts is a negative",
+        "Output includes an evaluator mental model written in the first person (the evaluator's own voice), not a third-person description of evaluators",
+        "Output flags the submission-mechanics compliance filters (private GitLab repo, the three named members with Reporter role, SUBMISSION.md at root, video link inside SUBMISSION.md, reply on Wellfound) as traps that can block review entirely",
+        "Any reference to how prior submissions to this brief fared is attributed to the skill's calibration material rather than presented as insider knowledge",
+        "The lead of the output (everything before the explicit requirements / traps / decisions detail) is under roughly 900 words and uses tables for the rubric and what-to-show sections",
+        "Output is a single Evaluator Lens document with the seven sections in order — Description (with inline references), Context understanding, Evaluator intent, Explicit requirements and Implicit requirements as tables with reference, impact and severity (implicit also with confidence), AI receptiveness (percentage, recommended disclosure, confidence), and Understanding with Matrix, Deal breakers, Deal makers and Submission package",
+        "AI receptiveness section rates the evaluators as highly receptive (roughly 75% or above), states that AI use is graded, and recommends describing the user's actual AI share framed around the decisions they made rather than stating a lower number"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "client-brief-attention-filter-and-trust",
+      "prompt": "here's a job post i'm thinking of bidding on (file attached). what is this client really looking for and what should my proposal focus on? i want to understand what they'll be judging before i write anything",
+      "expected_output": "An Evaluator Lens document that identifies the embedded attention filter (start the proposal with a fitness product name for someone who hates the gym) as a hard gate, identifies reliability/trust (the previous freelancer broke things and ghosted) as the veto criterion, flags the 'must have: Shopify integration, show me' as a hard filter requiring a specific sample, notes the client is non-technical so plain language and no framework lists are graded, catches that 'it should update itself' plus 'tell me if it's going to break' implies monitoring/maintenance expectations beyond the listed features, flags the budget vs scope tension ($1,500 fixed for 4 integrations + auto-refresh) as needing a scope proposal with explicit inclusions/exclusions, and recommends a structure that answers 'what you'd build, how long, what you need from me' in order.",
+      "files": [
+        "evals/files/freelance-job-post-dashboard.txt"
+      ],
+      "expectations": [
+        "Output identifies the instruction to start the proposal with a fitness product name as an embedded attention filter / hard gate that rejects non-compliant proposals, and specifies the product name must come before any greeting",
+        "Output identifies reliability, trust, or 'won't ghost / will warn before it breaks' as the veto or top-weighted criterion, citing the previous-freelancer story",
+        "Output flags 'must have: Shopify integration, show me' as a hard filter requiring a specific relevant sample, explicitly contrasting it with a generic portfolio or unsupported claim",
+        "Output notes the client is non-technical and that plain-language communication without framework lists is itself graded",
+        "Output flags the budget vs scope tension ($1,500 fixed vs four data sources plus self-updating) as needing an explicit scope proposal",
+        "Output recommends stating assumptions and inclusions/exclusions (including any recurring costs) rather than leaving scope open",
+        "Output recommends answering the client's three explicit questions (what you'd build, how long, what you need from me) in that order",
+        "Output reads 'tell me if it's going to break' as foresight (anticipating platform/API changes, failure alerts) rather than only repair-after-the-fact, and derives an ongoing maintenance/communication cadence requirement from it",
+        "Output notes the 5-week Black Friday timeline and the end-of-week decision as constraints affecting proposal timing (submit now) and content (buffer before Black Friday)",
+        "Output includes an evaluator persona written in the first person from the client's point of view (a busy, non-technical store owner who was burned before)",
+        "Output recommends a verification step a non-technical owner can trust, such as a parallel run against the client's existing Monday spreadsheet",
+        "Output states the correct count of data sources (four: Shopify, Meta Ads, Google Ads, Klaviyo) without miscounting",
+        "Output is a single Evaluator Lens document with the seven sections in order — Description (with inline references), Context understanding, Evaluator intent, Explicit requirements and Implicit requirements as tables with reference, impact and severity (implicit also with confidence), AI receptiveness (percentage, recommended disclosure, confidence), and Understanding with Matrix, Deal breakers, Deal makers and Submission package"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "prd-unstated-success-metric",
+      "prompt": "I'm the eng lead being asked to review this PRD (attached) and give an estimate by Jan 9. Can you analyze it from the PM's and leadership's perspective — what are they actually expecting from my review and from the implementation, including the stuff that isn't written down?",
+      "expected_output": "An Evaluator Lens document that identifies the unstated success metric (first-response time back under 2h30 by end of Q1 without headcount, from the Background section) as the real requirement even though 'Success metrics: TBD', flags that the stated goals (insert in under 3 seconds, shared replies, manager visibility) are means to that metric, identifies the composer-refactor dependency and the Jan 10 decision as the primary risk the review must address, treats the four open questions as items the eng lead is expected to resolve or recommend on rather than leave for Thursday, notes the non-goals (AI replies, routing changes, rich media) as boundaries that must not be crossed, flags the 'Eng lead: TBD' as meaning the evaluator is being auditioned for ownership, and recommends the review lead with the metric, the dependency decision, and recommendations on each open question.",
+      "files": [
+        "evals/files/internal-prd-saved-replies.txt"
+      ],
+      "expectations": [
+        "Output identifies first-response time back under 2h30 by end of Q1 without headcount as the real, unstated success metric, inferred from the Background section despite 'Success metrics: TBD'",
+        "Output explicitly states that the listed goals (3-second insert, shared replies, usage visibility) are means to the FRT metric rather than the success metric itself",
+        "Output proposes how to attribute or measure the feature's impact on FRT (e.g., per-ticket insert events, cohort comparison, a leading indicator for the beta) rather than relying only on R5's usage counter",
+        "Output identifies the composer refactor dependency and the Jan 10 decision deadline as the primary risk the eng review must address, with a specific recommendation (e.g., split estimate by dependency, talk to Tom before Jan 9, abstraction layer)",
+        "Output gives a recommended answer for at least three of the four open questions, framed as positions to bring to Thursday's sync",
+        "Output names all three non-goals (AI replies, routing changes, rich media) as scope boundaries and states that building toward them is a negative",
+        "Output notes that 'Eng lead: TBD' means the evaluator is implicitly being evaluated for ownership of the project",
+        "Output flags the customer_first_name serializer change as a dependency on code outside this feature that may belong to another owner",
+        "Output includes a weighted rubric (percentages) or an explicitly ranked criteria list from the PM/leadership perspective",
+        "Output identifies the customer-facing risk of an unfilled placeholder (e.g., a literal {{order_number}} reaching a customer) as a quality issue, not just a UX detail",
+        "Output flags at least one defect in the stated requirements themselves (e.g., Cmd/Ctrl+Shift+R collides with browser hard-reload, or 'manager' is never defined)",
+        "Output recommends that the eng review lead with the success metric and the composer-dependency decision",
+        "Output is a single Evaluator Lens document with the seven sections in order — Description (with inline references), Context understanding, Evaluator intent, Explicit requirements and Implicit requirements as tables with reference, impact and severity (implicit also with confidence), AI receptiveness (percentage, recommended disclosure, confidence), and Understanding with Matrix, Deal breakers, Deal makers and Submission package"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "take-home-ai-permitted-but-not-graded",
+      "prompt": "Got this backend exercise from a company (attached). They say I can use AI which is great. Before I start, what are they actually going to judge me on and what should I make sure is in the submission?",
+      "expected_output": "An Evaluator Lens document whose veto criterion is correctness under concurrency (never over-admitting) proven by a load test that genuinely exercises the race — NOT AI direction. The brief explicitly notes that AI use is permitted but ungraded ('we don't need to see prompts') and so AI direction is not a criterion. It identifies the stated priority order (correctness > measured not reasoned > latency), treats the DESIGN.md sections (algorithm, race handling, Redis-down, clock skew) and RESULTS.md as required-to-exist events, flags the 'we have been burned by designs argued correct and were not' line as the scar behind the 'measure, don't reason' criterion, flags the trap that a load test with a shared connection is not a concurrency test, identifies the over-reject-vs-over-admit asymmetry as a design constraint, notes 'a beautiful dashboard' as the named over-delivery trap, and recommends fail-open vs fail-closed be decided and justified rather than left implicit.",
+      "files": [
+        "evals/files/take-home-rate-limiter-concurrency.txt"
+      ],
+      "expectations": [
+        "Output names correctness under concurrency (never admitting request N+1 in a window), demonstrated by a load test that actually exercises the race, as the veto criterion",
+        "Output does NOT name AI direction, steering the AI, or anything about prompts/transcripts as the veto criterion or as a primary (top-three) rubric criterion",
+        "Output explicitly states that AI use is permitted but not graded, citing 'we don't need to see prompts' or equivalent",
+        "Output reproduces the brief's stated priority order: correctness first, measurement over reasoning second, latency third",
+        "Output identifies 'we have been burned by designs that were argued correct and were not' as the scar behind the measure-don't-reason criterion",
+        "Output treats the four DESIGN.md sections (algorithm choice, race handling, Redis-down decision, clock-skew analysis) and RESULTS.md raw output + interpretation as required-to-exist events",
+        "Output flags that a load test where all clients share one connection is explicitly called out as not a concurrency test, and recommends a test design that avoids this",
+        "Output identifies the over-reject-acceptable / over-admit-unacceptable asymmetry as a design constraint that should drive algorithm and failure-mode choices",
+        "Output names 'a beautiful dashboard' or latency optimization before correctness as the over-delivery trap",
+        "Output recommends an explicit, justified fail-open vs fail-closed decision for Redis unavailability rather than leaving it implicit",
+        "Output includes a weighted rubric where correctness under concurrency carries the largest weight and AI direction carries zero or is absent",
+        "Output includes a first-person evaluator persona focused on infrastructure correctness and measurement, not on AI usage",
+        "Output is a single Evaluator Lens document with the seven sections in order — Description (with inline references), Context understanding, Evaluator intent, Explicit requirements and Implicit requirements as tables with reference, impact and severity (implicit also with confidence), AI receptiveness (percentage, recommended disclosure, confidence), and Understanding with Matrix, Deal breakers, Deal makers and Submission package",
+        "AI receptiveness section rates AI use as permitted but not examined (tiebreaker at most), with a neutral-to-positive percentage and an explicit confidence"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "grant-call-community-ownership-veto",
+      "prompt": "I'm thinking of applying for this fellowship (call attached). I run a small data consultancy and I've got a civic-tech idea I've wanted to build for a while. What are the evaluators going to be looking for, and how should I frame my application?",
+      "expected_output": "An Evaluator Lens document whose veto is community ownership of the question/data/result — the 'if it would still make sense with a different community swapped in, it is a product' test — and which warns the user directly that their framing ('a civic-tech idea I've wanted to build') is the exact anti-pattern the call names. It reproduces the published scoring weights (relationship 30%, question 20%, handover 30%, learning 20%; budget checked not scored), notes that handover plan is tied for the highest weight and 'we will publish a report is not a plan', treats the work-sample two-sentence role split as a required-to-exist proof of past collaboration, flags the 15% tools ceiling, notes that at least one evaluator is a past fellow (persona: has lived this), identifies the pre-deadline Q&A channel and the published anonymised answers as both a resource and a signal, recommends inviting a community member to the shortlist conversation, and recommends the user either re-anchor the idea on a community they already work with or not apply.",
+      "files": [
+        "evals/files/grant-call-community-data.txt"
+      ],
+      "expectations": [
+        "Output names community ownership of the question, data and result (not a product with a community attached) as the veto criterion, citing the 'different community swapped in' test or the 'we fund people, not products' line",
+        "Output directly tells the user that their own framing ('a civic-tech idea I've wanted to build') matches the anti-pattern the call explicitly rejects, and recommends re-anchoring on an existing community relationship or not applying",
+        "Output reproduces the published scoring weights (relationship 30%, question 20%, handover 30%, learning 20%) and notes budget is checked but not scored",
+        "Output identifies the handover plan as tied for the highest weight and quotes or paraphrases 'we will publish a report is not a plan' as the failing picture",
+        "Output treats the work sample's two-sentence 'your role / community's role' split as a required-to-exist proof of a prior collaborative project, not just an attachment",
+        "Output flags the ~15% ceiling on tools/equipment and the expectation that most budget goes to the fellow's and participants' time",
+        "Output includes a first-person evaluator persona that reflects that at least one evaluator is a former fellow who has done this kind of work",
+        "Output identifies the pre-deadline questions channel and the published anonymised answers as something the applicant should read and may use",
+        "Output recommends having a community member join the shortlist conversation, reading 'where possible, we ask that' as a strong expectation",
+        "Output does not treat platform/dashboard building as a scoring strength and notes the 'means, not the end' distinction",
+        "Output does not mention AI direction, prompts, or transcripts as a criterion (the call never mentions AI)",
+        "Output notes the 1,500-word limit and 'headings help us' as format compliance that affects whether the application is read favourably",
+        "Output is a single Evaluator Lens document with the seven sections in order — Description (with inline references), Context understanding, Evaluator intent, Explicit requirements and Implicit requirements as tables with reference, impact and severity (implicit also with confidence), AI receptiveness (percentage, recommended disclosure, confidence), and Understanding with Matrix, Deal breakers, Deal makers and Submission package"
+      ]
+    },
+    {
+      "id": 6,
+      "name": "chat-history-founder-trial",
+      "prompt": "This is my LinkedIn chat with a founder who wants me to do a paid trial (exported, attached). What is he actually going to judge me on, and what should I send him on Friday? He also asked how I use AI — how should I answer that?",
+      "files": [
+        "evals/files/linkedin-chat-founder-prototype.txt"
+      ],
+      "expected_output": "An Evaluator Lens document built from a chat history: it numbers and cites the founder's messages, separates his messages (requirements) from the user's (context, including the user's own promise to handle concurrent cancellations), identifies proactive communication / not disappearing as the veto (stated twice: contractors 'disappeared for days', 'tells me early'), treats the double-charge-on-concurrent-cancellation scenario as a Critical requirement the founder will test first, applies the latest timing message (prototype due Fri 10 Oct, full feature mid-January, not Black Friday), notes UI polish is explicitly not graded, lists a submission package of the prototype plus a Loom of at most 5 minutes that a non-technical cofounder can follow plus a note on AI use, and rates AI receptiveness high (the team uses Cursor and Claude daily) while recommending an honest account of actual AI use including where the user did not trust it.",
+      "expectations": [
+        "Output references the chat by message (number, speaker or date) rather than by document section",
+        "Output treats the user's own messages as context, and records that the user already promised to handle concurrent cancellations",
+        "Output names proactive communication / warning early / not disappearing as the veto or top-weighted criterion, citing both the 'disappeared for days' and 'tells me early' messages",
+        "Output treats preventing double charges when two cancellations happen at once as a Critical requirement and notes the founder said he will test that scenario first",
+        "Output applies the latest timing message: the prototype is due Friday 10 Oct and the full feature targets mid-January, not Black Friday, and flags the change",
+        "Output states UI polish is explicitly not graded, citing the founder's message",
+        "Output's submission package lists the prototype, a Loom of at most 5 minutes understandable by a non-technical cofounder covering what was built and what comes next, and an account of AI use",
+        "Output notes waitlisted people must not be charged until they get the spot, and that texts may be logged rather than sent",
+        "AI receptiveness section rates the founder as highly receptive (roughly 75% or above) citing daily Cursor and Claude use, and recommends describing the user's actual AI share including where they did not trust the AI, rather than suggesting a number that does not match their usage",
+        "Output stays within the 6-hour timebox in its recommendations and flags over-delivery as a risk",
+        "Output is a single Evaluator Lens document with the seven sections in order — Description (with inline references), Context understanding, Evaluator intent, Explicit requirements and Implicit requirements as tables with reference, impact and severity (implicit also with confidence), AI receptiveness (percentage, recommended disclosure, confidence), and Understanding with Matrix, Deal breakers, Deal makers and Submission package"
+      ]
+    }
+  ]
+}
