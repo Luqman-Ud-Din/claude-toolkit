@@ -1,0 +1,3 @@
+- Role applied for: Backend
+- Deadline: 2026-10-14
+- Prior rejection: none mentioned
