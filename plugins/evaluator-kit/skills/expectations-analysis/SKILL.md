@@ -233,7 +233,7 @@ If the user asks you to re-run or revise the analysis on the same input, overwri
 
 ## Post-mortem mode
 
-When the outcome is known — the user pastes feedback, a rejection, an acceptance with notes, or `docs/evaluator-expectations/outcome.md` exists — the skill runs again on different inputs. Read `brief.md`, `expectations.md`, `docs/submission-audit/audit-final.md` and `gaps.md` if the audit skill wrote them, and the feedback. Then answer four questions, in this order:
+When the outcome is known — the user pastes feedback, a rejection, an acceptance with notes, or `docs/evaluator-expectations/outcome.md` exists — the skill runs again on different inputs. Read `brief.md`, `expectations.md`, `docs/submission-audit/audit.md` if the audit skill wrote it (its §1 verdict, §8 gaps and §6 AI disclosure), and the feedback. Then answer four questions, in this order:
 
 1. **Which criterion did the feedback grade on?** Map each sentence of the feedback to a Matrix row, a deal breaker, or a required-to-exist event in the Lens. Feedback is the evaluator's rubric stated in retrospect; this is the only ground truth the method ever gets.
 2. **Was it in the Lens?** If yes, at what weight and confidence, and was it the veto? If the feedback's main point was weighted 5% in the Lens, the count was wrong, and the question is which signals were under-read. If it was not in the Lens at all, find the sentence in the brief that should have produced it and name the interrogation question that would have caught it.

@@ -21,6 +21,7 @@ How to open each kind of thing a submission can be, in the way the evaluator wil
 15. Data analysis and notebooks
 16. Surfaces you cannot read
 17. Tools
+18. Message or chat reply
 
 ---
 
@@ -41,6 +42,7 @@ The Lens's archetype and persona set the order. Defaults when the Lens does not 
 | Academic assignment | rubric lines in order → format compliance → the argument |
 | Hackathon | the demo → the pitch → the repo |
 | Design brief | the piece itself → the rationale → the constraints checklist |
+| Message / chat thread | the reply's first sentence (often a phone preview) → the answer to their latest ask → answers to every earlier open question → attachments or links → the sign-off and next step |
 
 The first item in the row is `first_surface` unless the Lens overrides it. Everything in Phase 2 depends on getting this right.
 
@@ -266,3 +268,20 @@ A video you cannot watch, a live link you cannot open, a demo that needs credent
 | Word and line counts | `wc -w`, `wc -l`; `scripts/inventory.py` |
 | Transcript statistics | `scripts/inventory.py --transcript` |
 | Placeholders left in | `scripts/inventory.py` (flags `<…>`, `TODO`, `TBD`, `lorem`, `{{`) |
+
+## 18. Message or chat reply
+
+An email, a Slack, Teams, LinkedIn or Upwork message, a reply in a thread — drafted in a file or pasted into the chat. The Lens was usually built from the thread itself, so `brief.md` holds the numbered messages the reply must answer.
+
+**Open**: as plain text. Read the first sentence alone, then the whole reply, with a verdict after each: many evaluators see only the notification preview before deciding whether to open it.
+
+**Proof lives in**: the first sentence answering what they most recently asked; each open question from the thread answered, in the order asked, findable; every requirement changed mid-thread reflected in its latest version; what the user promised in their own earlier messages delivered or explicitly re-scoped; attachments or links present and named in the text; one concrete next step with a date.
+
+**Checks**:
+- Thread coverage: list every evaluator question and request from `brief.md` by message number; each answered, deferred with a reason, or missing.
+- Latest version: no answer built on a requirement the evaluator later changed.
+- Unkept promises: anything the user said they would do ("I'll make sure concurrent cancellations are handled") either shown or re-scoped in plain words.
+- No re-asking what the thread already answered.
+- Register matches the thread (two lines to a two-line message; no proposal formatting in a DM unless they asked for it); length readable on a phone.
+- Attachments: referenced in the text and actually attached or linked; links open with the evaluator's access.
+- AI disclosure: if they asked how the user works with AI, the answer is there, specific, and consistent with any transcript or commits they will see.

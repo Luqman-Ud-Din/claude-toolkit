@@ -52,7 +52,7 @@ Status **Missing**. The transcript is the veto sentence made literal:
 | "Time spent, and on what" | Thin | honest number, field unanswered |
 | obstacle note | Thin | the pre-warned mobile sink only; no backend obstacle found or reported |
 
-### Phase 5 — gates, mechanics, traps
+### Phase 5 — requirements, package, deal breakers
 
 Blocks-review, three: placeholder video; the Lens tracked in history; GitLab/private/Reporters/Wellfound unverifiable (no remote). Over-delivery trap tripped: `max_uses`, the race guard, the thread spec and the `ONCE` seed were never asked for — and are the thing the submitter is proudest of. Sanitisation: transcript vs commits disagree (the transcript's rename never happened in git). Tone: clinical register to a warm brief.
 

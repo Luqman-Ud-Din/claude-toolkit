@@ -15,7 +15,7 @@ One row per rubric criterion from the Lens, in the Lens's order. Columns: criter
 | **Weighted score** | | | | **41** | |
 ```
 
-Factors: Strong 1.0 · Adequate 0.7 · Weak 0.3 · Missing 0. Gates are listed below the table as pass/fail and are not in the sum. Tiebreaker criteria (the Lens marks them) are in the sum at their small weight.
+Factors: Strong 1.0 · Adequate 0.7 · Weak 0.3 · Missing 0. Gates (core function, format limits, Critical requirements, mandatory package items) are listed on the **Gates:** line below the table as pass/fail and are not in the sum; §4 and §5 hold the detail. The factor itself is not printed in the report — it follows from the strength. Tiebreaker criteria (the Lens marks them) are in the sum at their small weight.
 
 The number is a summary, not the verdict. Two submissions can both score 60 and get different verdicts because one of them failed the veto.
 
@@ -25,16 +25,20 @@ Apply in order; the first that matches wins.
 
 **not-ready** — any of:
 - the veto criterion is Weak or Missing;
-- a gate fails (core function; a hard format limit; a mandatory requirement absent);
+- a gate fails (core function; a hard format limit; a Critical requirement not met — explicit, or implicit at Stated/Strong confidence);
 - a required-to-exist event is Empty;
-- a blocks-review mechanic is tripped (wrong platform, missing collaborator, link not where asked, public when private was required, wrong channel).
+- a blocks-review mechanic is tripped (wrong platform, missing collaborator, link not where asked, public when private was required, wrong channel);
+- AI traces where the Lens says the evaluator forbids AI (receptiveness around 10% or below, AI use *forbidden*).
 
-Why these four: each one ends the evaluator's read before the content is weighed. The score is irrelevant because it is never computed.
+Why these: each one ends the evaluator's read before the content is weighed. The score is irrelevant because it is never computed.
 
 **fix-first** — none of the above, and any of:
 - weighted score under 70;
 - any criterion weighted 15% or more is Weak or Missing;
+- any High requirement not met (explicit, or implicit at Stated/Strong confidence);
+- any Submission package item absent;
 - any required-to-exist event is Thin;
+- the AI disclosure is *contradicted* by the traces (a stated share or claim the transcript, commits or style do not support);
 - the veto proof is present but not on `first_surface` (the evaluator forms their impression without it).
 
 Why: the submission survives the first pass, but in a comparison against others to the same brief it loses on a primary axis. These gaps are fixable in hours and the fix list says how.
@@ -57,14 +61,18 @@ Rank gaps by class, then by rubric weight within class:
 
 1. **blocks-review** — the evaluator cannot open the work. Fix first; minutes.
 2. **veto** — the veto criterion Weak or Missing.
-3. **gate** — a pass/fail requirement failed.
+3. **gate** — a pass/fail requirement failed: a Critical requirement, a hard format limit, the core function.
 4. **event-empty** — a required-to-exist event with no record.
 5. **primary** — a criterion weighted 15% or more, Weak or Missing.
-6. **event-thin** — a required-to-exist event with a generic record.
-7. **first-surface** — veto proof exists but not where the evaluator starts.
-8. **secondary** — a criterion under 15%, Weak or Missing.
-9. **trap** — a Lens trap tripped that is not already covered above (tone, over-delivery, sanitisation).
-10. **tiebreaker** — the Lens's tiebreaker criteria.
+6. **high-requirement** — a High requirement not met (implicit only at Stated/Strong confidence).
+7. **event-thin** — a required-to-exist event with a generic record.
+8. **package** — a Submission package item absent or thin.
+9. **ai-disclosure** — disclosure *contradicted*, *mismatch* or *absent* (contradicted ranks first).
+10. **first-surface** — veto proof exists but not where the evaluator starts.
+11. **secondary** — a criterion under 15%, Weak or Missing.
+12. **trap** — a Lens trap tripped that is not already covered above (tone, over-delivery, sanitisation).
+13. **medium-requirement** — a Medium requirement not met.
+14. **tiebreaker** — the Lens's tiebreaker criteria, Low requirements, implicit requirements at Inferred/Speculative confidence, and absent deal makers.
 
 Within a class, higher weight first. Across the whole list, no more than the user can act on before the deadline should be above the fold; put a line in the report saying which gaps are the "must" set and which are the "if time" set.
 
@@ -94,12 +102,13 @@ Never write a fix that amounts to fabricating a trace. If the user asks for one,
 
 ## Re-audit rounds
 
-When `audit-final.md` exists from a previous round:
+When `docs/submission-audit/audit.md` exists with `mode: full` from a previous round, read it before overwriting it:
 
-- Read the previous `gaps.md`. For each gap: closed (evidence now present at the stated address), still open, or changed.
+- Take its §8 gaps. For each: closed (evidence now present at the stated address), still open, or changed. Gap IDs stay stable across rounds.
 - New gaps found this round are marked `new in round <n>`.
-- The report gets a "Since last round" block: closed / open / new counts and the score delta.
-- `gaps.md` keeps closed items with their checkbox ticked, below the open ones, so the user sees progress.
+- §9 Notes → "Since last round" gets closed / open / new counts, the score delta and the verdict change.
+- §8 keeps closed items under "Closed in earlier rounds" with their checkbox ticked, below the open ones, so the user sees progress.
+- A previous `mode: partial` file is not a round; overwrite it and start at round 1.
 - Verdict is recomputed from scratch; a round-1 not-ready can be a round-2 ship.
 
 ## What the report never does

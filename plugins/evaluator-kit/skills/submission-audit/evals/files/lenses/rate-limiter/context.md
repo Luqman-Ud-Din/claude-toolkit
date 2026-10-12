@@ -1,2 +1,0 @@
-- Role applied for: platform engineering
-- Deadline: next Friday

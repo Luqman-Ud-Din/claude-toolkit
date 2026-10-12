@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Builds the four test submissions under $1 (default: ./fixtures-build).
+# Builds the five test submissions under $1 (default: ./fixtures-build).
 # Each gets docs/evaluator-expectations/ from evals/files/lenses/<name>/.
 set -euo pipefail
 OUT="${1:-./fixtures-build}"
@@ -407,5 +407,40 @@ The read-prune-count-add sequence runs inside one Lua script via EVALSHA, so it 
 EOF
 gitc "$R" "2026-10-07T10:20:00+05:00" "DESIGN: algorithm choice and race handling"
 git -C "$R" log --oneline | cat
+
+############################################################################
+# 5. founder-reply — a LinkedIn reply message against a Lens built from a chat
+############################################################################
+F="$OUT/founder-reply"; mkdir -p "$F/prototype/src"; git -C "$F/prototype" init -q
+cat > "$F/prototype/src/waitlist.ts" <<'EOF'
+// Promote the next waitlisted member when a booking is cancelled.
+export async function onCancel(db: Db, classId: string) {
+  const next = await db.waitlist.first(classId);          // read
+  if (!next) return;
+  await db.bookings.create(classId, next.memberId);        // write — no lock, no transaction
+  await stripe.paymentIntents.capture(next.paymentIntentId);
+  log.info(`SMS to ${next.phone}: you're in!`);           // texts are logged, not sent
+}
+EOF
+cat > "$F/prototype/NOTES.md" <<'EOF'
+# Waitlist prototype — notes
+
+Built in one evening with Claude Code. Claude wrote most of the waitlist service, the Stripe capture and the seed script from my prompts; I reviewed the diffs and renamed things. I did not get to concurrency.
+EOF
+gitc "$F/prototype" "2026-10-09T21:10:00+05:00" "waitlist prototype"
+mkdir -p "$F/docs/evaluator-expectations"; cp "$LENSES/founder-chat"/*.md "$F/docs/evaluator-expectations/"
+cat > "$F/reply.md" <<'EOF'
+Hi Daniel, hope you had a good week! Sorry this is a bit later than I wanted.
+
+The waitlist prototype is done — when someone cancels, the next person on the waitlist gets booked and charged, and the text is logged. Code is on the `waitlist-prototype` branch.
+
+Loom walkthrough: <loom link>
+
+Next steps: I think we can get the full version live well before Black Friday if we start next week.
+
+On AI: I barely used it, maybe 10%, mostly for autocomplete.
+
+Let me know what you think!
+EOF
 
 echo; echo "Built under $OUT:"; ls "$OUT"

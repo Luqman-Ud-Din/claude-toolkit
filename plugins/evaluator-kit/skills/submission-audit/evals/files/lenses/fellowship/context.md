@@ -1,2 +1,0 @@
-- Applicant: runs a small data consultancy; has a civic-tech idea they have wanted to build
-- Deadline: 15 January

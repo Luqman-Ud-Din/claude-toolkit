@@ -18,11 +18,7 @@ docs/
     outcome.md                ← user pastes feedback here
     calibration.md            ← post-mortem
   submission-audit/           ← audit skill
-    inventory.md
-    audit-partial.md          ← partial mode
-    audit-final.md
-    evidence.md
-    gaps.md
+    audit.md                  ← every mode; overwritten each run
 ```
 
 ## `docs/evaluator-expectations/`
@@ -67,9 +63,9 @@ ai_receptiveness: 85
 - `veto` is the one-sentence veto from **Deal breakers**, verbatim. A reader that reads nothing else reads this.
 - `first_surface` is the first thing the evaluator opens, from the reading order in Phase 6. The audit checks the veto proof lives there.
 - `submission_form` is the form the **Submission package** takes (message reply, proposal, repo + README, video, cover note, form, deck, hybrid).
-- `ai_receptiveness` is the percentage from **AI receptiveness**; recorded so the audit can compare what the submission says about AI use against it (planned for the audit skill; not checked yet).
+- `ai_receptiveness` is the percentage from **AI receptiveness**; the audit's **AI disclosure** section (§6) compares what the submission says about AI use, and what its traces show, against it.
 
-Sections the audit reads by name, in this order: **Deal breakers** (the veto criterion and the traps), **Matrix** (criterion, weight, confidence, failing looks like), **Submission package** (the package items, **Proof per criterion**, **Required-to-exist events**, **Pre-submission check**), **Explicit requirements** and **Implicit requirements** (severity drives which misses are blocking), and **AI receptiveness**. **Description**, **Context understanding**, **Evaluator intent** and **Deal makers** are for the user; the audit reads **Context understanding** for the user's role and constraints.
+Sections the audit reads by name, in this order: **Deal breakers** (the veto criterion and the traps), **Matrix** (criterion, weight, confidence, failing looks like), **Submission package** (the package items, **Proof per criterion**, **Required-to-exist events**; the **Pre-submission check** is for the user and is not re-ticked by the audit), **Explicit requirements** and **Implicit requirements** (severity drives which misses are blocking), and **AI receptiveness**. The audit also reads **Deal makers** (differentiators and decisions, checked present or absent, never gating) and **Context understanding** for the user's role and constraints. It reads **Evaluator intent** for the evaluator persona and reading time; **Description** is for the user.
 
 ### `outcome.md`
 
@@ -88,15 +84,15 @@ Written by the post-mortem. The four answers from the post-mortem section of the
 
 ## `docs/submission-audit/`
 
-| File | Written by | Read by | When |
-|---|---|---|---|
-| `inventory.md` | audit | re-audit (to diff), post-mortem | Every audit run |
-| `audit-partial.md` | audit, partial mode | user, audit full mode | Halfway through the work |
-| `audit-final.md` | audit, full mode | user, post-mortem | Before submitting; overwritten each round |
-| `evidence.md` | audit, full mode | user who disputes a grade, post-mortem | Every full run |
-| `gaps.md` | audit, full mode | user, while fixing; next round | Every full run; closed items carried forward |
+One file, `audit.md`, written by every audit run — full, partial and re-audit — and read by the user, the next re-audit and the post-mortem. Its template is in the audit skill's `assets/output-templates.md`.
 
-### `audit-final.md` front-matter
+| Mode | When | What `audit.md` holds |
+|---|---|---|
+| partial | Halfway through the work | Events table, Critical requirements so far, do-next, short inventory. No verdict, no score. |
+| full | Before submitting | Verdict, scorecard, deal breakers, requirements, submission package, AI disclosure, deal makers, ranked gaps, notes; appendix with the reading order and rejected evidence for weak criteria. |
+| re-audit | After fixes | Full, plus closed gaps carried forward and "Since last round". The previous `audit.md` is read before it is overwritten. |
+
+### `audit.md` front-matter — full mode
 
 ```yaml
 ---
@@ -108,38 +104,36 @@ lens_path: docs/evaluator-expectations/expectations.md
 lens_version: 1
 lens_derived_at_audit: false
 independence: fresh-session | subagent | same-context
-submission_ref: "git a1b2c3d (6 commits, 2026-10-09T18:02..2026-10-09T21:40) | files: …"
+submission_form: repo + README
+submission_ref: "git a1b2c3d (6 commits, 2026-10-09T18:02..2026-10-09T21:40) | files: … | message draft, 184 words"
 verdict: ship | fix-first | not-ready
 weighted_score: 41
 veto_status: strong | adequate | weak | missing
 veto_on_first_surface: false
-first_pass: "<one line in the evaluator's voice, written after the first surface only>"
+ai_disclosure: fits | mismatch | contradicted | absent | n-a
 ---
 ```
 
-- `round` increments on each full re-audit; `gaps.md` carries closed items forward.
+- `round` increments on each full re-audit; §8 carries closed gaps forward with stable gap IDs. A partial run is round 0 and is simply overwritten.
 - `lens_derived_at_audit: true` means no Lens existed before the work and no halfway checkpoint ran; the post-mortem weighs that.
 - `independence` records whether the audit ran blind. `same-context` verdicts are optimistic by construction.
-- `submission_ref` lets a later run tell what changed: a commit hash and range for a repo, or the file list with sizes for documents.
+- `submission_ref` lets a later run tell what changed: a commit hash and range for a repo, the file list with sizes for documents, or the word count for a message draft.
+- `ai_disclosure` is the result of the AI disclosure section (§6) against the Lens's `ai_receptiveness`.
 
-### `audit-partial.md` front-matter
+### `audit.md` front-matter — partial mode
 
 ```yaml
 ---
 kind: evaluator-audit
 mode: partial
+round: 0
 written: 2026-10-09
+lens_path: docs/evaluator-expectations/expectations.md
 lens_version: 1
 independence: …
 submission_ref: "…"
 ---
 ```
-
-Contains only the required-to-exist events table (event · happened? · evidence · if not, when and what) and a three-line "do next". No verdict, no score.
-
-### `evidence.md`, `gaps.md`, `inventory.md`
-
-Templates in the audit skill's `assets/output-templates.md`. Their front-matter carries `kind` (`evaluator-audit-evidence`, `evaluator-audit-gaps`, `evaluator-audit-inventory`), `round`, and `written`.
 
 ## Lookup rules for downstream skills
 
@@ -151,7 +145,7 @@ When the audit (or any later step) needs the Lens:
 
 Stop at the first hit. If none: do not derive a rubric in the same context as the submission. Say the Lens is missing, run `expectations-analysis` in a separate context on the brief alone (the user must supply the brief), let it write the folder, then proceed — and set `lens_derived_at_audit: true` in the audit's front-matter.
 
-When the post-mortem needs the audit: `docs/submission-audit/audit-final.md` (latest round), then `gaps.md` for what was known and left open, then `evidence.md` if a specific grade is in question.
+When the post-mortem needs the audit: `docs/submission-audit/audit.md` — §1 for the verdict and the evaluator-voice lines, §8 for what was known and left open, §6 for the AI disclosure, the Appendix if a specific weak grade is in question. If its `mode` is `partial`, no full audit ran.
 
 ## Why folders and not the conversation
 

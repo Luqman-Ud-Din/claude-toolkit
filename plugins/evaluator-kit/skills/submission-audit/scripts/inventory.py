@@ -303,7 +303,7 @@ def main(argv):
                 print(f"  {k}: {v}")
         print("  (ratios are heuristics; read the turns the previews point at)")
 
-    print("\nThis is an inventory, not a judgment. Map each surface to the Lens's What-to-show table and read it.")
+    print("\nThis is an inventory, not a judgment. Map each surface to the Lens's Submission package and Proof per criterion, and read it.")
     return 0
 
 

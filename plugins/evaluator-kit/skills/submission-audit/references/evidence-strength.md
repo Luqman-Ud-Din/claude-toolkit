@@ -27,7 +27,7 @@ Signs of echo:
 - The claim sits in a header, summary, or cover note rather than next to the work.
 - The same claim could be pasted into any submission to this brief.
 
-An echo caps the rating at Weak. If an echo is the *only* evidence for the criterion, record it as Weak and name it as echo in the ledger; the gap list then says "replace the claim with the instance".
+An echo caps the rating at Weak. If an echo is the *only* evidence for the criterion, record it as Weak and name it as echo under Rejected evidence; the gap list then says "replace the claim with the instance".
 
 ## Per criterion type
 
@@ -132,14 +132,14 @@ Pass if the core flow the brief named works end to end and an evaluator can see 
 | Price with no scope | Unbounded | Weak |
 | A beautiful dashboard the brief said not to prioritise | Over-delivery | Scoping finding, not a credit |
 
-## Writing the ledger entry
+## Recording candidates
 
-For every candidate:
+Keep every candidate in your working notes while you read, in this form, including the ones that do not count:
 
 ```
-### <criterion>
+<criterion>
 - Candidate: <what was found, one line>
-  - Address: <file § heading / lines / commit / turn / slide / cell / page>
+  - Address: <file § heading / lines / commit / turn / message ¶ / slide / cell / page>
   - Strength: Strong | Adequate | Weak | Missing
   - Depth: first-pass | normal-read | search-only
   - Echo: yes | no
@@ -147,4 +147,4 @@ For every candidate:
   - Note: <one line, why this rating>
 ```
 
-Keep every candidate, including the ones that do not count; the report takes the best per criterion, and the post-mortem wants to know what else was there.
+What reaches `audit.md`: the best candidate per criterion goes into the §2 scorecard as its evidence reference. For criteria that end Weak or Missing, the candidates that did not count go into **Appendix → Rejected evidence**, one line each — what was found, where, and why it did not count (echo, thin, buried, anti-pattern). Candidates for criteria that passed stay in your notes; the scorecard reference is enough.
