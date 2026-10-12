@@ -5,7 +5,7 @@ description: Audit a finished or in-progress submission — code repo, document,
 
 ## Plugin invocation
 
-When invoking a skill from this bundle, use `evaluator-kit:<skill-name>`. Keep bare skill
+When invoking a skill from this bundle, use `brief-evaluation:<skill-name>`. Keep bare skill
 IDs in front-matter, handoff files and output paths. Resolve `scripts/`, `references/`
 and `assets/` relative to this SKILL.md, not the user's project or submission; quote
 script paths when running commands.

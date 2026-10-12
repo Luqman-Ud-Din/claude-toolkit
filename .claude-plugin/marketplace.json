@@ -36,8 +36,8 @@
       "category": "explore"
     },
     {
-      "name": "evaluator-kit",
-      "source": "./plugins/evaluator-kit",
+      "name": "brief-evaluation",
+      "source": "./plugins/brief-evaluation",
       "description": "Evaluator-side analysis of any brief, message or chat (job post, take-home, PRD, RFP, grant call, client thread) into one Evaluator Lens - requirements with impact and severity, evaluator intent, AI receptiveness, weighted matrix, deal breakers and makers, submission package - and an audit of the submission against it with a ship / fix-first / not-ready verdict. No audit-core dependency.",
       "version": "0.1.0",
       "category": "review"
