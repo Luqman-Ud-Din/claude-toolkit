@@ -16,7 +16,7 @@ class PackagingTests(unittest.TestCase):
     def test_inventory_and_readme(self):
         plugins, errors = inventory(ROOT)
         self.assertEqual(errors, [])
-        self.assertEqual(sum(len(row[2]) for row in plugins), 79)
+        self.assertEqual(sum(len(row[2]) for row in plugins), 81)
         self.assertEqual(readme(plugins, ROOT), (ROOT / 'README.md').read_text(encoding='utf-8'))
         self.assertEqual(readme(plugins, ROOT), readme(plugins, ROOT))
 

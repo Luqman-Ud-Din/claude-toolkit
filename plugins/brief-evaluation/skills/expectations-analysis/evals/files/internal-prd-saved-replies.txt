@@ -1,0 +1,66 @@
+PRD: Saved Replies for the Support Inbox
+Owner: Priya (PM, Support Tools)   Eng lead: TBD   Design: Marco
+Status: Draft v2 — ready for eng review
+Target: Q1
+
+Background
+
+Our support team answers ~1,800 tickets a week in the inbox we built last year. Agents told us in the last two retros that they're re-typing the same five or six answers dozens of times a day ("where's my order", "how do I reset my password", "can I change my shipping address"). Two agents keep a personal Google Doc of paste-ready answers. Average first-response time has crept from 2h10 to 3h40 over the last two quarters while ticket volume grew 30%. Leadership has asked us to get FRT back under 2h30 by end of Q1 without adding headcount.
+
+Problem
+
+Agents have no shared, fast way to insert a standard answer into a reply.
+
+Goals
+
+- Agents can insert a saved reply into the composer in under 3 seconds
+- Saved replies can be shared across the team, not just personal
+- Managers can see which replies are used most
+
+Non-goals
+
+- AI-generated replies (separate initiative, Q2)
+- Changes to the ticket routing logic
+- Rich media in replies (images, attachments) — text and links only for v1
+
+Proposed solution
+
+Add a "Saved replies" panel to the composer. Agents open it with a keyboard shortcut or a button, search by title, click to insert. Replies support simple placeholders: {{customer_first_name}}, {{order_number}}. Anyone can create a personal reply; managers can promote a personal reply to a team reply. Usage count is recorded per insert.
+
+Open questions
+
+- Should inserting a reply replace the composer contents or append? (Marco leans append.)
+- Do we need folders/tags for replies, or is search enough for v1?
+- What happens to a team reply when the agent who created it leaves?
+- Placeholders: what if order_number is empty for a ticket — leave the placeholder, blank it, or block insert?
+
+Requirements
+
+R1. Agent can create, edit, delete a personal saved reply (title + body).
+R2. Agent can search saved replies by title from the composer and insert with one click.
+R3. Manager can promote a personal reply to team scope; team replies visible to all agents.
+R4. Body supports {{customer_first_name}} and {{order_number}} placeholders, filled from the ticket.
+R5. Each insert increments a usage counter visible to managers in a simple list.
+R6. Keyboard shortcut (Cmd/Ctrl+Shift+R) opens the panel.
+
+Success metrics
+
+TBD — Priya to confirm with Support leadership.
+
+Dependencies
+
+- Composer refactor (Tom) is landing mid-January; the panel should build on the new composer, not the old one.
+- Ticket model exposes order_number already; customer_first_name needs a small change in the customer serializer.
+
+Risks
+
+- If the composer refactor slips, we either block or build against the old composer and migrate. Need a call by Jan 10.
+
+Timeline
+
+Design handoff: Jan 6
+Eng estimate requested by: Jan 9
+Beta with 5 agents: Feb 3
+GA: Feb 24
+
+Please review and leave comments inline. We'll go through open questions in Thursday's sync.

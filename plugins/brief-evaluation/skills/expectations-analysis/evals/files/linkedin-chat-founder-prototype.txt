@@ -1,0 +1,35 @@
+LinkedIn conversation — Daniel Okafor (Founder, Tallyroom) and the user
+Exported 2026-10-06. Messages in order; the user's messages are marked [me].
+
+[Daniel — Mon 29 Sep, 09:14]
+Hi! Saw your post about the inventory sync tool you built. We're a 6-person team building a booking + payments product for small fitness studios. Our current contractor is leaving at the end of October and we need someone to pick up a few things fast. Open to a chat?
+
+[me — Mon 29 Sep, 11:02]
+Hi Daniel, thanks for reaching out. Yes, happy to chat. What are the things you need picked up?
+
+[Daniel — Mon 29 Sep, 11:40]
+Main one: studios keep asking for class waitlists. When someone cancels, the next person on the waitlist should get the spot automatically and get a text. We use Stripe for payments so the waitlisted person shouldn't be charged until they actually get the spot. Stack is Next.js + Postgres (Supabase). Ideally live before Black Friday since studios run promos then.
+
+[Daniel — Mon 29 Sep, 11:42]
+Also honestly the bigger thing for me: our last two contractors disappeared for days at a time. I need someone who tells me early when something is going sideways. I'm not technical enough to spot it myself.
+
+[me — Tue 30 Sep, 08:55]
+Makes sense. I'd want to look at the codebase before giving a timeline. Is there a way to do a small paid trial first?
+
+[Daniel — Tue 30 Sep, 10:20]
+Yes, good idea. Let's do a paid trial: build a prototype of the waitlist promotion flow (no real texts needed, just log them). Timebox it to about 6 hours, I'll pay your rate for 6. I'll give you repo access today.
+
+[Daniel — Tue 30 Sep, 10:21]
+Don't worry about UI polish, our designer will redo it anyway.
+
+[Daniel — Thu 2 Oct, 16:05]
+Quick thing — a studio owner told me she got double-charged once with the old system when two people cancelled at the same time. So please make sure that can't happen in yours. That's the scenario I'll test first when I try it.
+
+[me — Thu 2 Oct, 16:30]
+Got it, I'll make sure concurrent cancellations are handled.
+
+[Daniel — Fri 3 Oct, 09:12]
+One more: when you send it, send me a short Loom (5 min max) walking through what you built and what you'd do next. I'll forward it to my cofounder who isn't technical either. And tell me what you used — we use Cursor and Claude every day here, I just want to know how you work with them and where you didn't trust them.
+
+[Daniel — Mon 6 Oct, 14:47]
+Change of plan on timing: Black Friday is too tight for the full feature, so let's aim the real version at mid-January. The prototype is still due this Friday (10 Oct) though.
